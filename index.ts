@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import * as fs from "fs";
+import zod from "zod";
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -33,12 +34,37 @@ function delay(ms: number) {
 
 interface City {
     name: string;
+    state_code: string;
 }
 
 interface State {
     name: string;
     code: string;
 }
+
+type EntityType = "city" | "state";
+
+interface EntityMap {
+    city: City;
+    state: State;
+}
+
+
+type EntityFactoryMap = {
+    [K in EntityType]: (data: any) => EntityMap[K];
+}
+
+const entityFactories: EntityFactoryMap = {
+    city: (data: any): City => ({
+            name: data.name,
+            state_code: data.state_code,
+    }),
+    state:  (data: any): State => ({
+        name: data.name,
+        code: data.code,
+    }),
+}
+
 
 
 let buffer = "";
@@ -72,12 +98,29 @@ function extractEntity({ buffer, entityType }: { buffer: string; entityType: str
     return null;
 }
 
+function extractEntity2<E extends EntityType>({ buffer, entityType }: { buffer: string; entityType: E}): EntityMap[E] | null {
+    const jsonEntity = getJsonObject(buffer);
+    if (!jsonEntity) {
+        return null;
+    }
+    // const entity: EntityMap[E] = jsonEntity as EntityMap[E];
 
 
-async function streamParser(content: any, entityType: string) {
+    const factory: EntityFactoryMap[E] = entityFactories[entityType];
+    const entity: EntityMap[E] = factory(jsonEntity);
+    
+
+    // const entity = entityFactories[E](jsonEntity);
+
+    return entity;
+}
 
 
-    let outputEntity: any = null;
+
+
+async function streamParser<E extends EntityType>(content: any, entityType: E) {
+
+    let outputEntity: EntityMap[E] | null = null;
 
     let start = content.indexOf("{");
     let end = content.indexOf("}");
@@ -101,7 +144,7 @@ async function streamParser(content: any, entityType: string) {
 
         if (buffer.length > 0) {
 
-            outputEntity = extractEntity({ buffer, entityType })
+            outputEntity = extractEntity2<E>({ buffer, entityType});
         }
         buffer = "";
     }
@@ -110,13 +153,13 @@ async function streamParser(content: any, entityType: string) {
 
 export async function readFileParseContent() {
 
-
     // readfile and parse
     const data = fs.readFileSync('output_state.txt', 'utf8');
     const lines = data.split(/\r?\n/);
 
     for (let line of lines) {
-        let res = await streamParser(line, "state");
+        let res = await streamParser<"city">(line, "city");
+
         if (res) {
             console.log(res);
         }
