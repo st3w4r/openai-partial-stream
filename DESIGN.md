@@ -21,3 +21,6 @@ LLM:
 - Pass to the LLM the expected structure to return.
 
 
+
+Validation library:
+

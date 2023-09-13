@@ -1,13 +1,13 @@
 import OpenAI from "openai";
-import * as fs from "fs";
+// import * as fs from "fs";
 import { z } from "zod";
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-const Stream = require("stream");
-const writableStream = new Stream.Writable();
+// const Stream = require("stream");
+// const writableStream = new Stream.Writable();
 
 
 function delay(ms: number) {
@@ -31,10 +31,11 @@ function delay(ms: number) {
 //     }
 // }
 
-interface City {
-    name: string;
-    state_code: string;
-}
+// interface City {
+//     name: string;
+//     state_code?: string;
+//     population: number;
+// }
 
 const CitySchema = z.object({
     name: z.string(),
@@ -42,17 +43,29 @@ const CitySchema = z.object({
     population: z.number().default(0),
 });
 
-interface State {
-    name: string;
-    code: string;
-}
+type City = z.infer<typeof CitySchema>;
+
+// interface State {
+//     name: string;
+//     code: string;
+// }
 
 const StateSchema = z.object({
     name: z.string(),
     code: z.string(),
 })
 
+type State = z.infer<typeof StateSchema>;
+
 type EntityType = "city" | "state";
+
+type Entity = City | State;
+
+// type EntitySchemaType = z.ZodType<City> | z.ZodType<State> | z.ZodTypeAny;
+
+type EntitySchemaType = z.ZodType<Entity>
+
+
 
 interface EntityMap {
     city: City;
@@ -65,14 +78,23 @@ type EntityFactoryMap = {
 }
 
 
-function parseEntity<E extends z.ZodTypeAny>({data, schema} : {data: any, schema: E}): E | null {
+function parseEntity<D extends Entity, S extends z.ZodType<D>>({data, schema} : {data: any, schema: S}): D | null {
     const parserRes = schema.safeParse(data);
     return parserRes.success ? parserRes.data : null;
 }
 
+type EntitySchemaMap = {
+    [K in EntityType]: z.ZodTypeAny;
+}
+
+const mapEntitySchema: EntitySchemaMap = {
+    city: CitySchema,
+    state: StateSchema
+}
+
 const entityFactories: EntityFactoryMap = {
-    city: (data: any): City => parseEntity({data, schema: CitySchema}),
-    state:  (data: any): State => parseEntity({data, schema: StateSchema})
+    city: (data: any): City | null => parseEntity({data, schema: CitySchema}),
+    state:  (data: any): State | null => parseEntity({data, schema: StateSchema})
 }
 
 
@@ -99,8 +121,16 @@ function extractEntity<E extends EntityType>({ buffer, entityType }: { buffer: s
     }
     // const entity: EntityMap[E] = jsonEntity as EntityMap[E];
 
+
+
     const factory: EntityFactoryMap[E] = entityFactories[entityType];
     const entity: EntityMap[E] = factory(jsonEntity);
+
+
+    // const schema: EntitySchemaMap[E] = mapEntitySchema[entityType];
+    // const entity = parseEntity({data: jsonEntity, schema});
+
+    // const entity = parseEntity({data: jsonEntity, schema: CitySchema});
 
     // const entity = entityFactories[E](jsonEntity);
 
@@ -211,5 +241,5 @@ export async function main() {
 
 }
 
-main();
-// readFileParseContent();
+// main();
+readFileParseContent();
