@@ -1,0 +1,48 @@
+[
+{"
+name
+":
+ "
+Los
+ Angeles
+"},
+ 
+
+ {"
+name
+":
+ "
+San
+ Francisco
+"},
+ 
+
+ {"
+name
+":
+ "
+San
+ Diego
+"},
+ 
+
+ {"
+name
+":
+ "
+Sac
+ramento
+"},
+ 
+
+ {"
+name
+":
+ "
+San
+ Jose
+"}
+]
+
+
+
