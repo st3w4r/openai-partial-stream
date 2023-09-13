@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import * as fs from "fs";
-import zod from "zod";
+import { z } from "zod";
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -8,7 +8,6 @@ const openai = new OpenAI({
 
 const Stream = require("stream");
 const writableStream = new Stream.Writable();
-
 
 
 function delay(ms: number) {
@@ -37,10 +36,21 @@ interface City {
     state_code: string;
 }
 
+const CitySchema = z.object({
+    name: z.string(),
+    state_code: z.string().optional(),
+    population: z.number().default(0),
+});
+
 interface State {
     name: string;
     code: string;
 }
+
+const StateSchema = z.object({
+    name: z.string(),
+    code: z.string(),
+})
 
 type EntityType = "city" | "state";
 
@@ -55,14 +65,18 @@ type EntityFactoryMap = {
 }
 
 const entityFactories: EntityFactoryMap = {
-    city: (data: any): City => ({
-            name: data.name,
-            state_code: data.state_code,
-    }),
-    state:  (data: any): State => ({
-        name: data.name,
-        code: data.code,
-    }),
+    city: (data: any): City => {
+        const parseRes = CitySchema.safeParse(data);
+        // TODO: Handle error and return to the users if necessary for prompt debugging.
+        // if (!parseRes.success) {
+        //     console.error(parseRes.error);
+        // }
+        return parseRes.success? parseRes.data : null;
+    },
+    state:  (data: any): State => {
+        const parseRes = StateSchema.safeParse(data);
+        return parseRes.success? parseRes.data : null;
+    },
 }
 
 
@@ -105,10 +119,8 @@ function extractEntity2<E extends EntityType>({ buffer, entityType }: { buffer: 
     }
     // const entity: EntityMap[E] = jsonEntity as EntityMap[E];
 
-
     const factory: EntityFactoryMap[E] = entityFactories[entityType];
     const entity: EntityMap[E] = factory(jsonEntity);
-    
 
     // const entity = entityFactories[E](jsonEntity);
 
