@@ -23,4 +23,18 @@ LLM:
 
 
 Validation library:
+- Zod
 
+
+
+Features:
+- Object
+- List
+- Item
+- Object key
+- Object Keyed String Value    (stream individual characters)
+- Object Keyed Number Value    (stream left to right)
+- Object Keyed Boolean Value   (steram first letter T/F)
+- Object Keyed Null Value      (stream first letter N)
+
+Index of object

@@ -2,6 +2,8 @@ import OpenAI from "openai";
 import * as fs from 'fs';
 import { z } from "zod";
 import { zodToTs, printNode } from "zod-to-ts";
+import { Stream } from "stream";
+import { STATUS_CODES } from "http";
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -175,19 +177,46 @@ async function streamParser<E extends EntityType>(content: any, entityType: E) {
     return outputEntity;
 }
 
+
+// Enum for status
+
+enum Status {
+    COMPLETED = "COMPLETED",
+    PARTIAL = "PARTIAL",
+    FAILED = "FAILED",
+}
+
+type StreamResponseWrapper = {
+    index: number;
+    status: Status;
+    data: any;
+}
+
+
 export async function readFileParseContent() {
 
 
 
     // readfile and parse
-    const data = fs.readFileSync('output_city_state.txt', 'utf8');
+    const data = fs.readFileSync('output_state.txt', 'utf8');
     const lines = data.split(/\r?\n/);
 
+    let itemIdx = 0;
     for (let line of lines) {
-        let res = await streamParser<"city">(line, "city");
-
+        let res = await streamParser<"state">(line, "state");
+        
+        
         if (res) {
-            console.log(res);
+
+            const streamRes: StreamResponseWrapper = {
+                index: itemIdx,
+                status: Status.COMPLETED,
+                data: res,
+            }
+
+            // console.log("Item index:", itemIdx);
+            console.log(streamRes);
+            itemIdx++;
         }
         await delay(10);
 
@@ -273,5 +302,5 @@ export async function main() {
 
 }
 
-main();
-// readFileParseContent();
+// main();
+readFileParseContent();
