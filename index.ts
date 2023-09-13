@@ -25,11 +25,11 @@ function delay(ms: number) {
 // Parse the json object
 
 // class City {
-    //     name: string;
+//     name: string;
 //     constructor(name: string) {
-    //         this.name = name;
-    //     }
-    // }
+//         this.name = name;
+//     }
+// }
 
 interface City {
     name: string;
@@ -64,19 +64,15 @@ type EntityFactoryMap = {
     [K in EntityType]: (data: any) => EntityMap[K];
 }
 
+
+function parseEntity<E extends z.ZodTypeAny>({data, schema} : {data: any, schema: E}): E | null {
+    const parserRes = schema.safeParse(data);
+    return parserRes.success ? parserRes.data : null;
+}
+
 const entityFactories: EntityFactoryMap = {
-    city: (data: any): City => {
-        const parseRes = CitySchema.safeParse(data);
-        // TODO: Handle error and return to the users if necessary for prompt debugging.
-        // if (!parseRes.success) {
-        //     console.error(parseRes.error);
-        // }
-        return parseRes.success? parseRes.data : null;
-    },
-    state:  (data: any): State => {
-        const parseRes = StateSchema.safeParse(data);
-        return parseRes.success? parseRes.data : null;
-    },
+    city: (data: any): City => parseEntity({data, schema: CitySchema}),
+    state:  (data: any): State => parseEntity({data, schema: StateSchema})
 }
 
 
@@ -170,7 +166,7 @@ export async function readFileParseContent() {
     const lines = data.split(/\r?\n/);
 
     for (let line of lines) {
-        let res = await streamParser<"city">(line, "city");
+        let res = await streamParser<"state">(line, "state");
 
         if (res) {
             console.log(res);
@@ -181,26 +177,34 @@ export async function readFileParseContent() {
 }
 
 
-export async function main(name: string) {
+export async function main() {
 
     const stream = await openai.chat.completions.create({
         messages: [
-            // { 
-            //     role: "user", 
-            //     content: "Give me a list of 5 cities in california. Bullet point them." 
-            // },
-            // {
-            //     role: "user", 
-            //     content: 'Format to respect: json with [{"name": "city1"}, {"name": "city2"}]'
-            // },
             { 
                 role: "user", 
-                content: "Give me a list of 5 state in USA." 
+                content: "Give me a list of 5 cities in california. Bullet point them." 
             },
             {
-                role: "user",
-                content: 'Format to respect: json with [{"name": "state1","code": "CA"}, {"name": "state2","code": "AL"}]'
-            }
+                role: "user", 
+                content: 'Format to respect: json with [{"name": "city1"}, {"name": "city2"}]'
+            },
+            {
+                role: "user", 
+                content: 'Add the property state_code to each city in the json.'
+            },
+            {
+                role: "user", 
+                content: 'Add the property population to each city in the json.'
+            },
+            // { 
+            //     role: "user", 
+            //     content: "Give me a list of 5 state in USA." 
+            // },
+            // {
+            //     role: "user",
+            //     content: 'Format to respect: json with [{"name": "state1","code": "CA"}, {"name": "state2","code": "AL"}]'
+            // }
         ],
         model: "gpt-3.5-turbo",
         stream: true,
@@ -213,12 +217,15 @@ export async function main(name: string) {
 
         // Print without new line:
         if (content) {
-            streamParser(content, "state");
+            let res = await streamParser<"city">(content, "city");
+            if (res) {
+                console.log(res);
+            }
         }
     }
     process.stdout.write("\n");
 
 }
 
-// main();
-readFileParseContent();
+main();
+// readFileParseContent();
