@@ -31,26 +31,53 @@ function delay(ms: number) {
     //     }
     // }
 
-type City = {
+interface City {
     name: string;
 }
 
-type State = {
+interface State {
     name: string;
     code: string;
 }
 
 
 let buffer = "";
-let list = [];
 let inString = false;
 
 
+function getJsonObject(buffer: string): any {
+    try {
+        let start = buffer.indexOf("{");
+        let end = buffer.indexOf("}");
+        let content = buffer.slice(start, end + 1);
+        return JSON.parse(content);
+    } catch (e) {
+        return null
+    }
+}
+
+function extractEntity({ buffer, entityType }: { buffer: string; entityType: string; }): City | State | null {
+    const jsonEntity = getJsonObject(buffer);
+    if (!jsonEntity) {
+        return null;
+    }
+
+    if (entityType === "city") {
+        let city: City = {name: jsonEntity.name};
+        return city;
+    } else if (entityType === "state") {
+        let state: State = {name: jsonEntity.name, code: jsonEntity.code};
+        return state;
+    }
+    return null;
+}
 
 
-async function streamParser(content: any, entity: string) {
 
-    let output: any = null;
+async function streamParser(content: any, entityType: string) {
+
+
+    let outputEntity: any = null;
 
     let start = content.indexOf("{");
     let end = content.indexOf("}");
@@ -62,7 +89,7 @@ async function streamParser(content: any, entity: string) {
         inString = false;
     }
 
-    
+
     if (inString) {
         buffer += content;
     } else {
@@ -74,39 +101,11 @@ async function streamParser(content: any, entity: string) {
 
         if (buffer.length > 0) {
 
-            let startContent = buffer.indexOf("{");
-            let endContent = buffer.indexOf("}");
-            content = buffer.slice(startContent, endContent + 1);
-
-            // console.log(content);
-
-            if (entity === "city") {
-                try {
-                    let jsonEntity = JSON.parse(content);
-                    // console.log(jsonEntity);
-                    let city: City = {name: jsonEntity.name};
-                    list.push(city);
-
-                    console.log(city);
-
-                } catch (e) {
-                    // Not a json object yet
-                }
-            } else if (entity === "state") {
-
-                try {
-                    let jsonEntity = JSON.parse(content);
-                    let state: State = {name: jsonEntity.name, code: jsonEntity.code};
-                    console.log(state);
-                    output = state;
-                } catch (e) {
-                    // Not a json object yet
-                }
-            }
+            outputEntity = extractEntity({ buffer, entityType })
         }
         buffer = "";
     }
-    return output;
+    return outputEntity;
 }
 
 export async function readFileParseContent() {
@@ -117,7 +116,10 @@ export async function readFileParseContent() {
     const lines = data.split(/\r?\n/);
 
     for (let line of lines) {
-        streamParser(line, "state");
+        let res = await streamParser(line, "state");
+        if (res) {
+            console.log(res);
+        }
         await delay(10);
 
     }
