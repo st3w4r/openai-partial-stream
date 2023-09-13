@@ -92,23 +92,7 @@ function getJsonObject(buffer: string): any {
     }
 }
 
-function extractEntity({ buffer, entityType }: { buffer: string; entityType: string; }): City | State | null {
-    const jsonEntity = getJsonObject(buffer);
-    if (!jsonEntity) {
-        return null;
-    }
-
-    if (entityType === "city") {
-        let city: City = {name: jsonEntity.name};
-        return city;
-    } else if (entityType === "state") {
-        let state: State = {name: jsonEntity.name, code: jsonEntity.code};
-        return state;
-    }
-    return null;
-}
-
-function extractEntity2<E extends EntityType>({ buffer, entityType }: { buffer: string; entityType: E}): EntityMap[E] | null {
+function extractEntity<E extends EntityType>({ buffer, entityType }: { buffer: string; entityType: E}): EntityMap[E] | null {
     const jsonEntity = getJsonObject(buffer);
     if (!jsonEntity) {
         return null;
@@ -152,7 +136,7 @@ async function streamParser<E extends EntityType>(content: any, entityType: E) {
 
         if (buffer.length > 0) {
 
-            outputEntity = extractEntity2<E>({ buffer, entityType});
+            outputEntity = extractEntity<E>({ buffer, entityType});
         }
         buffer = "";
     }
