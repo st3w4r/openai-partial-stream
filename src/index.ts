@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-// import * as fs from "fs";
+import * as fs from 'fs';
 import { z } from "zod";
 
 const openai = new OpenAI({
@@ -40,7 +40,7 @@ function delay(ms: number) {
 const CitySchema = z.object({
     name: z.string(),
     state_code: z.string().optional(),
-    population: z.number().default(0),
+    population: z.number().optional(),
 });
 
 type City = z.infer<typeof CitySchema>;
@@ -63,7 +63,7 @@ type Entity = City | State;
 
 // type EntitySchemaType = z.ZodType<City> | z.ZodType<State> | z.ZodTypeAny;
 
-type EntitySchemaType = z.ZodType<Entity>
+// type EntitySchemaType = z.ZodType<Entity>
 
 
 
@@ -74,7 +74,7 @@ interface EntityMap {
 
 
 type EntityFactoryMap = {
-    [K in EntityType]: (data: any) => EntityMap[K];
+    [K in EntityType]: (data: any) => EntityMap[K] | null;
 }
 
 
@@ -124,7 +124,7 @@ function extractEntity<E extends EntityType>({ buffer, entityType }: { buffer: s
 
 
     const factory: EntityFactoryMap[E] = entityFactories[entityType];
-    const entity: EntityMap[E] = factory(jsonEntity);
+    const entity: EntityMap[E] | null = factory(jsonEntity);
 
 
     // const schema: EntitySchemaMap[E] = mapEntitySchema[entityType];
