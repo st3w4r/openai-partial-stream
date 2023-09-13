@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import * as fs from 'fs';
 import { z } from "zod";
+import { zodToTs, printNode } from "zod-to-ts";
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -41,6 +42,7 @@ const CitySchema = z.object({
     name: z.string(),
     state_code: z.string().optional(),
     population: z.number().optional(),
+    // population: z.string(),
 });
 
 type City = z.infer<typeof CitySchema>;
@@ -175,12 +177,14 @@ async function streamParser<E extends EntityType>(content: any, entityType: E) {
 
 export async function readFileParseContent() {
 
+
+
     // readfile and parse
-    const data = fs.readFileSync('output_state.txt', 'utf8');
+    const data = fs.readFileSync('output_city_state.txt', 'utf8');
     const lines = data.split(/\r?\n/);
 
     for (let line of lines) {
-        let res = await streamParser<"state">(line, "state");
+        let res = await streamParser<"city">(line, "city");
 
         if (res) {
             console.log(res);
@@ -190,27 +194,52 @@ export async function readFileParseContent() {
     }
 }
 
+function generateEntityJsonPrompt(entityType: EntityType) {
+
+    const entitySchema = mapEntitySchema[entityType];
+    const { node } = zodToTs(entitySchema, entityType);
+    const nodeString = printNode(node);
+    console.log(nodeString);
+
+    const prompt = `
+    Format a list of json object to respect this json TypeScript definition: ${nodeString}
+    `;
+
+    return prompt;
+}
+
 
 export async function main() {
+
+    const entityPrompt = generateEntityJsonPrompt("city");
+
 
     const stream = await openai.chat.completions.create({
         messages: [
             { 
                 role: "user", 
-                content: "Give me a list of 5 cities in california. Bullet point them." 
+                content: "Give me 5 cities in california." 
             },
             {
-                role: "user", 
-                content: 'Format to respect: json with [{"name": "city1"}, {"name": "city2"}]'
+                role: "user",
+                content: entityPrompt,
             },
-            {
-                role: "user", 
-                content: 'Add the property state_code to each city in the json.'
-            },
-            {
-                role: "user", 
-                content: 'Add the property population to each city in the json.'
-            },
+            // {
+            //     role: "user",
+            //     content: "When refering a number revert each digit. For example 1234 becomes 4321. Rewrite the entire JSON",
+            // }
+            // {
+            //     role: "user", 
+            //     content: 'Format to respect: json with [{"name": "city1"}, {"name": "city2"}]'
+            // },
+            // {
+            //     role: "user", 
+            //     content: 'Add the property state_code to each city in the json.'
+            // },
+            // {
+            //     role: "user", 
+            //     content: 'Add the property population to each city in the json.'
+            // },
             // { 
             //     role: "user", 
             //     content: "Give me a list of 5 state in USA." 
@@ -221,13 +250,15 @@ export async function main() {
             // }
         ],
         model: "gpt-3.5-turbo",
+        // model: "gpt-4",
         stream: true,
+        temperature: 0.7,
     });
 
     for await (const msg of stream) {
-        const content = msg.choices[0].delta.content
+        const content = msg.choices[0].delta.content + "";
 
-        fs.appendFileSync('output.txt', content+"\n");
+        fs.appendFileSync('output.txt', content);
 
         // Print without new line:
         if (content) {
@@ -239,7 +270,8 @@ export async function main() {
     }
     process.stdout.write("\n");
 
+
 }
 
-// main();
-readFileParseContent();
+main();
+// readFileParseContent();
