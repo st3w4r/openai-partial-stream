@@ -222,6 +222,7 @@
 
     <script type="module">
         let blocks = [];
+        let colorBlocks = [];
 
         function clearBlocks() {
             const container = document.getElementById('blocksContainer');
@@ -276,6 +277,11 @@
 
         function processBlock(index, data) {
             if (!blocks[index]) {
+
+                if (data.hex) {
+                    colorBlocks[index] = data.hex;
+                }
+
                 // Block does not exist; create it
                 const block = document.createElement('div');
                 block.className = 'color-block';
@@ -295,6 +301,18 @@
                 block.style.opacity = 0;  // Initially set to 0
                 document.getElementById('blocksContainer').appendChild(block);
                 blocks[index] = block;
+
+
+                // Add click event to copy the hex code
+                block.addEventListener('click', function () {
+                    const hexCode = colorBlocks[index];
+                    navigator.clipboard.writeText(hexCode).then(() => {
+                        // You can show a small notification if you'd like to indicate the color has been copied.
+                        alert('Color ' + hexCode + ' copied to clipboard!');
+                    }, (err) => {
+                        console.error('Could not copy color: ', err);
+                    });
+                });
 
                 // Delay to let the block be added to the DOM, then fade in.
                 setTimeout(() => {

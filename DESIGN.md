@@ -55,4 +55,4 @@ Index of object
 - Check if the value is valid for the key in the schema
 - If not valid, return nothing and continue
 - When the end of the object is detected, return the object
-
+-
