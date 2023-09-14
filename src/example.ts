@@ -33,9 +33,9 @@ const PostCodeSchema = z.object({
 });
 
 const ColorSchema = z.object({
-    name: z.string().optional(),
     hex: z.string().optional(),
-    // description: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
 });
 
 type PostCode = z.infer<typeof PostCodeSchema>;
@@ -62,15 +62,15 @@ export async function callGenerateColors() {
                 // },
             { 
                 role: "user", 
-                content: "Give me a palette of 5 gorgeous color with the name and hex code" 
+                content: "Give me a palette of 5 gorgeous color with the hex code, name and a description." 
             },
             { 
                 role: "user", 
                 content: genPromptSchema(ColorSchema, "Color"),
             },
         ],
-        // model: "gpt-3.5-turbo",
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
+        // model: "gpt-4",
         stream: true, // ENABLE STREAMING
         temperature: 0.7,
     });

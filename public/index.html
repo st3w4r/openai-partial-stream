@@ -6,34 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Color Blocks</title>
     <style>
-        body {
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f7f7f7;
-        }
-
-        #blocksContainer {
-            display: flex;
-            flex-wrap: wrap;
-        }
-
         .color-block {
-            width: 150px;
-            height: 150px;
+            /* min-width: 150px; */
+            width: 200px;
+            /* Set minimum width so it doesn't get too small */
+            padding: 20px 10px;
+            /* Padding to space out content */
             margin: 20px;
-            text-align: center;
-            padding-top: 50px;
+            text-align: left;
             font-family: Arial, sans-serif;
-            border: 2px solid #ccc;
+            /* border: 2px solid #ccc; */
+            border: 4px solid whitesmoke;
             border-radius: 15px;
-            /* rounded corners */
             box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s, box-shadow 0.2s, opacity 0.5s;
             opacity: 0;
+
+            word-wrap: break-word;
         }
+
 
         .color-block:hover {
             transform: scale(1.05);
@@ -56,6 +47,79 @@
             margin-bottom: 20px;
             text-align: center;
         }
+
+        body {
+            /* height: 100vh; */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            /* Changed to column to stack vertically */
+            align-items: baseline;
+            background-color: #f7f7f7;
+            padding-top: 200px;
+            /* Space at the top for the button */
+            background-color: beige;
+            /* This sets the entire website's background color */
+        }
+
+
+        #generateColors {
+            margin-bottom: 20px;
+            background-color: coral;
+            padding: 20px;
+            border: 0;
+            color: beige;
+            font-size: x-large;
+            font-weight: bold;
+            cursor: pointer;
+            /* Change the cursor to a hand when hovering over the button */
+            transition: background-color 0.3s, transform 0.3s;
+            /* For a smooth color and size transition on hover */
+            border-radius: 5px;
+            /* Add some rounded corners */
+        }
+
+        #generateColors:hover {
+            background-color: darkred;
+            /* Darken the button color on hover for a hover effect */
+            transform: scale(1.05);
+            /* Make the button slightly larger on hover for a hover effect */
+        }
+
+
+        #blocksContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: left;
+            /* Center the blocks horizontally */
+            align-items: center;
+            /* Center the blocks vertically */
+            flex-grow: 1;
+            /* Allow the container to grow and take up remaining space */
+        }
+
+        .color-name {
+            color: beige;
+            font-weight: bold;
+            font-size: xxx-large;
+        }
+
+        .color-description {
+            color: beige;
+            text-align: justify
+                /* font-weight: bold; */
+                /* font-size: xxx-large; */
+        }
+
+        .color-content {
+            display: flex;
+            flex-direction: column;
+            /* Stack children vertically */
+            justify-content: center;
+            /* Vertically center children */
+            height: 100%;
+            /* Take full height of the parent */
+        }
     </style>
 </head>
 
@@ -68,9 +132,7 @@
         <button onclick="addBlock()">Add Block</button>
     </div> -->
 
-    <div id="buttonContainer">
-        <button id="generateColors">Generate Colors</button>
-    </div>
+    <button id="generateColors">Generate Colors</button>
 
     <div id="blocksContainer">
 
@@ -116,10 +178,17 @@
                     const block = document.createElement('div');
                     block.className = 'color-block';
                     block.style.backgroundColor = data.hex || '#FFFFFF';  // Default to white if hex isn't provided
+                    //             block.innerHTML = `
+                    //     <span class="color-name">${data.name || ''}</span>
+                    //     <span class="color-description">${data.description || ''}</span>
+                    // `;
                     block.innerHTML = `
-            <span class="color-name">${data.name || ''}</span>
-            <span class="color-description">${data.description || ''}</span>
-        `;
+                        <div class="color-content">
+                            <span class="color-name">${data.name || ''}</span>
+                            <span class="color-description">${data.description || ''}</span>
+                        </div>
+                    `;
+
 
                     block.style.opacity = 0;  // Initially set to 0
                     document.getElementById('blocksContainer').appendChild(block);
