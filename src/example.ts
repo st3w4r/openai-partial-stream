@@ -62,17 +62,17 @@ export async function callGenerateColors() {
                 // },
             { 
                 role: "user", 
-                content: "Give me a palette of 15 gorgeous color with the hex code, name and a description." 
+                content: "Give me a palette of 5 gorgeous color with the hex code, name and a description." 
             },
             { 
                 role: "user", 
                 content: genPromptSchema(ColorSchema, "Color"),
             },
         ],
-        // model: "gpt-3.5-turbo",
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
+        // model: "gpt-4",
         stream: true, // ENABLE STREAMING
-        temperature: 0.7,
+        temperature: 1,
     });
 
 
