@@ -120,6 +120,7 @@
             /* Vertically center children */
             height: 100%;
             /* Take full height of the parent */
+            transition: opacity 0.5s ease-in;
         }
 
         /* ... (rest of your CSS code) ... */
@@ -142,7 +143,7 @@
             /* border: 2px solid whitesmoke; */
             /* Adding a border similar to your color blocks */
             opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+            transition: opacity 0.5s ease-in;
         }
 
 
@@ -194,6 +195,7 @@
 
 
         function callGenerateColors() {
+            // Display the "Voila!" message
             clearBlocks();
             // Connect to the SSE endpoint
             const eventSource = new EventSource('http://localhost:3000/sse');
@@ -215,7 +217,6 @@
                 eventSource.close();  // Close the connection from the client side
 
 
-                // Display the "Voila!" message
                 document.getElementById('voilaContainer').style.opacity = "1";
             });
 
