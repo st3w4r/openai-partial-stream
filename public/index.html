@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Color Blocks</title>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f7f7f7;
+        }
+
+        #blocksContainer {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .color-block {
+            width: 150px;
+            height: 150px;
+            margin: 20px;
+            text-align: center;
+            padding-top: 50px;
+            font-family: Arial, sans-serif;
+            border: 2px solid #ccc;
+            border-radius: 15px;
+            /* rounded corners */
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.5s;
+            opacity: 0;
+        }
+
+        .color-block:hover {
+            transform: scale(1.05);
+            box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-description {
+            margin-top: 10px;
+        }
+
+        .color-code {
+            display: none;
+        }
+
+        .color-block:hover .color-code {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+        <input type="text" id="colorName" placeholder="Color Name">
+        <input type="text" id="colorValue" placeholder="Color Value (e.g., #ff0000)">
+        <textarea id="colorDescription" placeholder="Description"></textarea>
+        <button onclick="addBlock()">Add Block</button>
+    </div>
+
+    <div id="blocksContainer"></div>
+
+    <script>
+        let blocks = [];
+
+        function addBlock() {
+            const container = document.getElementById('blocksContainer');
+            const colorName = document.getElementById('colorName').value;
+            const colorValue = document.getElementById('colorValue').value;
+            const colorDescription = document.getElementById('colorDescription').value;
+
+            const blockData = {
+                name: colorName,
+                hex: colorValue,
+                description: colorDescription
+            };
+            blocks.push(blockData);
+
+            const block = document.createElement('div');
+            block.className = 'color-block';
+            block.style.backgroundColor = colorValue;
+            block.setAttribute('data-index', blocks.length - 1);  // set index
+            block.innerHTML = `
+            ${colorName}
+            <div class="color-code">${colorValue}</div>
+            <div class="color-description">
+                ${colorDescription}
+            </div>
+        `;
+
+            block.onclick = function () {
+                const index = parseInt(this.getAttribute('data-index'));
+                const updatedBlock = {
+                    name: prompt("Enter a new color name:", blockData.name),
+                    hex: prompt("Enter a new color value:", blockData.hex),
+                    description: prompt("Enter a new description:", blockData.description)
+                };
+                updateBlock(index, updatedBlock);
+            };
+
+            container.appendChild(block);
+
+            // Fade-in effect
+            setTimeout(() => block.style.opacity = "1", 50);
+        }
+
+        function updateBlock(index, data) {
+            const block = document.querySelector(`[data-index="${index}"]`);
+            if (!block) return;
+
+            if (data.name) block.childNodes[0].nodeValue = data.name;
+            if (data.hex) {
+                block.style.backgroundColor = data.hex;
+                block.querySelector('.color-code').innerText = data.hex;
+            }
+            if (data.description) block.querySelector('.color-description').innerText = data.description;
+
+            // Update in the blocks array
+            blocks[index] = data;
+        }
+    </script>
+
+</body>
+
+</html>
