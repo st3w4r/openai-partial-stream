@@ -5,6 +5,8 @@ import { zodToTs, printNode } from "zod-to-ts";
 import { Stream } from "stream";
 import { STATUS_CODES } from "http";
 
+import { PassThrough } from "stream";
+
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -142,9 +144,53 @@ function extractEntity<E extends EntityType>({ buffer, entityType }: { buffer: s
 }
 
 
+function simpleExtractEntity(buffer: string, schema: z.ZodTypeAny) {
+    const jsonEntity = getJsonObject(buffer);
+    if (!jsonEntity) {
+        return null;
+    }
+    const entity = parseEntity({data: jsonEntity, schema});
+    return entity;
+}
 
 
-async function streamParser<E extends EntityType>(content: any, entityType: E) {
+
+
+function simpleStreamParser(content: any, schema: z.ZodTypeAny) {
+    
+    let outputEntity: any = null;
+
+    let start = content.indexOf("{");
+    let end = content.indexOf("}");
+
+    if (start !== -1) {
+        inString = true;
+    }
+    if (end !== -1) {
+        inString = false;
+    }
+
+    if (inString) {
+        buffer += content;
+    } else {
+
+        // Flush
+        if (end !== -1) {
+            buffer += content;
+        }
+
+        if (buffer.length > 0) {
+            outputEntity = simpleExtractEntity(buffer, schema);
+        }
+        buffer = "";
+    }
+
+    return outputEntity;
+}
+
+
+
+export async function streamParser<E extends EntityType>(content: any, entityType: E) {
 
     let outputEntity: EntityMap[E] | null = null;
 
@@ -223,6 +269,22 @@ export async function readFileParseContent() {
     }
 }
 
+
+export function genPromptSchema(schema: z.ZodTypeAny, entityName: string) {
+    const { node } = zodToTs(schema, entityName);
+    const nodeString = printNode(node);
+    console.log(nodeString);
+    const prompt = `
+    Format an array of json object to respect this json TypeScript definition:
+    ${nodeString}
+
+    Output as a json array:
+    e.g.: [{"name": "city1"}, {"name": "city2"}]
+    `;
+    return prompt;
+}
+
+
 function generateEntityJsonPrompt(entityType: EntityType) {
 
     const entitySchema = mapEntitySchema[entityType];
@@ -238,10 +300,45 @@ function generateEntityJsonPrompt(entityType: EntityType) {
 }
 
 
+
+
+
+
+
+export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny) {
+    
+    // const writableStream = new PassThrough();
+    let itemIdx = 0;
+
+    for await (const msg of stream) {
+        const content = msg.choices[0].delta.content + "";
+        if (content) {
+            let res = simpleStreamParser(content, schema);
+            if (res) {
+                const streamRes: StreamResponseWrapper = {
+                    index: itemIdx,
+                    status: Status.COMPLETED,
+                    data: res,
+                }
+                itemIdx++;
+
+                // resString = JSON.stringify(streamRes)
+                yield streamRes;
+                // writableStream.write(streamRes);
+                // console.log(streamRes);
+            } else {
+                // process.stdout.write(content);
+            }
+        }
+    }
+    // yield null;
+    // return writableStream;
+}
+
+
 export async function main() {
 
     const entityPrompt = generateEntityJsonPrompt("city");
-
 
     const stream = await openai.chat.completions.create({
         messages: [
@@ -303,4 +400,4 @@ export async function main() {
 }
 
 // main();
-readFileParseContent();
+// readFileParseContent();
