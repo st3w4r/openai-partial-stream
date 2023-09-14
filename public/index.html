@@ -147,6 +147,7 @@
         }
 
 
+
         */ ::selection {
             background-color: coral;
             /* Background color of the selected text */
@@ -158,6 +159,37 @@
         ::-moz-selection {
             background-color: coral;
             color: white;
+        }
+
+        /* Enhanced keyframes for the light passing effect */
+        @keyframes shineEffect {
+            from {
+                background-position: -300% 0;
+            }
+
+            to {
+                background-position: 300% 0;
+            }
+        }
+
+        #generateColors.processing {
+            color: transparent;
+            /* Set text color to transparent during processing */
+            background: linear-gradient(120deg,
+                    coral,
+                    transparent,
+                    rgba(255, 255, 255, 0.1),
+                    rgba(255, 255, 255, 0.5),
+                    rgba(255, 255, 255, 0.1),
+                    transparent,
+                    coral);
+            background-size: 300% 100%;
+            animation: shineEffect 5s infinite;
+            /* Slowed down the animation to 3 seconds */
+            cursor: not-allowed;
+            -webkit-background-clip: text;
+            /* To apply gradient effect only to the text */
+            background-clip: text;
         }
     </style>
 </head>
@@ -195,15 +227,22 @@
 
 
         function callGenerateColors() {
-            // Display the "Voila!" message
+            const btn = document.getElementById('generateColors');
+
+            // Change the button text to "Processing..." and disable it
+            btn.textContent = "Streaming Colors";
+            // btn.textContent = "Generate Colors";
+            btn.disabled = true;
+            btn.classList.add("processing");
+
             clearBlocks();
+
             // Connect to the SSE endpoint
             const eventSource = new EventSource('http://localhost:3000/sse');
 
             eventSource.onmessage = function (event) {
                 // Parse the data from the SSE message
                 const data = JSON.parse(event.data).message;
-
                 processBlock(data.index, data.data);
             };
 
@@ -216,12 +255,14 @@
                 console.log(e.data);  // "Closing connection"
                 eventSource.close();  // Close the connection from the client side
 
-
+                // Reset the button to its original state
+                btn.textContent = "Generate Colors";
+                btn.disabled = false;
+                btn.classList.remove("processing");
                 document.getElementById('voilaContainer').style.opacity = "1";
             });
-
-
         }
+
 
         document.getElementById('generateColors').addEventListener('click', () => callGenerateColors());
 
@@ -260,6 +301,8 @@
                 if (data.description) block.querySelector('.color-description').textContent = data.description;
             }
         }
+
+
 
 
 
