@@ -306,13 +306,28 @@
                 // Add click event to copy the hex code
                 block.addEventListener('click', function () {
                     const hexCode = colorBlocks[index];
+                    const colorNameElement = block.querySelector('.color-name');
+                    const colorDescriptionElement = block.querySelector('.color-description');
+
+                    // Store the original texts
+                    const originalNameText = colorNameElement.textContent;
+                    const originalDescriptionText = colorDescriptionElement.textContent;
+
+                    // Set new texts
+                    colorNameElement.textContent = 'COPIED';
+                    colorDescriptionElement.textContent = hexCode;
+
                     navigator.clipboard.writeText(hexCode).then(() => {
-                        // You can show a small notification if you'd like to indicate the color has been copied.
-                        alert('Color ' + hexCode + ' copied to clipboard!');
+                        setTimeout(() => {
+                            // Revert the texts back to the original after 3 seconds
+                            colorNameElement.textContent = originalNameText;
+                            colorDescriptionElement.textContent = originalDescriptionText;
+                        }, 3000);
                     }, (err) => {
                         console.error('Could not copy color: ', err);
                     });
                 });
+
 
                 // Delay to let the block be added to the DOM, then fade in.
                 setTimeout(() => {
