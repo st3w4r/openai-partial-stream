@@ -4,8 +4,6 @@ import { callGenerateColors } from './example.js';
 const app = express();
 const PORT: number = 3000;
 
-let clients: Response[] = [];
-
 // Middleware to handle POST data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,11 +36,10 @@ app.get('/sse', async (req: Request, res: Response) => {
     res.header('Connection', 'keep-alive');
     res.flushHeaders(); // flush the headers to establish SSE with the client
 
-    // Add client to clients list
-    clients.push(res);
     // On client disconnect, remove them from the clients list
     req.on('close', () => {
-        clients = clients.filter(client => client !== res);
+        console.log("Client disconnected");
+        // TODO: Stop processing
     });
 
     const gen = await callGenerateColors();
@@ -56,8 +53,6 @@ app.get('/sse', async (req: Request, res: Response) => {
     }
 
     console.log("Done");
-    clients = clients.filter(client => client !== res);
-    
     res.write('event: CLOSE\n');
     res.write('data: Done, closing connection\n\n');
     res.end();
