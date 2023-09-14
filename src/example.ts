@@ -19,14 +19,14 @@
 // Import the file from ./src/readFileParseContent
 import OpenAI from "openai";
 import { z } from "zod";
-import { readFileParseContent, genPromptSchema, handleOpenAiResponse } from "./index.js";
+import { readFileParseContent, genPromptSchema, handleOpenAiResponse, readFileAndStreamContent, handleMockResponse } from "./index.js";
 
 
 // Schema
 
 const PostCodeSchema = z.object({
-    postcode: z.string(),
-    councilName: z.string(),
+    postcode: z.string().optional(),
+    councilName: z.string().optional(),
 });
 
 type PostCode = z.infer<typeof PostCodeSchema>;
@@ -38,34 +38,47 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-const stream = await openai.chat.completions.create({
-    messages: [
-        { 
-            role: "user", 
-            content: "Give me 5 postcode in London with their council name." 
-        },
-        { 
-            role: "user", 
-            content: genPromptSchema(PostCodeSchema, "PostCode"),
-        },
-    ],
-    model: "gpt-3.5-turbo",
-    // model: "gpt-4",
-    stream: true, // ENABLE STREAMING
-    temperature: 0.7,
-});
+// const stream = await openai.chat.completions.create({
+//     messages: [
+//         { 
+//             role: "user", 
+//             content: "Give me 5 postcode in London with their council name." 
+//         },
+//         { 
+//             role: "user", 
+//             content: genPromptSchema(PostCodeSchema, "PostCode"),
+//         },
+//     ],
+//     model: "gpt-3.5-turbo",
+//     // model: "gpt-4",
+//     stream: true, // ENABLE STREAMING
+//     temperature: 0.7,
+// });
 
+
+
+
+// // Parser
+// // API proposal:
+// // const entityStream = streamParser(stream, PostCodeSchema);
+
+// const entityStream = handleOpenAiResponse(stream, PostCodeSchema);
+
+
+// for await (const entity of entityStream) {
+//     // console.log(entity);
+// }
+
+
+
+// Mock
+
+// mock stream
+const mockStream = readFileAndStreamContent("./output_postcode_partial.txt");
 // Parser
-// API proposal:
-// const entityStream = streamParser(stream, PostCodeSchema);
+const mockEnitytStream = handleMockResponse(mockStream, PostCodeSchema);
 
-const entityStream = handleOpenAiResponse(stream, PostCodeSchema);
-
-
-for await (const entity of entityStream) {
+for await (const entity of mockEnitytStream) {
     console.log(entity);
 }
-
-
-
 

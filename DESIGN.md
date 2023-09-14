@@ -38,3 +38,21 @@ Features:
 - Object Keyed Null Value      (stream first letter N)
 
 Index of object
+
+
+# Partial stream parser Object key
+
+- In a list of object
+- Stream each key/value of the object when available
+
+- Detect the start of an object "{"
+- Detect the end of an object "}"
+- If in inString
+- Accumulate until the end of the key/value
+- Pattern: "key": "value"
+- At the last " of the value, return the key/value
+- Check if the key is part of the schema
+- Check if the value is valid for the key in the schema
+- If not valid, return nothing and continue
+- When the end of the object is detected, return the object
+
