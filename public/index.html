@@ -148,7 +148,7 @@
 
 
 
-        */ ::selection {
+        ::selection {
             background-color: coral;
             /* Background color of the selected text */
             color: white;
@@ -160,6 +160,13 @@
             background-color: coral;
             color: white;
         }
+
+        /* Additional -webkit prefix for Safari */
+        ::-webkit-selection {
+            background-color: coral;
+            color: white;
+        }
+
 
         /* Enhanced keyframes for the light passing effect */
         @keyframes shineEffect {
