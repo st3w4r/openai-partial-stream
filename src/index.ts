@@ -160,10 +160,8 @@ function hasKeyValuePattern(s: string): boolean {
     return regex.test(s);
 }
 
-let partialBuffer = "";
 
 let nbKeyValue = 0;
-let hasChanged = false;
 
 function partialStreamParser(content: any, schema: z.ZodTypeAny) {
     
@@ -177,30 +175,6 @@ function partialStreamParser(content: any, schema: z.ZodTypeAny) {
         inString = false;
     }
 
-    // if (inString) {
-    //     buffer += content;
-    // }
-
-    // if (buffer === ""){
-    //     partialBuffer = ""
-    // }
-
-    // partialBuffer += content
-
-    // if (inString) {
-    //     partialBuffer += content
-    // }
-
-    // Count quotes that are not escaped
-
-    // console.log("\nB:", buffer +"\n");
-
-    const hasKeyValue = hasKeyValuePattern(buffer);
-    if (!hasKeyValue) {
-        return null;
-    }
-
-
     function extractKeyValuePairs(s: string): string[] {
         // Regular expression for the pattern "key": "value"
         const regex = /(?<!\\)"[^"]+"\s*:\s*(?<!\\)"[^"]*"/g;
@@ -209,63 +183,25 @@ function partialStreamParser(content: any, schema: z.ZodTypeAny) {
 
     const kvList = extractKeyValuePairs(buffer);
 
-    
-    // Detect if changes happened
-    // console.log(lenKvList);
-    // if (lenKvList <= nbKeyValue) {
-    //     nbKeyValue = lenKvList;
-    //     return null;
-    // }
+    if (kvList.length === 0) {
+        return null;
+    }
 
-    // if (lenKvList > nbKeyValue) {
-
-    //     nbKeyValue = lenKvList;
-    // }
-
-    // if (nbKeyValue >= kvList.length) {
-
-    // }
-
-    // End of an object reset the counter
-    
-    // console.log(kvList.length);
-
-    
-    if (nbKeyValue >= kvList.length) {
+    // Detect if changes happened    
+    if (kvList.length <= nbKeyValue) {
         // console.log("no new value");
         return null
     }
 
     if (end !== -1) {
         nbKeyValue = 0;
-        hasChanged = true;
     }
 
-    // if (kvList.length > nbKeyValue) {
-    //     console.log("New value");
-    // } else {
-    //     // nbKeyValue = kvList.length;
-    //     console.log("No new value")
-    //     return null
-    // }
-
-    // console.log(kvList.length);
 
     let jsonObj = kvList?.join(",")
 
     jsonObj = "{" + jsonObj + "}"
 
-    // console.log("HasKeyValue:", hasKeyValue);
-    
-    // let newBuffer = partialBuffer.split(",").slice(0,-1).join("");
-
-    // console.log("\nNB:", newBuffer +"\n");
-
-
-    // Add a closing bracket if the buffer is not closed
-    // if (start > -1 && end === -1) {
-    //     newBuffer += "}"
-    // }
 
     const outputEntity = simpleExtractEntity(jsonObj, schema);
 
@@ -280,7 +216,7 @@ function partialStreamParser(content: any, schema: z.ZodTypeAny) {
 
 function simpleStreamParser(content: any, schema: z.ZodTypeAny) {
     
-    // let completed = false;
+    let completed = false;
     let outputEntity: any = null;
 
     let start = content.indexOf("{");
@@ -296,11 +232,11 @@ function simpleStreamParser(content: any, schema: z.ZodTypeAny) {
     if (inString) {
         buffer += content;
         
-        // completed = false;
+        completed = false;
         outputEntity = partialStreamParser(buffer, schema);
     } else {
 
-        // completed = true;
+        completed = true;
 
         // Flush
         if (end !== -1) {
@@ -311,9 +247,10 @@ function simpleStreamParser(content: any, schema: z.ZodTypeAny) {
             outputEntity = simpleExtractEntity(buffer, schema);
         }
         buffer = "";
+        nbKeyValue = 0;
     }
 
-    return outputEntity;
+    return [outputEntity, completed];
 }
 
 
@@ -441,28 +378,34 @@ function generateEntityJsonPrompt(entityType: EntityType) {
 
 
 
+
 export async function* handleMockResponse(stream: any, schema: z.AnyZodObject) {
  
     let itemIdx = 0;
 
     for await (const content of stream) {
         
-        process.stdout.write(content);
+        // process.stdout.write(content);
         
         if (content) {
 
-            let res = simpleStreamParser(content, schema);
+            let [res, completed] = simpleStreamParser(content, schema);
+
+
             if (res) {
                 const streamRes: StreamResponseWrapper = {
                     index: itemIdx,
-                    status: Status.COMPLETED,
+                    status: completed? Status.COMPLETED: Status.PARTIAL,
                     data: res,
                 }
-                itemIdx++;
+
+                if (completed === true) {
+                    itemIdx++;
+                }
 
                 // resString = JSON.stringify(streamRes)
-                
-                process.stdout.write("\n\n");
+
+                // process.stdout.write("\n\n");
 
                 yield streamRes;
                 // writableStream.write(streamRes);
@@ -483,20 +426,26 @@ export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny) {
     for await (const msg of stream) {
         const content = msg.choices[0].delta.content + "";
         
-        process.stdout.write(content);
+        // process.stdout.write(content);
         
         if (content) {
 
-            let res = simpleStreamParser(content, schema);
+            let [res, completed] = simpleStreamParser(content, schema);
             if (res) {
                 const streamRes: StreamResponseWrapper = {
                     index: itemIdx,
-                    status: Status.COMPLETED,
+                    status: completed? Status.COMPLETED: Status.PARTIAL,
                     data: res,
                 }
-                itemIdx++;
+
+                if (completed === true) {
+                    itemIdx++;
+                }
 
                 // resString = JSON.stringify(streamRes)
+                
+                // process.stdout.write("\n\n");
+
                 yield streamRes;
                 // writableStream.write(streamRes);
                 // console.log(streamRes);
