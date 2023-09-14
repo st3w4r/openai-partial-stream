@@ -30,7 +30,14 @@ const PostCodeSchema = z.object({
     country: z.string().optional(),
 });
 
+const ColorSchema = z.object({
+    name: z.string().optional(),
+    hex: z.string().optional(),
+    description: z.string().optional(),
+});
+
 type PostCode = z.infer<typeof PostCodeSchema>;
+type Color = z.infer<typeof ColorSchema>;
 
 
 // API call
@@ -41,17 +48,25 @@ const openai = new OpenAI({
 
 const stream = await openai.chat.completions.create({
     messages: [
+        // { 
+        //     role: "user", 
+        //     content: "Give me 5 postcode in London with their council name." 
+        // },
+        // { 
+            //     role: "user", 
+            //     content: genPromptSchema(PostCodeSchema, "PostCode"),
+            // },
         { 
             role: "user", 
-            content: "Give me 5 postcode in London with their council name." 
+            content: "Give me 5 color with the name and hex code, and a description." 
         },
         { 
             role: "user", 
-            content: genPromptSchema(PostCodeSchema, "PostCode"),
+            content: genPromptSchema(ColorSchema, "Color"),
         },
     ],
-    model: "gpt-3.5-turbo",
-    // model: "gpt-4",
+    // model: "gpt-3.5-turbo",
+    model: "gpt-4",
     stream: true, // ENABLE STREAMING
     temperature: 0.7,
 });
@@ -63,7 +78,7 @@ const stream = await openai.chat.completions.create({
 // API proposal:
 // const entityStream = streamParser(stream, PostCodeSchema);
 
-const entityStream = handleOpenAiResponse(stream, PostCodeSchema);
+const entityStream = handleOpenAiResponse(stream, ColorSchema);
 
 
 for await (const entity of entityStream) {

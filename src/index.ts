@@ -201,6 +201,7 @@ function partialStreamParser(content: any, schema: z.ZodTypeAny) {
     let jsonObj = kvList?.join(",")
 
     jsonObj = "{" + jsonObj + "}"
+    // console.log(jsonObj);
 
 
     const outputEntity = simpleExtractEntity(jsonObj, schema);
@@ -355,7 +356,9 @@ export function genPromptSchema(schema: z.ZodTypeAny, entityName: string) {
     ${nodeString}
 
     Output as a json array:
-    e.g.: [{"name": "city1"}, {"name": "city2"}]
+    example: [{"name": "value"}, {"name": "value"}]
+
+    Now convert to the JSON format
     `;
     return prompt;
 }
