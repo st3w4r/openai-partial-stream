@@ -1,3 +1,8 @@
+import OpenAI from "openai";
+import { z } from "zod";
+import { readFileParseContent, genPromptSchema, handleOpenAiResponse, readFileAndStreamContent, handleMockResponse } from "./index.js";
+
+
 // Interface for developer how to use this library
 
 
@@ -17,9 +22,6 @@
 // import { readFileParseContent } from "./src/readFileParseContent";
 
 // Import the file from ./src/readFileParseContent
-import OpenAI from "openai";
-import { z } from "zod";
-import { readFileParseContent, genPromptSchema, handleOpenAiResponse, readFileAndStreamContent, handleMockResponse } from "./index.js";
 
 
 // Schema
@@ -46,44 +48,62 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-const stream = await openai.chat.completions.create({
-    messages: [
-        // { 
-        //     role: "user", 
-        //     content: "Give me 5 postcode in London with their council name." 
-        // },
-        // { 
+export async function callGenerateColors() {
+
+    const stream = await openai.chat.completions.create({
+        messages: [
+            // { 
             //     role: "user", 
-            //     content: genPromptSchema(PostCodeSchema, "PostCode"),
+            //     content: "Give me 5 postcode in London with their council name." 
             // },
-        { 
-            role: "user", 
-            content: "Give me 5 color with the name and hex code, and a description." 
-        },
-        { 
-            role: "user", 
-            content: genPromptSchema(ColorSchema, "Color"),
-        },
-    ],
-    // model: "gpt-3.5-turbo",
-    model: "gpt-4",
-    stream: true, // ENABLE STREAMING
-    temperature: 0.7,
-});
+            // { 
+                //     role: "user", 
+                //     content: genPromptSchema(PostCodeSchema, "PostCode"),
+                // },
+            { 
+                role: "user", 
+                content: "Give me 3 color with the name and hex code, and a description." 
+            },
+            { 
+                role: "user", 
+                content: genPromptSchema(ColorSchema, "Color"),
+            },
+        ],
+        model: "gpt-3.5-turbo",
+        // model: "gpt-4",
+        stream: true, // ENABLE STREAMING
+        temperature: 0.7,
+    });
 
 
 
 
-// Parser
-// API proposal:
-// const entityStream = streamParser(stream, PostCodeSchema);
+    // Parser
+    // API proposal:
+    // const entityStream = streamParser(stream, PostCodeSchema);
 
-const entityStream = handleOpenAiResponse(stream, ColorSchema);
+    const entityStream = handleOpenAiResponse(stream, ColorSchema);
 
+    // for await (const entity of entityStream) {
+    //     console.log(entity);
+    // }
 
-for await (const entity of entityStream) {
-    console.log(entity);
+    return entityStream;
+
 }
+
+
+// await callGenerateColors();
+
+// console.log("Start");
+// for await (const data of callGenerateColors()) {
+//     console.log(data);
+// }
+
+
+// for await (const entity of entityStream) {
+//     console.log(entity);
+// }
 
 
 

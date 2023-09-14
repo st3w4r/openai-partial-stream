@@ -429,7 +429,7 @@ export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny) {
     for await (const msg of stream) {
         const content = msg.choices[0].delta.content + "";
         
-        // process.stdout.write(content);
+        process.stdout.write(content);
         
         if (content) {
 
@@ -457,6 +457,7 @@ export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny) {
             }
         }
     }
+    yield null;
 }
 
 
