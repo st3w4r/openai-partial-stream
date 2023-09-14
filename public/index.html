@@ -223,6 +223,7 @@
     <script type="module">
         let blocks = [];
         let colorBlocks = [];
+        let copiedColors = [];  // To maintain a list of copied colors
 
         function clearBlocks() {
             const container = document.getElementById('blocksContainer');
@@ -308,25 +309,35 @@
                     const hexCode = colorBlocks[index];
                     const colorNameElement = block.querySelector('.color-name');
                     const colorDescriptionElement = block.querySelector('.color-description');
+                    const originalNameText = colorNameElement.getAttribute('data-original') || colorNameElement.textContent;
+                    const originalDescriptionText = colorDescriptionElement.getAttribute('data-original') || colorDescriptionElement.textContent;
 
-                    // Store the original texts
-                    const originalNameText = colorNameElement.textContent;
-                    const originalDescriptionText = colorDescriptionElement.textContent;
+                    // Check if color is already copied
+                    if (copiedColors.includes(hexCode)) {
+                        // Color was previously copied; remove it
+                        copiedColors = copiedColors.filter(color => color !== hexCode);
+                        // Revert the texts back to original
+                        colorNameElement.textContent = originalNameText;
+                        colorDescriptionElement.textContent = originalDescriptionText;
+                    } else {
+                        // Color was not copied before; add it
+                        copiedColors.push(hexCode);
+                        // Store original texts in 'data-original' attributes for future use
+                        colorNameElement.setAttribute('data-original', originalNameText);
+                        colorDescriptionElement.setAttribute('data-original', originalDescriptionText);
+                        // Set new texts
+                        colorNameElement.textContent = 'COPIED';
+                        colorDescriptionElement.textContent = hexCode;
+                    }
 
-                    // Set new texts
-                    colorNameElement.textContent = 'COPIED';
-                    colorDescriptionElement.textContent = hexCode;
-
-                    navigator.clipboard.writeText(hexCode).then(() => {
-                        setTimeout(() => {
-                            // Revert the texts back to the original after 3 seconds
-                            colorNameElement.textContent = originalNameText;
-                            colorDescriptionElement.textContent = originalDescriptionText;
-                        }, 3000);
+                    // Update the clipboard with the list of copied colors
+                    navigator.clipboard.writeText(copiedColors.join('\n')).then(() => {
+                        console.log('Clipboard updated with copied colors');
                     }, (err) => {
-                        console.error('Could not copy color: ', err);
+                        console.error('Could not update clipboard: ', err);
                     });
                 });
+
 
 
                 // Delay to let the block be added to the DOM, then fade in.
