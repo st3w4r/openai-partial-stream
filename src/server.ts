@@ -1,5 +1,4 @@
 import express, { Request, Response } from 'express';
-
 import { callGenerateColors } from './example.js';
 
 const app = express();
@@ -11,6 +10,16 @@ let clients: Response[] = [];
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// CORS setup
+app.use((req: Request, res: Response, next: Function) => {
+    // Setting headers to handle the CORS issues
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    
+    // Proceed to the next middleware
+    next();
+});
+
 // SSE setup
 app.use((req: Request, res: Response, next: Function) => {
     res.header('Cache-Control', 'no-cache');
@@ -21,7 +30,6 @@ app.use((req: Request, res: Response, next: Function) => {
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello, World!');
 });
-
 
 app.get('/sse', async (req: Request, res: Response) => {
     // Set response headers for SSE
@@ -37,7 +45,7 @@ app.get('/sse', async (req: Request, res: Response) => {
         clients = clients.filter(client => client !== res);
     });
 
-    const gen = await callGenerateColors()
+    const gen = await callGenerateColors();
     
     for await (const data of gen) {
         console.log(data);
@@ -45,19 +53,11 @@ app.get('/sse', async (req: Request, res: Response) => {
             break;
         }
         res.write(`data: ${JSON.stringify({ message: data })}\n\n`);
-
     }
     console.log("Done");
     clients = clients.filter(client => client !== res);
     res.end();
 });
-
-// Simulate some data sending every 5 seconds
-// setInterval(() => {
-//     clients.forEach(client =>
-//         client.write(`data: ${JSON.stringify({ message: 'Hello from SSE!' })}\n\n`)
-//     );
-// }, 5000);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

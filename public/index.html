@@ -65,7 +65,11 @@
 
     <div id="blocksContainer"></div>
 
-    <script>
+    <!-- <script type="module" src="example.js"></script> -->
+
+
+    <script type="module">
+
         let blocks = [];
 
         function addBlock() {
@@ -123,6 +127,57 @@
             // Update in the blocks array
             blocks[index] = data;
         }
+
+
+
+        // let colorGenerator = callGenerateColors();
+
+        // function generateColors() {
+        //     for (let colorInfo of colorGenerator) {
+        //         if (colorInfo.status === 'PARTIAL') {
+        //             if (!blocks[colorInfo.index]) {
+        //                 // If block doesn't exist, create it
+        //                 addBlock(colorInfo.data.name, colorInfo.data.hex, colorInfo.data.description);
+        //             } else {
+        //                 // If block exists, update it
+        //                 updateBlock(colorInfo.index, colorInfo.data);
+        //             }
+        //         } else if (colorInfo.status === 'COMPLETED') {
+        //             // Update one last time for 'COMPLETED' state
+        //             updateBlock(colorInfo.index, colorInfo.data);
+        //         }
+        //     }
+        // }
+
+
+        // Connect to the SSE endpoint
+        const eventSource = new EventSource('http://localhost:3000/sse');
+
+        eventSource.onmessage = function (event) {
+            // Parse the data from the SSE message
+            const data = JSON.parse(event.data).message;
+
+            if (data.status === 'PARTIAL') {
+                if (!blocks[data.index]) {
+                    // If block doesn't exist, create it
+                    addBlock(data.data.name, data.data.hex, data.data.description);
+                } else {
+                    // If block exists, update it
+                    updateBlock(data.index, data.data);
+                }
+            } else if (data.status === 'COMPLETED') {
+                // Update one last time for 'COMPLETED' state
+                updateBlock(data.index, data.data);
+            }
+        };
+
+        eventSource.onerror = function (event) {
+            console.error('Error occurred:', event);
+            eventSource.close();
+        };
+
+
+
     </script>
 
 </body>

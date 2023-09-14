@@ -35,7 +35,7 @@ const PostCodeSchema = z.object({
 const ColorSchema = z.object({
     name: z.string().optional(),
     hex: z.string().optional(),
-    description: z.string().optional(),
+    // description: z.string().optional(),
 });
 
 type PostCode = z.infer<typeof PostCodeSchema>;
@@ -62,7 +62,7 @@ export async function callGenerateColors() {
                 // },
             { 
                 role: "user", 
-                content: "Give me 3 color with the name and hex code, and a description." 
+                content: "Give me a palette of 5 gorgeous color with the name and hex code" 
             },
             { 
                 role: "user", 
