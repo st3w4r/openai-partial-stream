@@ -51,134 +51,98 @@
         .color-block:hover .color-code {
             display: block;
         }
+
+        #buttonContainer {
+            margin-bottom: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
 
-    <div>
+    <!-- <div>
         <input type="text" id="colorName" placeholder="Color Name">
         <input type="text" id="colorValue" placeholder="Color Value (e.g., #ff0000)">
         <textarea id="colorDescription" placeholder="Description"></textarea>
         <button onclick="addBlock()">Add Block</button>
+    </div> -->
+
+    <div id="buttonContainer">
+        <button id="generateColors">Generate Colors</button>
     </div>
 
-    <div id="blocksContainer"></div>
+    <div id="blocksContainer">
 
-    <!-- <script type="module" src="example.js"></script> -->
+        <!-- <script type="module" src="example.js"></script> -->
 
 
-    <script type="module">
+        <script type="module">
+            let blocks = [];
 
-        let blocks = [];
+            function clearBlocks() {
+                const container = document.getElementById('blocksContainer');
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+                blocks = [];
+            }
 
-        function addBlock() {
-            const container = document.getElementById('blocksContainer');
-            const colorName = document.getElementById('colorName').value;
-            const colorValue = document.getElementById('colorValue').value;
-            const colorDescription = document.getElementById('colorDescription').value;
 
-            const blockData = {
-                name: colorName,
-                hex: colorValue,
-                description: colorDescription
-            };
-            blocks.push(blockData);
+            function callGenerateColors() {
+                clearBlocks();
+                // Connect to the SSE endpoint
+                const eventSource = new EventSource('http://localhost:3000/sse');
 
-            const block = document.createElement('div');
-            block.className = 'color-block';
-            block.style.backgroundColor = colorValue;
-            block.setAttribute('data-index', blocks.length - 1);  // set index
-            block.innerHTML = `
-            ${colorName}
-            <div class="color-code">${colorValue}</div>
-            <div class="color-description">
-                ${colorDescription}
-            </div>
+                eventSource.onmessage = function (event) {
+                    // Parse the data from the SSE message
+                    const data = JSON.parse(event.data).message;
+
+                    processBlock(data.index, data.data);
+                };
+
+                eventSource.onerror = function (event) {
+                    console.error('Error occurred:', event);
+                    eventSource.close();
+                };
+            }
+
+            document.getElementById('generateColors').addEventListener('click', () => callGenerateColors());
+
+
+            function processBlock(index, data) {
+                if (!blocks[index]) {
+                    // Block does not exist; create it
+                    const block = document.createElement('div');
+                    block.className = 'color-block';
+                    block.style.backgroundColor = data.hex || '#FFFFFF';  // Default to white if hex isn't provided
+                    block.innerHTML = `
+            <span class="color-name">${data.name || ''}</span>
+            <span class="color-description">${data.description || ''}</span>
         `;
 
-            block.onclick = function () {
-                const index = parseInt(this.getAttribute('data-index'));
-                const updatedBlock = {
-                    name: prompt("Enter a new color name:", blockData.name),
-                    hex: prompt("Enter a new color value:", blockData.hex),
-                    description: prompt("Enter a new description:", blockData.description)
-                };
-                updateBlock(index, updatedBlock);
-            };
+                    block.style.opacity = 0;  // Initially set to 0
+                    document.getElementById('blocksContainer').appendChild(block);
+                    blocks[index] = block;
 
-            container.appendChild(block);
-
-            // Fade-in effect
-            setTimeout(() => block.style.opacity = "1", 50);
-        }
-
-        function updateBlock(index, data) {
-            const block = document.querySelector(`[data-index="${index}"]`);
-            if (!block) return;
-
-            if (data.name) block.childNodes[0].nodeValue = data.name;
-            if (data.hex) {
-                block.style.backgroundColor = data.hex;
-                block.querySelector('.color-code').innerText = data.hex;
-            }
-            if (data.description) block.querySelector('.color-description').innerText = data.description;
-
-            // Update in the blocks array
-            blocks[index] = data;
-        }
-
-
-
-        // let colorGenerator = callGenerateColors();
-
-        // function generateColors() {
-        //     for (let colorInfo of colorGenerator) {
-        //         if (colorInfo.status === 'PARTIAL') {
-        //             if (!blocks[colorInfo.index]) {
-        //                 // If block doesn't exist, create it
-        //                 addBlock(colorInfo.data.name, colorInfo.data.hex, colorInfo.data.description);
-        //             } else {
-        //                 // If block exists, update it
-        //                 updateBlock(colorInfo.index, colorInfo.data);
-        //             }
-        //         } else if (colorInfo.status === 'COMPLETED') {
-        //             // Update one last time for 'COMPLETED' state
-        //             updateBlock(colorInfo.index, colorInfo.data);
-        //         }
-        //     }
-        // }
-
-
-        // Connect to the SSE endpoint
-        const eventSource = new EventSource('http://localhost:3000/sse');
-
-        eventSource.onmessage = function (event) {
-            // Parse the data from the SSE message
-            const data = JSON.parse(event.data).message;
-
-            if (data.status === 'PARTIAL') {
-                if (!blocks[data.index]) {
-                    // If block doesn't exist, create it
-                    addBlock(data.data.name, data.data.hex, data.data.description);
+                    // Delay to let the block be added to the DOM, then fade in.
+                    setTimeout(() => {
+                        block.style.opacity = 1;
+                    }, 50);
                 } else {
-                    // If block exists, update it
-                    updateBlock(data.index, data.data);
+                    // Block exists; update it
+                    const block = blocks[index];
+                    if (data.hex) block.style.backgroundColor = data.hex;
+                    if (data.name) block.querySelector('.color-name').textContent = data.name;
+                    if (data.description) block.querySelector('.color-description').textContent = data.description;
                 }
-            } else if (data.status === 'COMPLETED') {
-                // Update one last time for 'COMPLETED' state
-                updateBlock(data.index, data.data);
             }
-        };
-
-        eventSource.onerror = function (event) {
-            console.error('Error occurred:', event);
-            eventSource.close();
-        };
 
 
 
-    </script>
+
+
+        </script>
 
 </body>
 
