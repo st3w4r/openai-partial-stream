@@ -23,6 +23,7 @@
             opacity: 0;
 
             word-wrap: break-word;
+            min-height: 150px;
         }
 
 
@@ -54,7 +55,7 @@
             display: flex;
             flex-direction: column;
             /* Changed to column to stack vertically */
-            align-items: baseline;
+            align-items: center;
             background-color: #f7f7f7;
             padding-top: 200px;
             /* Space at the top for the button */
@@ -90,9 +91,9 @@
         #blocksContainer {
             display: flex;
             flex-wrap: wrap;
-            justify-content: left;
+            justify-content: center;
             /* Center the blocks horizontally */
-            align-items: center;
+            align-items: self-start;
             /* Center the blocks vertically */
             flex-grow: 1;
             /* Allow the container to grow and take up remaining space */
@@ -119,6 +120,19 @@
             /* Vertically center children */
             height: 100%;
             /* Take full height of the parent */
+        }
+
+        ::selection {
+            background-color: coral;
+            /* Background color of the selected text */
+            color: white;
+            /* Text color of the selected text */
+        }
+
+        /* For Firefox, you might need to include the following as well */
+        ::-moz-selection {
+            background-color: coral;
+            color: white;
         }
     </style>
 </head>
