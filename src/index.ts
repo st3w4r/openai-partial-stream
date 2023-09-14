@@ -358,7 +358,7 @@ export function genPromptSchema(schema: z.ZodTypeAny, entityName: string) {
     Output as a json array:
     example: [{"name": "value"}, {"name": "value"}]
 
-    Now convert to the JSON format
+    Now convert to the JSON format, write directly to JSON. No explanation needed.
     `;
     return prompt;
 }

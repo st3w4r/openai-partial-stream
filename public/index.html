@@ -122,7 +122,31 @@
             /* Take full height of the parent */
         }
 
-        ::selection {
+        /* ... (rest of your CSS code) ... */
+
+        .voila-style {
+            text-align: center;
+            margin-top: 20px;
+            font-size: x-large;
+            font-weight: bold;
+            background-color: beige;
+            /* Background similar to your body */
+            color: darkred;
+            /* To harmonize with the hover effect of your button */
+            padding: 10px 20px;
+            /* Padding to give it a bit of space */
+            /* border-radius: 5px; */
+            /* Same as your button for consistency */
+            /* box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); */
+            /* Slight shadow for depth, similar to your blocks */
+            /* border: 2px solid whitesmoke; */
+            /* Adding a border similar to your color blocks */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+
+        */ ::selection {
             background-color: coral;
             /* Background color of the selected text */
             color: white;
@@ -148,55 +172,70 @@
 
     <button id="generateColors">Generate Colors</button>
 
-    <div id="blocksContainer">
-
-        <!-- <script type="module" src="example.js"></script> -->
+    <div id="blocksContainer"></div>
 
 
-        <script type="module">
-            let blocks = [];
+    <div id="voilaContainer" class="voila-style">Voila!</div>
 
-            function clearBlocks() {
-                const container = document.getElementById('blocksContainer');
-                while (container.firstChild) {
-                    container.removeChild(container.firstChild);
-                }
-                blocks = [];
+    <!-- <script type="module" src="example.js"></script> -->
+
+
+    <script type="module">
+        let blocks = [];
+
+        function clearBlocks() {
+            const container = document.getElementById('blocksContainer');
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
             }
+            blocks = [];
+            document.getElementById('voilaContainer').style.opacity = "0";
+        }
 
 
-            function callGenerateColors() {
-                clearBlocks();
-                // Connect to the SSE endpoint
-                const eventSource = new EventSource('http://localhost:3000/sse');
+        function callGenerateColors() {
+            clearBlocks();
+            // Connect to the SSE endpoint
+            const eventSource = new EventSource('http://localhost:3000/sse');
 
-                eventSource.onmessage = function (event) {
-                    // Parse the data from the SSE message
-                    const data = JSON.parse(event.data).message;
+            eventSource.onmessage = function (event) {
+                // Parse the data from the SSE message
+                const data = JSON.parse(event.data).message;
 
-                    processBlock(data.index, data.data);
-                };
+                processBlock(data.index, data.data);
+            };
 
-                eventSource.onerror = function (event) {
-                    console.error('Error occurred:', event);
-                    eventSource.close();
-                };
-            }
+            eventSource.onerror = function (event) {
+                console.error('Error occurred:', event);
+                eventSource.close();
+            };
 
-            document.getElementById('generateColors').addEventListener('click', () => callGenerateColors());
+            eventSource.addEventListener('CLOSE', function (e) {
+                console.log(e.data);  // "Closing connection"
+                eventSource.close();  // Close the connection from the client side
 
 
-            function processBlock(index, data) {
-                if (!blocks[index]) {
-                    // Block does not exist; create it
-                    const block = document.createElement('div');
-                    block.className = 'color-block';
-                    block.style.backgroundColor = data.hex || '#FFFFFF';  // Default to white if hex isn't provided
-                    //             block.innerHTML = `
-                    //     <span class="color-name">${data.name || ''}</span>
-                    //     <span class="color-description">${data.description || ''}</span>
-                    // `;
-                    block.innerHTML = `
+                // Display the "Voila!" message
+                document.getElementById('voilaContainer').style.opacity = "1";
+            });
+
+
+        }
+
+        document.getElementById('generateColors').addEventListener('click', () => callGenerateColors());
+
+
+        function processBlock(index, data) {
+            if (!blocks[index]) {
+                // Block does not exist; create it
+                const block = document.createElement('div');
+                block.className = 'color-block';
+                block.style.backgroundColor = data.hex || '#FFFFFF';  // Default to white if hex isn't provided
+                //             block.innerHTML = `
+                //     <span class="color-name">${data.name || ''}</span>
+                //     <span class="color-description">${data.description || ''}</span>
+                // `;
+                block.innerHTML = `
                         <div class="color-content">
                             <span class="color-name">${data.name || ''}</span>
                             <span class="color-description">${data.description || ''}</span>
@@ -204,28 +243,28 @@
                     `;
 
 
-                    block.style.opacity = 0;  // Initially set to 0
-                    document.getElementById('blocksContainer').appendChild(block);
-                    blocks[index] = block;
+                block.style.opacity = 0;  // Initially set to 0
+                document.getElementById('blocksContainer').appendChild(block);
+                blocks[index] = block;
 
-                    // Delay to let the block be added to the DOM, then fade in.
-                    setTimeout(() => {
-                        block.style.opacity = 1;
-                    }, 50);
-                } else {
-                    // Block exists; update it
-                    const block = blocks[index];
-                    if (data.hex) block.style.backgroundColor = data.hex;
-                    if (data.name) block.querySelector('.color-name').textContent = data.name;
-                    if (data.description) block.querySelector('.color-description').textContent = data.description;
-                }
+                // Delay to let the block be added to the DOM, then fade in.
+                setTimeout(() => {
+                    block.style.opacity = 1;
+                }, 50);
+            } else {
+                // Block exists; update it
+                const block = blocks[index];
+                if (data.hex) block.style.backgroundColor = data.hex;
+                if (data.name) block.querySelector('.color-name').textContent = data.name;
+                if (data.description) block.querySelector('.color-description').textContent = data.description;
             }
+        }
 
 
 
 
 
-        </script>
+    </script>
 
 </body>
 

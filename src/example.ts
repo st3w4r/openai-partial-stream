@@ -69,8 +69,8 @@ export async function callGenerateColors() {
                 content: genPromptSchema(ColorSchema, "Color"),
             },
         ],
-        model: "gpt-3.5-turbo",
-        // model: "gpt-4",
+        // model: "gpt-3.5-turbo",
+        model: "gpt-4",
         stream: true, // ENABLE STREAMING
         temperature: 0.7,
     });

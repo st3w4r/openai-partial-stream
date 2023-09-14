@@ -54,9 +54,14 @@ app.get('/sse', async (req: Request, res: Response) => {
         }
         res.write(`data: ${JSON.stringify({ message: data })}\n\n`);
     }
+
     console.log("Done");
     clients = clients.filter(client => client !== res);
+    
+    res.write('event: CLOSE\n');
+    res.write('data: Done, closing connection\n\n');
     res.end();
+    
 });
 
 app.listen(PORT, () => {
