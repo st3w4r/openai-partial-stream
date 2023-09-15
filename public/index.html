@@ -202,28 +202,52 @@
 
 
         /* Add this to your CSS */
-        #modeSelector {
+        .button-bar {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            background-color: gray;
+            border-radius: 5px;
             margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            /* To hide the overflow of the moving overlay */
         }
 
-        #modeSelector input[type="radio"] {
+
+        .active-overlay {
+            position: absolute;
+            height: 100%;
+            background-color: coral;
+            transition: left 0.3s, width 0.3s; // Add width to the transition properties.
+        }
+
+
+
+
+        .mode-radio {
             display: none;
         }
 
-        #modeSelector label {
-            padding: 10px 20px;
-            background-color: gray;
-            border-radius: 5px;
+        .mode-button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
             color: beige;
-            font-weight: bold;
+            font-size: large;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
-        #modeSelector input[type="radio"]:checked+label {
-            background-color: darkred;
+        /* Modify the hover effect to work with labels */
+        .mode-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Add a new style for checked radio buttons */
+        .mode-radio:checked+.mode-button {
+            color: beige;
+            /* Change color when checked if desired */
         }
     </style>
 </head>
@@ -231,19 +255,24 @@
 <body>
 
     <!-- Add this right above your Generate Colors button -->
-    <div id="modeSelector">
-        <input type="radio" id="NoStream" name="mode" value="NoStream" checked>
-        <label for="NoStream">NoStream</label>
+    <div id="modeSelector" class="button-bar">
+        <div class="active-overlay"></div>
 
-        <input type="radio" id="StreamObject" name="mode" value="StreamObject">
-        <label for="StreamObject">StreamObject</label>
+        <input type="radio" name="mode" id="NoStream" value="NoStream" class="mode-radio">
+        <label for="NoStream" class="mode-button">NoStream</label>
 
-        <input type="radio" id="StreamObjectKeyValue" name="mode" value="StreamObjectKeyValue">
-        <label for="StreamObjectKeyValue">StreamObjectKeyValue</label>
+        <input type="radio" name="mode" id="StreamObject" value="StreamObject" class="mode-radio" checked>
+        <label for="StreamObject" class="mode-button">StreamObject</label>
 
-        <input type="radio" id="StreamObjectKeyValueTokens" name="mode" value="StreamObjectKeyValueTokens">
-        <label for="StreamObjectKeyValueTokens">StreamObjectKeyValueTokens</label>
+        <input type="radio" name="mode" id="StreamObjectKeyValue" value="StreamObjectKeyValue" class="mode-radio">
+        <label for="StreamObjectKeyValue" class="mode-button">StreamObjectKeyValue</label>
+
+        <input type="radio" name="mode" id="StreamObjectKeyValueTokens" value="StreamObjectKeyValueTokens"
+            class="mode-radio">
+        <label for="StreamObjectKeyValueTokens" class="mode-button">StreamObjectKeyValueTokens</label>
     </div>
+
+
 
     <button id="generateColors">Generate Colors</button>
 
@@ -283,6 +312,9 @@
 
             // Retrieve the selected mode:
             const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+            // OR
+            // const selectedMode = document.querySelector('.mode-radio:checked').value;
+
 
             // Connect to the SSE endpoint using the selected mode:
             const eventSource = new EventSource(`http://localhost:3000/sse?mode=${selectedMode}`);
@@ -398,6 +430,34 @@
                 if (data.description) block.querySelector('.color-description').textContent = data.description;
             }
         }
+
+
+        document.querySelectorAll('.mode-button').forEach((btn, idx) => {
+            btn.addEventListener('click', () => {
+
+                const overlay = document.querySelector('.active-overlay');
+
+                overlay.style.left = `${btn.offsetLeft}px`;  // Set overlay to start at the button's left offset.
+                overlay.style.width = `${btn.offsetWidth}px`;  // Set overlay width to match the button's width.
+
+
+                // Your color generation logic can now also access the selected mode using:
+                // document.querySelector('.mode-radio:checked').value
+            });
+        });
+
+        // Initialize the overlay's position and width to match the StreamObject button
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultButton = document.querySelector('label[for="StreamObject"]');
+
+            const overlay = document.querySelector('.active-overlay');
+
+            overlay.style.left = `${defaultButton.offsetLeft}px`;
+            overlay.style.width = `${defaultButton.offsetWidth}px`;
+        });
+
+
+
 
     </script>
 
