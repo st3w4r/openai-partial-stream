@@ -197,16 +197,12 @@ function partialStreamParserKeyValueTokens(content: any, schema: z.ZodTypeAny) {
     
     const kvList = extractKeyValuePairsWithCorrection(buffer);
 
-    // const kvList = extractKeyValuePairs(buffer);
-
     if (kvList.length === 0) {
         return null;
     }
 
     // Detect if changes happened 
-    if (kvList.length <= nbKey) {
-        // console.log("no new value");
-        // return null
+    if (kvList.length > nbKey) {
         // Reset value length because new key is added
         prevValueLen = 0;
     }
@@ -234,16 +230,11 @@ function partialStreamParserKeyValueTokens(content: any, schema: z.ZodTypeAny) {
     let jsonObj = kvList?.join(",")
 
     jsonObj = "{" + jsonObj + "}"
-    // console.log(jsonObj);
-
 
     const outputEntity = simpleExtractEntity(jsonObj, schema);
 
-    if (outputEntity) {
-        nbKey = kvList.length;
-        
-        // partialBuffer = "";
-    }
+    nbKey = kvList.length;
+
 
     return outputEntity;
 }
