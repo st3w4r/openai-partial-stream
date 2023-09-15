@@ -280,18 +280,22 @@
         <div class="active-overlay"></div>
 
         <input type="radio" name="mode" id="NoStream" value="NoStream" class="mode-radio">
-        <label for="NoStream" class="mode-button">All-Together</label>
+        <label for="NoStream" class="mode-button" data-tooltip="Loads all colors at once.">All-Together</label>
 
         <input type="radio" name="mode" id="StreamObject" value="StreamObject" class="mode-radio" checked>
-        <label for="StreamObject" class="mode-button">One-By-One</label>
+        <label for="StreamObject" class="mode-button" data-tooltip="Loads colors one by one.">One-By-One</label>
 
         <input type="radio" name="mode" id="StreamObjectKeyValue" value="StreamObjectKeyValue" class="mode-radio">
-        <label for="StreamObjectKeyValue" class="mode-button">When-Ready</label>
+        <label for="StreamObjectKeyValue" class="mode-button"
+            data-tooltip="Loads colors as they're ready.">When-Ready</label>
 
         <input type="radio" name="mode" id="StreamObjectKeyValueTokens" value="StreamObjectKeyValueTokens"
             class="mode-radio">
-        <label for="StreamObjectKeyValueTokens" class="mode-button">Real-time</label>
+        <label for="StreamObjectKeyValueTokens" class="mode-button"
+            data-tooltip="Loads colors in real-time.">Real-time</label>
+
     </div>
+
 
 
 
@@ -487,6 +491,7 @@
             overlay.style.left = `${defaultButton.offsetLeft}px`;
             overlay.style.width = `${defaultButton.offsetWidth}px`;
         });
+
 
     </script>
 

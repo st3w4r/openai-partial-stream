@@ -63,7 +63,7 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
                 // },
             {
                 role: "user",
-                content: "Give me a palette of 3 gorgeous color with the hex code, name and a description."
+                content: "Give me a palette of 12 gorgeous color with the hex code, name and a description."
             },
             {
                 role: "user",
