@@ -110,12 +110,12 @@ export async function callGenerateColors() {
 
 // Mock
 
-// mock stream
-const mockStream = readFileAndStreamContent("./output_postcode_partial.txt");
-// Parser
-const mockEnitytStream = handleMockResponse(mockStream, PostCodeSchema);
+// // mock stream
+// const mockStream = readFileAndStreamContent("./output_postcode_partial.txt");
+// // Parser
+// const mockEnitytStream = handleMockResponse(mockStream, PostCodeSchema);
 
-for await (const entity of mockEnitytStream) {
-    console.log(entity);
-}
+// for await (const entity of mockEnitytStream) {
+//     console.log(entity);
+// }
 

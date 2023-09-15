@@ -258,6 +258,11 @@
             eventSource.onerror = function (event) {
                 console.error('Error occurred:', event);
                 eventSource.close();
+
+                // Error
+                btn.textContent = "Oops! Retry a bit later";
+                btn.disabled = false;
+                btn.classList.remove("processing");
             };
 
             eventSource.addEventListener('CLOSE', function (e) {
@@ -346,6 +351,8 @@
                 }, 50);
             } else {
                 // Block exists; update it
+                colorBlocks[index] = data.hex;
+
                 const block = blocks[index];
                 if (data.hex) block.style.backgroundColor = data.hex;
                 if (data.name) block.querySelector('.color-name').textContent = data.name;
