@@ -1,0 +1,43 @@
+[
+{"post
+code": "SW
+1A 
+1AA", "co
+unc
+ilName"
+: "
+City of Westmin
+ster
+"},
+{"post
+cod
+e": "E1 6
+AN", "
+cou
+ncilName": "Tower Haml
+ets
+"},
+{"po
+stc
+ode": "NW
+1 5AL", "cou
+nci
+lName": "Cam
+den
+"},
+{"postcode": "EC1A 4DD", "c
+oun
+cilName": "Isl
+ingt
+on
+"},
+{"
+pos
+tcode": "W1D 
+4FA", "cou
+nci
+lName": "Cit
+y o
+f Londo
+n"}
+]

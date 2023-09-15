@@ -1,0 +1,441 @@
+
+Ap
+ologies
+,
+ but
+ I
+'m
+ unable
+ to
+ assist
+.
+undefined
+
+Here
+ is
+ a
+ list
+ of
+ 
+5
+ cities
+ in
+ California
+:
+
+
+-
+ Los
+ Angeles
+
+
+-
+ San
+ Francisco
+
+
+-
+ San
+ Diego
+
+
+-
+ Sacramento
+
+
+-
+ San
+ Jose
+undefined
+
+Here
+ is
+ a
+ sample
+ JSON
+ with
+ all
+ the
+ fields
+:
+
+
+[
+
+ 
+ {
+
+   
+ "
+name
+":
+ "
+San
+ Francisco
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ "
+883
+305
+"
+
+ 
+ },
+
+ 
+ {
+
+   
+ "
+name
+":
+ "
+Los
+ Angeles
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ "
+397
+768
+67
+"
+
+ 
+ },
+
+ 
+ {
+
+   
+ "
+name
+":
+ "
+Sac
+ramento
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ "
+508
+529
+"
+
+ 
+ },
+
+ 
+ {
+
+   
+ "
+name
+":
+ "
+San
+ Diego
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ "
+140
+663
+0
+"
+
+ 
+ },
+
+ 
+ {
+
+   
+ "
+name
+":
+ "
+P
+alo
+ Alto
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ "
+663
+90
+"
+
+ 
+ }
+
+]
+undefined
+
+Sure
+,
+ here
+ are
+ the
+ cities
+ with
+ an
+ added
+ population
+ property
+:
+
+
+-
+ {
+
+   
+ "
+name
+":
+ "
+Los
+ Angeles
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ 
+397
+768
+6
+
+
+ 
+ },
+
+  
+
+-
+ {
+
+   
+ "
+name
+":
+ "
+San
+ Diego
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ 
+140
+663
+0
+
+
+ 
+ },
+
+
+-
+ {
+
+   
+ "
+name
+":
+ "
+San
+ Jose
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ 
+102
+179
+5
+
+
+ 
+ },
+
+
+-
+ {
+
+   
+ "
+name
+":
+ "
+San
+ Francisco
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ 
+883
+305
+
+
+ 
+ },
+
+
+-
+ {
+
+   
+ "
+name
+":
+ "
+Sac
+ramento
+",
+
+   
+ "
+state
+_code
+":
+ "
+CA
+",
+
+   
+ "
+population
+":
+ 
+508
+529
+
+
+ 
+ }
+  
+
+
+Note
+:
+ These
+ populations
+ are
+ estimated
+ values
+ and
+ might
+ not
+ be
+ 
+100
+%
+ accurate
+.
+undefined

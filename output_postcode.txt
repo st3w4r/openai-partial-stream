@@ -1,0 +1,31 @@
+Here is a list of 5 cities in California in JSON format:
+
+1. {
+    "name": "Los Angeles",
+    "state_code": "CA",
+    "population": 3977683
+}
+
+2. {
+    "name": "San Francisco",
+    "state_code": "CA",
+    "population": 883305
+}
+
+3. {
+    "name": "San Diego",
+    "state_code": "CA",
+    "population": 1425976
+}
+
+4. {
+    "name": "Sacramento",
+    "state_code": "CA",
+    "population": 508529
+}
+
+5. {
+    "name": "San Jose",
+    "state_code": "CA",
+    "population": 1030119
+}undefined
