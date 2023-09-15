@@ -205,7 +205,7 @@
         .button-bar {
             display: flex;
             align-items: center;
-            background-color: gray;
+            background-color: darkslategray;
             border-radius: 5px;
             margin-bottom: 20px;
             position: relative;
@@ -214,6 +214,7 @@
             z-index: 1;
             /* Making sure this container is above the overlay */
 
+            white-space: nowrap;
         }
 
 
@@ -255,6 +256,7 @@
             /* Needed to set a z-index */
             z-index: 2;
             /* Ensures the text labels are above the overlay */
+
         }
 
         /* Modify the hover effect to work with labels */
@@ -277,22 +279,22 @@
         <div class="active-overlay"></div>
 
         <input type="radio" name="mode" id="NoStream" value="NoStream" class="mode-radio">
-        <label for="NoStream" class="mode-button">NoStream</label>
+        <label for="NoStream" class="mode-button">All-Together</label>
 
         <input type="radio" name="mode" id="StreamObject" value="StreamObject" class="mode-radio" checked>
-        <label for="StreamObject" class="mode-button">StreamObject</label>
+        <label for="StreamObject" class="mode-button">One-By-One</label>
 
         <input type="radio" name="mode" id="StreamObjectKeyValue" value="StreamObjectKeyValue" class="mode-radio">
-        <label for="StreamObjectKeyValue" class="mode-button">StreamObjectKeyValue</label>
+        <label for="StreamObjectKeyValue" class="mode-button">When-Ready</label>
 
         <input type="radio" name="mode" id="StreamObjectKeyValueTokens" value="StreamObjectKeyValueTokens"
             class="mode-radio">
-        <label for="StreamObjectKeyValueTokens" class="mode-button">StreamObjectKeyValueTokens</label>
+        <label for="StreamObjectKeyValueTokens" class="mode-button">Real-time</label>
     </div>
 
-
-
     <button id="generateColors">Generate Colors</button>
+
+
 
     <div id="blocksContainer"></div>
 
@@ -371,6 +373,18 @@
 
 
         function processBlock(index, data) {
+            // Check if the current mode is NoStream and handle the list
+            const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+            if (selectedMode === 'NoStream' && Array.isArray(data)) {
+                data.forEach((item, idx) => {
+                    processSingleBlock(idx, item);
+                });
+            } else {
+                processSingleBlock(index, data);
+            }
+        }
+
+        function processSingleBlock(index, data) {
             if (!blocks[index]) {
 
                 if (data.hex) {
@@ -473,8 +487,6 @@
             overlay.style.left = `${defaultButton.offsetLeft}px`;
             overlay.style.width = `${defaultButton.offsetWidth}px`;
         });
-
-
 
     </script>
 
