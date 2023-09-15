@@ -211,6 +211,9 @@
             position: relative;
             overflow: hidden;
             /* To hide the overflow of the moving overlay */
+            z-index: 1;
+            /* Making sure this container is above the overlay */
+
         }
 
 
@@ -221,6 +224,17 @@
             transition: left 0.3s, width 0.3s; // Add width to the transition properties.
         }
 
+        .active-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: coral;
+            z-index: 1;
+            /* Ensures the overlay is beneath the text labels but above the gray background */
+        }
 
 
 
@@ -237,6 +251,10 @@
             font-size: large;
             cursor: pointer;
             transition: background-color 0.3s;
+            position: relative;
+            /* Needed to set a z-index */
+            z-index: 2;
+            /* Ensures the text labels are above the overlay */
         }
 
         /* Modify the hover effect to work with labels */
@@ -455,7 +473,6 @@
             overlay.style.left = `${defaultButton.offsetLeft}px`;
             overlay.style.width = `${defaultButton.offsetWidth}px`;
         });
-
 
 
 
