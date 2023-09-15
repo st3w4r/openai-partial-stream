@@ -62,6 +62,10 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
                 //     content: genPromptSchema(PostCodeSchema, "PostCode"),
                 // },
             {
+                role: "system",
+                content: "Write JSON only"
+            },
+            {
                 role: "user",
                 content: "Give me a palette of 3 gorgeous color with the hex code, name and a description."
             },
@@ -70,8 +74,8 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
                 content: genPromptSchema(ColorSchema, "Color"),
             },
         ],
-        model: "gpt-3.5-turbo",
-        // model: "gpt-4",
+        // model: "gpt-3.5-turbo",
+        model: "gpt-4",
         stream: true, // ENABLE STREAMING
         // temperature: 0.7,
         temperature: 1.3,
@@ -111,12 +115,12 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
 // Mock
 
-// // mock stream
-// const mockStream = readFileAndStreamContent("./output_postcode_partial.txt");
-// // Parser
-// const mockEnitytStream = handleMockResponse(mockStream, PostCodeSchema, StreamMode.StreamObjectKeyValueTokens);
+// mock stream
+const mockStream = readFileAndStreamContent("./output_postcode_partial.txt");
+// Parser
+const mockEnitytStream = handleMockResponse(mockStream, PostCodeSchema, StreamMode.StreamObjectKeyValueTokens);
 
-// for await (const entity of mockEnitytStream) {
-//     console.log(entity);
-// }
+for await (const entity of mockEnitytStream) {
+    console.log(entity);
+}
 
