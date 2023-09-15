@@ -60,17 +60,17 @@ export async function callGenerateColors() {
                 //     role: "user", 
                 //     content: genPromptSchema(PostCodeSchema, "PostCode"),
                 // },
-            { 
-                role: "user", 
-                content: "Give me a palette of 5 gorgeous color with the hex code, name and a description." 
+            {
+                role: "user",
+                content: "Give me a palette of 5 gorgeous color with the hex code, name and a description."
             },
-            { 
-                role: "user", 
+            {
+                role: "user",
                 content: genPromptSchema(ColorSchema, "Color"),
             },
         ],
-        // model: "gpt-3.5-turbo",
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
+        // model: "gpt-4",
         stream: true, // ENABLE STREAMING
         // temperature: 0.7,
         temperature: 1.3,
@@ -97,7 +97,7 @@ export async function callGenerateColors() {
 // await callGenerateColors();
 
 // console.log("Start");
-// for await (const data of callGenerateColors()) {
+// for await (const data of await callGenerateColors()) {
 //     console.log(data);
 // }
 
@@ -110,12 +110,12 @@ export async function callGenerateColors() {
 
 // Mock
 
-// // mock stream
-// const mockStream = readFileAndStreamContent("./output_postcode_partial.txt");
-// // Parser
-// const mockEnitytStream = handleMockResponse(mockStream, PostCodeSchema);
+// mock stream
+const mockStream = readFileAndStreamContent("./output_postcode_partial.txt");
+// Parser
+const mockEnitytStream = handleMockResponse(mockStream, PostCodeSchema);
 
-// for await (const entity of mockEnitytStream) {
-//     console.log(entity);
-// }
+for await (const entity of mockEnitytStream) {
+    console.log(entity);
+}
 

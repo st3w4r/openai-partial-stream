@@ -161,10 +161,100 @@ function hasKeyValuePattern(s: string): boolean {
 }
 
 
+let nbKey = 0;
+let prevValueLen = 0;
+
+function partialStreamParserKeyOnly(content: any, schema: z.ZodTypeAny) {
+
+    let start = content.indexOf("{");
+    let end = content.indexOf("}");
+
+    if (start !== -1) {
+        inString = true;
+    }
+    if (end !== -1) {
+        inString = false;
+    }
+
+    function extractKeyValuePairsWithCorrection(s: string): string[] {
+        // 1. Regular expression for complete "key": "value" pairs
+        const completeRegex = /(?<!\\)"[^"]+"\s*:\s*(?<!\\)"[^"]*"/g;
+
+        // 2. Regular expression for "key": "incompleteValue patterns
+        const incompleteRegex = /(?<!\\)"([^"]+)"\s*:\s*(?<!\\)"([^"]+)$/;
+
+        let result: string[] = [...s.match(completeRegex) || []];
+
+        const incompleteMatch = s.match(incompleteRegex);
+        if (incompleteMatch) {
+            const corrected = `"${incompleteMatch[1]}": "${incompleteMatch[2]}"`; // close the incomplete value
+            result.push(corrected);
+        }
+    
+        return result;
+    }
+    
+    const kvList = extractKeyValuePairsWithCorrection(buffer);
+
+    // const kvList = extractKeyValuePairs(buffer);
+
+    if (kvList.length === 0) {
+        return null;
+    }
+
+    // Detect if changes happened 
+    if (kvList.length <= nbKey) {
+        // console.log("no new value");
+        // return null
+        // Reset value length because new key is added
+        prevValueLen = 0;
+    }
+
+    // Detect change in the value
+    const maxKey = kvList.length - 1 > 0 ? kvList.length - 1 : 0;
+
+    const valueLen = kvList[maxKey].length;
+    console.log(kvList[maxKey], valueLen, prevValueLen, nbKey, kvList.length)
+
+
+    if (valueLen <= prevValueLen) {
+        // console.log("no new content added to value");
+        return null
+    }
+
+    prevValueLen = valueLen;
+
+    if (end !== -1) {
+        nbKey = 0;
+        prevValueLen = 0;
+    }
+
+
+    let jsonObj = kvList?.join(",")
+
+    jsonObj = "{" + jsonObj + "}"
+    // console.log(jsonObj);
+
+
+    const outputEntity = simpleExtractEntity(jsonObj, schema);
+
+    if (outputEntity) {
+        nbKey = kvList.length;
+        
+        // partialBuffer = "";
+    }
+
+    return outputEntity;
+}
+
+
+
+
+
 let nbKeyValue = 0;
 
 function partialStreamParser(content: any, schema: z.ZodTypeAny) {
-    
+
     let start = content.indexOf("{");
     let end = content.indexOf("}");
 
@@ -214,6 +304,7 @@ function partialStreamParser(content: any, schema: z.ZodTypeAny) {
     return outputEntity;
 }
 
+let isTokenValueStream = true
 
 function simpleStreamParser(content: any, schema: z.ZodTypeAny) {
     
@@ -234,7 +325,15 @@ function simpleStreamParser(content: any, schema: z.ZodTypeAny) {
         buffer += content;
         
         completed = false;
-        outputEntity = partialStreamParser(buffer, schema);
+
+        
+        if (isTokenValueStream) {
+            outputEntity = partialStreamParserKeyOnly(buffer, schema);
+
+        } else {
+            outputEntity = partialStreamParser(buffer, schema);
+        }
+
     } else {
 
         completed = true;
@@ -249,6 +348,8 @@ function simpleStreamParser(content: any, schema: z.ZodTypeAny) {
         }
         buffer = "";
         nbKeyValue = 0;
+        nbKey = 0;
+        prevValueLen = 0;
     }
 
     return [outputEntity, completed];
