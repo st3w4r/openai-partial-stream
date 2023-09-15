@@ -203,22 +203,12 @@
 
 <body>
 
-    <!-- <div>
-        <input type="text" id="colorName" placeholder="Color Name">
-        <input type="text" id="colorValue" placeholder="Color Value (e.g., #ff0000)">
-        <textarea id="colorDescription" placeholder="Description"></textarea>
-        <button onclick="addBlock()">Add Block</button>
-    </div> -->
-
     <button id="generateColors">Generate Colors</button>
 
     <div id="blocksContainer"></div>
 
 
     <div id="voilaContainer" class="voila-style">Voila!</div>
-
-    <!-- <script type="module" src="example.js"></script> -->
-
 
     <script type="module">
         let blocks = [];
@@ -247,7 +237,7 @@
             clearBlocks();
 
             // Connect to the SSE endpoint
-            const eventSource = new EventSource('http://localhost:3000/sse');
+            const eventSource = new EventSource('http://localhost:3000/sse?mode=NoStream');
 
             eventSource.onmessage = function (event) {
                 // Parse the data from the SSE message
@@ -359,12 +349,6 @@
                 if (data.description) block.querySelector('.color-description').textContent = data.description;
             }
         }
-
-
-
-
-
-
 
     </script>
 

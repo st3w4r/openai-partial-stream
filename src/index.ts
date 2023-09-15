@@ -6,6 +6,7 @@ import { Stream } from "stream";
 import { STATUS_CODES } from "http";
 
 import { PassThrough } from "stream";
+import { StreamMode } from "./utils.js";
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -164,7 +165,7 @@ function hasKeyValuePattern(s: string): boolean {
 let nbKey = 0;
 let prevValueLen = 0;
 
-function partialStreamParserKeyOnly(content: any, schema: z.ZodTypeAny) {
+function partialStreamParserKeyValueTokens(content: any, schema: z.ZodTypeAny) {
 
     let start = content.indexOf("{");
     let end = content.indexOf("}");
@@ -304,9 +305,9 @@ function partialStreamParser(content: any, schema: z.ZodTypeAny) {
     return outputEntity;
 }
 
-let isTokenValueStream = true
+let enableTokenValueStream = true
 
-function simpleStreamParser(content: any, schema: z.ZodTypeAny) {
+function simpleStreamParser(content: any, schema: z.ZodTypeAny, mode: StreamMode) {
     
     let completed = false;
     let outputEntity: any = null;
@@ -327,10 +328,10 @@ function simpleStreamParser(content: any, schema: z.ZodTypeAny) {
         completed = false;
 
         
-        if (isTokenValueStream) {
-            outputEntity = partialStreamParserKeyOnly(buffer, schema);
+        if (mode == StreamMode.StreamObjectKeyValueTokens) {
+            outputEntity = partialStreamParserKeyValueTokens(buffer, schema);
 
-        } else {
+        } else if (mode == StreamMode.StreamObjectKeyValue) {
             outputEntity = partialStreamParser(buffer, schema);
         }
 
@@ -483,9 +484,11 @@ function generateEntityJsonPrompt(entityType: EntityType) {
 
 
 
-export async function* handleMockResponse(stream: any, schema: z.AnyZodObject) {
+export async function* handleMockResponse(stream: any, schema: z.AnyZodObject, mode: StreamMode) {
  
     let itemIdx = 0;
+
+    let noStreamBufferList: any = [];
 
     for await (const content of stream) {
         
@@ -493,7 +496,7 @@ export async function* handleMockResponse(stream: any, schema: z.AnyZodObject) {
         
         if (content) {
 
-            let [res, completed] = simpleStreamParser(content, schema);
+            let [res, completed] = simpleStreamParser(content, schema, mode);
 
 
             if (res) {
@@ -511,7 +514,15 @@ export async function* handleMockResponse(stream: any, schema: z.AnyZodObject) {
 
                 // process.stdout.write("\n\n");
 
-                yield streamRes;
+                if (mode === StreamMode.NoStream) {
+                    if (completed === true) {
+                        noStreamBufferList.push(res);
+                    }
+                } else {
+
+                    yield streamRes;
+                }
+
                 // writableStream.write(streamRes);
                 // console.log(streamRes);
             } else {
@@ -519,13 +530,30 @@ export async function* handleMockResponse(stream: any, schema: z.AnyZodObject) {
             }
         }
     }
+
+
+
+    if (mode === StreamMode.NoStream) {
+        const streamRes: StreamResponseWrapper = {
+            index: itemIdx,
+            status: Status.COMPLETED,
+            data: noStreamBufferList,
+        }
+        yield streamRes;
+    }
+
+
+    yield null;
 }
 
 
 
-export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny) {
+export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny, mode: StreamMode) {
     
     let itemIdx = 0;
+
+
+    let noStreamBufferList: any = [];
 
     for await (const msg of stream) {
         const content = msg.choices[0].delta.content + "";
@@ -534,7 +562,7 @@ export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny) {
         
         if (content) {
 
-            let [res, completed] = simpleStreamParser(content, schema);
+            let [res, completed] = simpleStreamParser(content, schema, mode);
             if (res) {
                 const streamRes: StreamResponseWrapper = {
                     index: itemIdx,
@@ -550,7 +578,15 @@ export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny) {
                 
                 // process.stdout.write("\n\n");
 
-                yield streamRes;
+                if (mode === StreamMode.NoStream) {
+                    if (completed === true) {
+                        noStreamBufferList.push(res);
+                    }
+                } else {
+
+                    yield streamRes;
+                }
+
                 // writableStream.write(streamRes);
                 // console.log(streamRes);
             } else {
@@ -558,6 +594,18 @@ export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny) {
             }
         }
     }
+
+
+    if (mode === StreamMode.NoStream) {
+        const streamRes: StreamResponseWrapper = {
+            index: itemIdx,
+            status: Status.COMPLETED,
+            data: noStreamBufferList,
+        }
+        yield streamRes;
+    }
+
+
     yield null;
 }
 

@@ -29,7 +29,16 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Hello, World!');
 });
 
+
+import { StreamMode } from "./utils.js";
+
+
 app.get('/sse', async (req: Request, res: Response) => {
+
+    // Extract mode from the query parameter
+    const mode: StreamMode = req.query.mode as StreamMode;
+
+    
     // Set response headers for SSE
     res.header('Content-Type', 'text/event-stream');
     res.header('Cache-Control', 'no-cache');
@@ -42,7 +51,7 @@ app.get('/sse', async (req: Request, res: Response) => {
         // TODO: Stop processing
     });
 
-    const gen = await callGenerateColors();
+    const gen = await callGenerateColors(mode);
     
     for await (const data of gen) {
         console.log(data);
