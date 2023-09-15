@@ -198,10 +198,52 @@
             /* To apply gradient effect only to the text */
             background-clip: text;
         }
+
+
+
+        /* Add this to your CSS */
+        #modeSelector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #modeSelector input[type="radio"] {
+            display: none;
+        }
+
+        #modeSelector label {
+            padding: 10px 20px;
+            background-color: gray;
+            border-radius: 5px;
+            color: beige;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #modeSelector input[type="radio"]:checked+label {
+            background-color: darkred;
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- Add this right above your Generate Colors button -->
+    <div id="modeSelector">
+        <input type="radio" id="NoStream" name="mode" value="NoStream" checked>
+        <label for="NoStream">NoStream</label>
+
+        <input type="radio" id="StreamObject" name="mode" value="StreamObject">
+        <label for="StreamObject">StreamObject</label>
+
+        <input type="radio" id="StreamObjectKeyValue" name="mode" value="StreamObjectKeyValue">
+        <label for="StreamObjectKeyValue">StreamObjectKeyValue</label>
+
+        <input type="radio" id="StreamObjectKeyValueTokens" name="mode" value="StreamObjectKeyValueTokens">
+        <label for="StreamObjectKeyValueTokens">StreamObjectKeyValueTokens</label>
+    </div>
 
     <button id="generateColors">Generate Colors</button>
 
@@ -228,6 +270,9 @@
         function callGenerateColors() {
             const btn = document.getElementById('generateColors');
 
+
+
+
             // Change the button text to "Processing..." and disable it
             btn.textContent = "Streaming Colors";
             // btn.textContent = "Generate Colors";
@@ -236,8 +281,12 @@
 
             clearBlocks();
 
-            // Connect to the SSE endpoint
-            const eventSource = new EventSource('http://localhost:3000/sse?mode=NoStream');
+            // Retrieve the selected mode:
+            const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+
+            // Connect to the SSE endpoint using the selected mode:
+            const eventSource = new EventSource(`http://localhost:3000/sse?mode=${selectedMode}`);
+
 
             eventSource.onmessage = function (event) {
                 // Parse the data from the SSE message
