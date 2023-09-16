@@ -4,6 +4,7 @@
 
 
 import fs from "fs";
+import { printNode } from "zod-to-ts";
 
 
 class Stack<T> {
@@ -66,110 +67,212 @@ const hm = {
     "quote": 0,
 };
 
+let is_key = false;
+let is_value = false;
 
 const lines = fs.readFileSync("./output_postcode_partial.txt", "utf8").split("\n");
 
-for (const line of lines) {
 
-    // console.log(line);
+function jsonLexer(lines: string[]) {
 
-    for (const char of line) {
+    const tokens: any[] = [];
+    
 
-        let resChar = {};
+    for (const line of lines) {
 
-        if (['[', '{', '"', '}', ']'].includes(char)) {
-            charStack.push(char);
+        // console.log(line);
 
-            if (char === "{") {
-                hm["object"] = hm["object"] +1;
+        for (const char of line) {
 
-                resChar = {
-                    "name": "OPEN_OBJECT",
-                }
+            let resChar:any = {};
+
+            if (['[', '{', '"', '}', ']'].includes(char)) {
+                charStack.push(char);
+
+                if (char === "{") {
+                    hm["object"] = hm["object"] +1;
+
+                    resChar = {
+                        "name": "OPEN_OBJECT",
+                    }
 
 
-            } else if (char === "}") {
-                hm["object"] = hm["object"] -1;
+                } else if (char === "}") {
+                    hm["object"] = hm["object"] -1;
 
-                resChar = {
-                    "name": "CLOSE_OBJECT",
-                }
+                    resChar = {
+                        "name": "CLOSE_OBJECT",
+                    }
 
-            } else if (char === "[") {
-                hm["array"] = hm["array"] +1;
+                } else if (char === "[") {
+                    hm["array"] = hm["array"] +1;
 
-                resChar = {
-                    "name": "OPEN_ARRAY",
-                }
+                    resChar = {
+                        "name": "OPEN_ARRAY",
+                    }
 
-            } else if (char === "]") {
-                hm["array"] = hm["array"] -1;
+                } else if (char === "]") {
+                    hm["array"] = hm["array"] -1;
 
-                resChar = {
-                    "name": "CLOSE_ARRAY",
-                }
+                    resChar = {
+                        "name": "CLOSE_ARRAY",
+                    }
 
-            } else if (char === '"') {
-                hm["quote"] = hm["quote"] + 1;
+                } else if (char === '"') {
+                    hm["quote"] = hm["quote"] + 1;
 
-                // resChar = {
-                //     "name": hm["quote"] % 2 === 0 ? "CLOSE_QUOTE" : "OPEN_QUOTE",
+                    // resChar = {
+                    //     "name": hm["quote"] % 2 === 0 ? "CLOSE_QUOTE" : "OPEN_QUOTE",
+                    // }
+
+                    // if 1 or 3, then open quote
+                    // if 2 or 4, then close quote
+
+                    // if 1 Open quote for key
+                    // if 2 Close quote for key
+                    // if 3 Open quote for value
+                    // if 4 Close quote for value
+
+                    let quoteMod = hm["quote"] % 4;
+                    let quoteNmae = ""
+
+                    if (quoteMod === 1) {
+                        quoteNmae = "OPEN_KEY";
+                        is_key = true;
+
+                    } else if (quoteMod === 2) {
+                        quoteNmae = "CLOSE_KEY";
+                        is_key = false;
+                    } else if (quoteMod === 3) {
+                        quoteNmae = "OPEN_VALUE";
+                        is_value = true;
+
+                    } else if (quoteMod === 0) {
+                        quoteNmae = "CLOSE_VALUE";
+                        hm["quote"] = hm["quote"] - 4;
+                        is_value = false;
+                    }
+
+                    resChar = {
+                        "name": quoteNmae,
+                    }
+                } 
+                // else if (char === ":") {
+                //     resChar = {
+                //         "name": "COLON",
+                //     }
                 // }
+                // else if (char === ",") {
+                //     resChar = {
+                //         "name": "COMMA",
+                //     }
+                // }
+            } else {
 
-                // if 1 or 3, then open quote
-                // if 2 or 4, then close quote
-
-                // if 1 Open quote for key
-                // if 2 Close quote for key
-                // if 3 Open quote for value
-                // if 4 Close quote for value
-
-                let quoteMod = hm["quote"] % 4;
-                let quoteNmae = ""
-
-                if (quoteMod === 1) {
-                    quoteNmae = "OPEN_KEY";
-
-                } else if (quoteMod === 2) {
-                    quoteNmae = "CLOSE_KEY";
-                } else if (quoteMod === 3) {
-                    quoteNmae = "OPEN_VALUE";
-
-                } else if (quoteMod === 0) {
-                    quoteNmae = "CLOSE_VALUE";
-                    hm["quote"] = hm["quote"] - 4;
+                if (is_key) {
+                    resChar = {
+                        "name": "KEY",
+                        "value": char,
+                    }
+                } else if (is_value) {
+                    resChar = {
+                        "name": "VALUE",
+                        "value": char,
+                    }
+                } else {
+                    resChar = {
+                        "name": "CHAR",
+                        "value": char,
+                    }
                 }
 
-                resChar = {
-                    "name": quoteNmae,
-                }
-            } 
-            // else if (char === ":") {
-            //     resChar = {
-            //         "name": "COLON",
-            //     }
-            // }
-            // else if (char === ",") {
-            //     resChar = {
-            //         "name": "COMMA",
-            //     }
-            // }
-        } else {
-            resChar = {
-                "name": "CHAR",
-                "value": char,
             }
+            
+            // console.log(resChar, hm);
 
+            // Appends to the tokens
+            tokens.push(resChar);
         }
-        
-        console.log(resChar, hm);
     }
+
+    return tokens;
 }
+
+
+const tokens = jsonLexer(lines);
 
 // console.log(charStack);
 
-console.log(hm);
+// console.log(tokens);
+// console.log(hm);
 
+
+function parseTokens(tokens: any[]) {
+
+    let keyBuffer = "";
+    let valueBuffer = "";
+
+    let inKey = false;
+    let inValue = false;
+
+    let objIdx = 0;
+
+    let results: any[] = []
+
+    tokens.forEach((token) => {
+
+        let res: any = {};
+
+        if (token["name"] === "OPEN_KEY") {
+            inKey = true;
+        } else if (token["name"] === "CLOSE_KEY") {
+            inKey = false;
+        } else if (token["name"] === "OPEN_VALUE") {
+            inValue = true;
+        } else if (token["name"] === "CLOSE_VALUE") {
+            inValue = false;
+
+            res = {
+                "index": objIdx,
+                "key": keyBuffer,
+                "value": valueBuffer,
+            }
+
+            results.push(res);
+            keyBuffer = "";
+            valueBuffer = "";
+
+
+        } else if (token["name"] === "OPEN_OBJECT") {
+            objIdx += 1;
+        }
+
+        if (inKey && token["name"] === "KEY") {
+            keyBuffer += token["value"];
+        } else if (inValue && token["name"] === "VALUE") {
+            valueBuffer += token["value"];
+
+            res = {
+                "index": objIdx,
+                "key": keyBuffer,
+                "value": valueBuffer,
+                "delta": token["value"],
+            }
+
+            results.push(res);
+        }
+
+    });
+
+
+    return results;
+
+}
+
+
+const results = parseTokens(tokens);
+
+console.log(results);
 
 
 console.log("Stream parser")
