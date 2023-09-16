@@ -195,3 +195,51 @@ L11:
 
 
 
+Lexer
+
+L1:
+{
+    "name": "OPEN_ARRAY"
+}
+
+L2:
+{
+    "name": "OPEN_OBJECT"
+}
+{
+    "name": "OPEN_KEY"
+}
+{
+    "name": "KEY",
+    "value": "post",
+}
+
+L3:
+{
+    "name": "KEY",
+    "value": "code",
+}
+{
+    "name": "CLOSE_KEY"
+}
+{
+    "name": "OPEN_VALUE"
+}
+{
+    "name": "VALUE",
+    "value": "SW",
+}
+
+L4:
+{
+    "name": "VALUE",
+    "value": "1A",
+}
+L5:
+{
+    "name": "VALUE",
+    "value": "1AA",
+}
+{
+    "name": "CLOSE_VALUE"
+}
