@@ -337,6 +337,8 @@
 
             // Retrieve the selected mode:
             const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+
+            console.log("selected mode", selectedMode);
             // OR
             // const selectedMode = document.querySelector('.mode-radio:checked').value;
 
@@ -483,14 +485,15 @@
             });
         });
 
-        // Initialize the overlay's position and width to match the StreamObject button
+        // Initialize the overlay's position and width to match the default checked button
         document.addEventListener('DOMContentLoaded', () => {
-            const defaultButton = document.querySelector('label[for="StreamObject"]');
-
-            const overlay = document.querySelector('.active-overlay');
-
-            overlay.style.left = `${defaultButton.offsetLeft}px`;
-            overlay.style.width = `${defaultButton.offsetWidth}px`;
+            // Add this new code to adjust the overlay based on the checked radio button
+            const checkedButton = document.querySelector('.mode-radio:checked + .mode-button');
+            if (checkedButton) {
+                const overlay = document.querySelector('.active-overlay');
+                overlay.style.left = `${checkedButton.offsetLeft}px`;
+                overlay.style.width = `${checkedButton.offsetWidth}px`;
+            }
         });
 
 

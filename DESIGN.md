@@ -58,3 +58,140 @@ Index of object
 -
 
 
+
+## Stream parser Design new algorithm:
+
+
+
+Token              ->    Type
+[                  ->    array 0
+{"post             ->    obj 0 key 0
+code": "SW         ->    key 0 value 0
+1A                 ->    value 0
+1AA", "co          ->    value 0 key1
+unc                ->    key1
+ilName"            ->    key1
+: "                ->    value1
+City of Westmin    ->    value1
+ster               ->    value1
+"},                ->    value 1
+{"post             ->    obj 1 key 1
+
+
+
+Count number of open and close brackets
+
+If open bracket `{` add to the hash map with the key object: +1
+
+If close bracket `}` add to the hash map with the key object: -1
+
+If open bracket `[` add to the hash map with the key array: +1
+
+If close bracket `]` add to the hash map with the key array: -1
+
+If the char `"` is detected add to the hashmap
+quote +1
+
+
+Each time it close, it adds to the general counter
+Object +1
+or Array +1
+The genral counter will be used as index.
+
+
+If the char `"` is detected and the backet `{` is > 0  then it is a key
+Add + 1 to the key counter in the hashmap
+
+if the char `"` is detected and the backet `{` is > 0  and the key counter is > 0 then it the end of the key.
+Reduce the key counter by 1 in the hashmap
+
+
+If the char `"` is detected and the backet `{` is > 0  then it is a value and key counter is even.
+Add + 1 to the value counter in the hashmap
+
+
+If the char `"` is detected and the backet `{` is > 0  and the key counter is even
+and the value counter is > 0 then it the end of the value.
+
+
+Manual step by step:
+
+L1:
+{
+ "array": 1,
+}
+
+L2:
+{
+ "array": 1,
+ "object": 1,
+ "quote": 1,
+}
+
+L3:
+{
+ "array": 1,
+ "object": 1,
+ "quote": 3,
+}
+
+L4:
+{
+ "array": 1,
+ "object": 1,
+ "quote": 3,
+}
+
+L5:
+{
+    "array": 1,
+    "object": 1,
+    "quote": 5,
+}
+
+L6:
+{
+    "array": 1,
+    "object": 1,
+    "quote": 5,
+}
+
+L7:
+{
+    "array": 1,
+    "object": 1,
+    "quote": 6,
+}
+
+L8:
+{
+    "array": 1,
+    "object": 1,
+    "quote": 7,
+}
+
+
+L9:
+{
+    "array": 1,
+    "object": 1,
+    "quote": 7,
+}
+
+L10:
+{
+    "array": 1,
+    "object": 1,
+    "quote": 7,
+}
+
+L11:
+{
+    "array": 1,
+    "object": 0,
+    "quote": 8,
+}
+
+
+
+
