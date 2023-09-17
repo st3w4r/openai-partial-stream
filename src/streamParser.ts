@@ -1,3 +1,10 @@
+// TODO:
+// - Handle escape characters
+// - Handle nested objects
+// - Handle nested arrays
+// - Handle nested objects in arrays
+// - Handle none json objects, simple bullet point list
+
 import fs from "fs";
 
 
