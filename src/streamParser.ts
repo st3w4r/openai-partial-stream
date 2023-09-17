@@ -85,8 +85,6 @@ function jsonLexer(lines: string[]) {
         // console.log(line);
 
         let buffer = "";
-        let bufferKey = "";
-        let bufferValue = "";
         let resChar:any = {};
 
         for (const char of line) {
@@ -95,29 +93,15 @@ function jsonLexer(lines: string[]) {
             if (['[', '{', '"', '}', ']'].includes(char)) {
                 charStack.push(char);
 
-                if (bufferKey.length) {
+                if (buffer.length) {
                     resChar = {
-                        "name": "KEY",
-                        "value": bufferKey,
-                    };
-                    tokens.push(resChar);
-                    bufferKey = "";
-                } else if (bufferValue.length) {
-                    resChar = {
-                        "name": "VALUE",
-                        "value": bufferValue,
-                    };
-                    tokens.push(resChar);
-                    bufferValue = "";
-                } else if (buffer.length) {
-                    // buffer += char;
-                    resChar = {
-                        "name": "CHAR",
+                        "name": prevType,
                         "value": buffer,
                     };
                     tokens.push(resChar);
                     buffer = "";
                 }
+
 
                 if (char === "{") {
                     hm["object"] = hm["object"] +1;
@@ -169,6 +153,7 @@ function jsonLexer(lines: string[]) {
                     if (quoteMod === 1) {
                         quoteNmae = "OPEN_KEY";
                         is_key = true;
+                        prevType = "KEY";
 
                     } else if (quoteMod === 2) {
                         quoteNmae = "CLOSE_KEY";
@@ -176,6 +161,7 @@ function jsonLexer(lines: string[]) {
                     } else if (quoteMod === 3) {
                         quoteNmae = "OPEN_VALUE";
                         is_value = true;
+                        prevType = "VALUE";
 
                     } else if (quoteMod === 0) {
                         quoteNmae = "CLOSE_VALUE";
@@ -197,59 +183,19 @@ function jsonLexer(lines: string[]) {
                 //         "name": "COMMA",
                 //     }
                 // }
+                // Appends to the tokens
                 tokens.push(resChar);
             } else {
 
-                if (is_key) {
-                    bufferKey += char;
-                    // resChar = {
-                    //     "name": "KEY",
-                    //     "value": char,
-                    // }
-                } else if (is_value) {
-                    bufferValue += char;
-                    // resChar = {
-                    //     "name": "VALUE",
-                    //     "value": char,
-                    // }
-                } else {
-                    buffer += char;
-                    // resChar = {
-                    //     "name": "CHAR",
-                    //     "value": char,
-                    // }
-                }
+                buffer += char;
 
             }
             
-            // console.log(resChar, hm);
-
-            // Appends to the tokens
-            // tokens.push(resChar);
-        }
-
-
-        if (bufferKey.length) {
-            resChar = {
-                "name": "KEY",
-                "value": bufferKey,
-            };
-            tokens.push(resChar);
-            bufferKey = "";
-        }
-        
-        if (bufferValue.length) {
-            resChar = {
-                "name": "VALUE",
-                "value": bufferValue,
-            };
-            tokens.push(resChar);
-            bufferValue = "";
         }
 
         if (buffer.length) {
             resChar = {
-                "name": "CHAR",
+                "name": prevType,
                 "value": buffer,
             };
             tokens.push(resChar);
