@@ -76,18 +76,48 @@ const lines = fs.readFileSync("./output_postcode_partial.txt", "utf8").split("\n
 function jsonLexer(lines: string[]) {
 
     const tokens: any[] = [];
-    
+
+    let prevType = "";
+
 
     for (const line of lines) {
 
         // console.log(line);
 
+        let buffer = "";
+        let bufferKey = "";
+        let bufferValue = "";
+        let resChar:any = {};
+
         for (const char of line) {
 
-            let resChar:any = {};
 
             if (['[', '{', '"', '}', ']'].includes(char)) {
                 charStack.push(char);
+
+                if (bufferKey.length) {
+                    resChar = {
+                        "name": "KEY",
+                        "value": bufferKey,
+                    };
+                    tokens.push(resChar);
+                    bufferKey = "";
+                } else if (bufferValue.length) {
+                    resChar = {
+                        "name": "VALUE",
+                        "value": bufferValue,
+                    };
+                    tokens.push(resChar);
+                    bufferValue = "";
+                } else if (buffer.length) {
+                    // buffer += char;
+                    resChar = {
+                        "name": "CHAR",
+                        "value": buffer,
+                    };
+                    tokens.push(resChar);
+                    buffer = "";
+                }
 
                 if (char === "{") {
                     hm["object"] = hm["object"] +1;
@@ -167,23 +197,27 @@ function jsonLexer(lines: string[]) {
                 //         "name": "COMMA",
                 //     }
                 // }
+                tokens.push(resChar);
             } else {
 
                 if (is_key) {
-                    resChar = {
-                        "name": "KEY",
-                        "value": char,
-                    }
+                    bufferKey += char;
+                    // resChar = {
+                    //     "name": "KEY",
+                    //     "value": char,
+                    // }
                 } else if (is_value) {
-                    resChar = {
-                        "name": "VALUE",
-                        "value": char,
-                    }
+                    bufferValue += char;
+                    // resChar = {
+                    //     "name": "VALUE",
+                    //     "value": char,
+                    // }
                 } else {
-                    resChar = {
-                        "name": "CHAR",
-                        "value": char,
-                    }
+                    buffer += char;
+                    // resChar = {
+                    //     "name": "CHAR",
+                    //     "value": char,
+                    // }
                 }
 
             }
@@ -191,8 +225,37 @@ function jsonLexer(lines: string[]) {
             // console.log(resChar, hm);
 
             // Appends to the tokens
-            tokens.push(resChar);
+            // tokens.push(resChar);
         }
+
+
+        if (bufferKey.length) {
+            resChar = {
+                "name": "KEY",
+                "value": bufferKey,
+            };
+            tokens.push(resChar);
+            bufferKey = "";
+        }
+        
+        if (bufferValue.length) {
+            resChar = {
+                "name": "VALUE",
+                "value": bufferValue,
+            };
+            tokens.push(resChar);
+            bufferValue = "";
+        }
+
+        if (buffer.length) {
+            resChar = {
+                "name": "CHAR",
+                "value": buffer,
+            };
+            tokens.push(resChar);
+            buffer = "";
+        }
+
     }
 
     return tokens;
@@ -203,8 +266,8 @@ const tokens = jsonLexer(lines);
 
 // console.log(charStack);
 
-// console.log(tokens);
-// console.log(hm);
+console.log(tokens);
+console.log(hm);
 
 
 function parseTokens(tokens: any[]) {
