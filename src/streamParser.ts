@@ -1,97 +1,34 @@
-
-
-// Read the file output_postcode_partial.txt
-
-
 import fs from "fs";
-import { printNode } from "zod-to-ts";
 
 
-class Stack<T> {
-    private items: T[] = [];
-
-    push(element: T): void {
-        this.items.push(element);
-    }
-
-    pop(): T | undefined {
-        return this.items.pop();
-    }
-
-    peek(): T | undefined {
-        return this.items[this.items.length - 1];
-    }
-
-    isEmpty(): boolean {
-        return this.items.length === 0;
-    }
-
-    size(): number {
-        return this.items.length;
-    }
-
-    clear(): void {
-        this.items = [];
-    }
-
-    print(): void {
-        console.log(this.items);
-    }
+type Token = {
+    name: string;
+    value?: string;
 }
 
-// Example usage
-const numberStack = new Stack<number>();
-numberStack.push(5);
-numberStack.push(10);
-numberStack.push(15);
-console.log(numberStack.peek());  // Outputs: 15
-numberStack.print();              // Outputs: [5, 10, 15]
-numberStack.pop();
+type TokenInfo = {
+    object: number;
+    array: number;
+    quote: number;
+}
 
 
-
-
-// fs.readFile("./output_postcode_partial.txt", "utf8", (err: any, data: any) => {
-//     if (err) {
-//         console.error(err);
-//         return;
-//     }
-//     console.log(data);
-// });
-
-const charStack = new Stack<string>();
-
-const hm = {
-    "object": 0,
-    "array": 0,
-    "quote": 0,
-};
-
-let is_key = false;
-let is_value = false;
-
-const lines = fs.readFileSync("./output_postcode_partial.txt", "utf8").split("\n");
-
-
-function jsonLexer(lines: string[]) {
-
-    const tokens: any[] = [];
-
+function jsonLexer(lines: string[]): [Token[], TokenInfo] {
+    const hm: TokenInfo = {
+        "object": 0,
+        "array": 0,
+        "quote": 0,
+    };
+    const tokens: Token[] = [];
     let prevType = "";
 
-
     for (const line of lines) {
-
-        // console.log(line);
-
         let buffer = "";
-        let resChar:any = {};
+        let resChar:Token = {name: ""};
 
         for (const char of line) {
 
-
             if (['[', '{', '"', '}', ']'].includes(char)) {
-                charStack.push(char);
 
                 if (buffer.length) {
                     resChar = {
@@ -102,36 +39,30 @@ function jsonLexer(lines: string[]) {
                     buffer = "";
                 }
 
-
                 if (char === "{") {
                     hm["object"] = hm["object"] +1;
 
                     resChar = {
                         "name": "OPEN_OBJECT",
                     }
-
-
                 } else if (char === "}") {
                     hm["object"] = hm["object"] -1;
 
                     resChar = {
                         "name": "CLOSE_OBJECT",
                     }
-
                 } else if (char === "[") {
                     hm["array"] = hm["array"] +1;
 
                     resChar = {
                         "name": "OPEN_ARRAY",
                     }
-
                 } else if (char === "]") {
                     hm["array"] = hm["array"] -1;
 
                     resChar = {
                         "name": "CLOSE_ARRAY",
                     }
-
                 } else if (char === '"') {
                     hm["quote"] = hm["quote"] + 1;
 
@@ -152,43 +83,27 @@ function jsonLexer(lines: string[]) {
 
                     if (quoteMod === 1) {
                         quoteNmae = "OPEN_KEY";
-                        is_key = true;
                         prevType = "KEY";
 
                     } else if (quoteMod === 2) {
                         quoteNmae = "CLOSE_KEY";
-                        is_key = false;
                     } else if (quoteMod === 3) {
                         quoteNmae = "OPEN_VALUE";
-                        is_value = true;
                         prevType = "VALUE";
 
                     } else if (quoteMod === 0) {
                         quoteNmae = "CLOSE_VALUE";
                         hm["quote"] = hm["quote"] - 4;
-                        is_value = false;
                     }
 
                     resChar = {
                         "name": quoteNmae,
                     }
                 } 
-                // else if (char === ":") {
-                //     resChar = {
-                //         "name": "COLON",
-                //     }
-                // }
-                // else if (char === ",") {
-                //     resChar = {
-                //         "name": "COMMA",
-                //     }
-                // }
                 // Appends to the tokens
                 tokens.push(resChar);
             } else {
-
                 buffer += char;
-
             }
             
         }
@@ -201,22 +116,12 @@ function jsonLexer(lines: string[]) {
             tokens.push(resChar);
             buffer = "";
         }
-
     }
-
-    return tokens;
+    return [tokens, hm];
 }
 
 
-const tokens = jsonLexer(lines);
-
-// console.log(charStack);
-
-console.log(tokens);
-console.log(hm);
-
-
-function parseTokens(tokens: any[]) {
+function parseTokens(tokens: Token[]) {
 
     let keyBuffer = "";
     let valueBuffer = "";
@@ -251,7 +156,6 @@ function parseTokens(tokens: any[]) {
             keyBuffer = "";
             valueBuffer = "";
 
-
         } else if (token["name"] === "OPEN_OBJECT") {
             objIdx += 1;
         }
@@ -272,16 +176,15 @@ function parseTokens(tokens: any[]) {
         }
 
     });
-
-
     return results;
-
 }
 
-
+const filename = "./output_postcode_partial.txt";
+const lines = fs.readFileSync(filename, "utf8").split("\n");
+const [tokens, info] = jsonLexer(lines);
 const results = parseTokens(tokens);
 
+console.log(tokens);
+console.log(info);
 console.log(results);
-
-
 console.log("Stream parser")
