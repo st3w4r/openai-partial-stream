@@ -8,6 +8,34 @@
 import fs from "fs";
 
 
+class StreamParser {
+
+    private tokens: Token[] = [];
+    private buffer: string = '';
+    private tokenCounters: TokenInfo = {
+        "object": 0,
+        "array": 0,
+        "quote": 0,
+    };
+
+    parse(chunk: string): Token[] {
+
+
+        return this.tokens;
+
+    }
+
+    getInfo(): TokenInfo {
+        return this.tokenCounters;
+    }
+
+    getTokens(): Token[] {
+        return this.tokens;
+    }
+}
+
+
+
 type Token = {
     name: string;
     value?: string;
@@ -20,14 +48,8 @@ type TokenInfo = {
 }
 
 
-function jsonLexer(lines: string[]): [Token[], TokenInfo] {
-    const hm: TokenInfo = {
-        "object": 0,
-        "array": 0,
-        "quote": 0,
-    };
+function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens: Token[], hm: TokenInfo, prevType: string } {
     const tokens: Token[] = [];
-    let prevType = "";
 
     for (const line of lines) {
         let buffer = "";
@@ -124,9 +146,27 @@ function jsonLexer(lines: string[]): [Token[], TokenInfo] {
             buffer = "";
         }
     }
-    return [tokens, hm];
+    return { tokens, hm, prevType };
 }
 
+function aggregateResults(lines: string[]): [Token[], TokenInfo] {
+    const hm: TokenInfo = {
+        "object": 0,
+        "array": 0,
+        "quote": 0,
+    };
+    const allTokens: Token[] = [];
+    let prevType = "";
+
+    for (const line of lines) {
+        const { tokens, hm: updatedHm, prevType: updatedPrevType } = jsonLexerLine(line, prevType, hm);
+        allTokens.push(...tokens);
+        Object.assign(hm, updatedHm);
+        prevType = updatedPrevType;
+    }
+
+    return [allTokens, hm];
+}
 
 function parseTokens(tokens: Token[]) {
 
@@ -188,10 +228,19 @@ function parseTokens(tokens: Token[]) {
 
 const filename = "./output_postcode_partial.txt";
 const lines = fs.readFileSync(filename, "utf8").split("\n");
-const [tokens, info] = jsonLexer(lines);
+const [tokens, info] = aggregateResults(lines);
 const results = parseTokens(tokens);
 
 console.log(tokens);
 console.log(info);
 console.log(results);
 console.log("Stream parser")
+
+
+
+// const parser = new StreamParser();
+
+// lines.forEach((chunk) => {
+//     const res = parser.parse(chunk);
+//     // Do something with the results
+// })
