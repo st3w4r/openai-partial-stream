@@ -5,8 +5,16 @@
 // - Handle nested objects in arrays
 // - Handle none json objects, simple bullet point list
 
+
 import fs from "fs";
 
+
+type JsonChunk = {
+    index: number;
+    key: string;
+    value?: string;
+    delta?: string;
+}
 
 type Token = {
     name: string;
@@ -19,8 +27,78 @@ type TokenInfo = {
     quote: number;
 }
 
+type ParseState = {
+    keyBuffer: string;
+    valueBuffer: string;
+    inKey: boolean;
+    inValue: boolean;
+    objIdx: number;
+    results: any[];
+}
+
+class StreamParser {
+    private lexerState: { tokenCounters: TokenInfo, prevType: string };
+    private parserState: ParseState;
+
+    constructor() {
+        this.lexerState = {
+            tokenCounters: {
+                "object": 0,
+                "array": 0,
+                "quote": 0,
+            },
+            prevType: ""
+        };
+        this.parserState = this.initParseState();
+    }
+
+    private initParseState(): ParseState {
+        return {
+            keyBuffer: "",
+            valueBuffer: "",
+            inKey: false,
+            inValue: false,
+            objIdx: 0,
+            results: []
+        };
+    }
+
+    public processChunk(chunk: string): JsonChunk[] {
+        // Lexing the line
+        const { tokens, tokenCounters, prevType } = jsonLexerLine(chunk, this.lexerState.prevType, this.lexerState.tokenCounters);
+        this.lexerState.tokenCounters = tokenCounters;
+        this.lexerState.prevType = prevType;
+
+        // Parsing the tokens
+        let resTokens: JsonChunk[] = [];
+        for (const token of tokens) {
+            const res: JsonChunk = processSingleToken(token, this.parserState);
+            if (res.key.length) {
+                resTokens.push(res);
+            }
+        }
+        // console.log(resTokens);
+        return resTokens;
+    }
+
+    public getResults(): any[] {
+        return this.parserState.results;
+    }
+
+    public reset(): void {
+        this.lexerState = {
+            tokenCounters: {
+                "object": 0,
+                "array": 0,
+                "quote": 0,
+            },
+            prevType: ""
+        };
+        this.parserState = this.initParseState();
+    }
+}
 // Function to process a single line
-function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens: Token[], hm: TokenInfo, prevType: string } {
+function jsonLexerLine(line: string, prevType: string, tokenCounters: TokenInfo): { tokens: Token[], tokenCounters: TokenInfo, prevType: string } {
     const tokens: Token[] = [];
     let buffer = "";
     let resChar: Token = { name: "" };
@@ -39,34 +117,34 @@ function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens:
                 }
 
                 if (char === "{") {
-                    hm["object"] = hm["object"] +1;
+                    tokenCounters["object"] = tokenCounters["object"] +1;
 
                     resChar = {
                         "name": "OPEN_OBJECT",
                     }
                 } else if (char === "}") {
-                    hm["object"] = hm["object"] -1;
+                    tokenCounters["object"] = tokenCounters["object"] -1;
 
                     resChar = {
                         "name": "CLOSE_OBJECT",
                     }
                 } else if (char === "[") {
-                    hm["array"] = hm["array"] +1;
+                    tokenCounters["array"] = tokenCounters["array"] +1;
 
                     resChar = {
                         "name": "OPEN_ARRAY",
                     }
                 } else if (char === "]") {
-                    hm["array"] = hm["array"] -1;
+                    tokenCounters["array"] = tokenCounters["array"] -1;
 
                     resChar = {
                         "name": "CLOSE_ARRAY",
                     }
                 } else if (char === '"') {
-                    hm["quote"] = hm["quote"] + 1;
+                    tokenCounters["quote"] = tokenCounters["quote"] + 1;
 
                     // resChar = {
-                    //     "name": hm["quote"] % 2 === 0 ? "CLOSE_QUOTE" : "OPEN_QUOTE",
+                    //     "name": tokenCounters["quote"] % 2 === 0 ? "CLOSE_QUOTE" : "OPEN_QUOTE",
                     // }
 
                     // if 1 or 3, then open quote
@@ -77,7 +155,7 @@ function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens:
                     // if 3 Open quote for value
                     // if 4 Close quote for value
 
-                    let quoteMod = hm["quote"] % 4;
+                    let quoteMod = tokenCounters["quote"] % 4;
                     let quoteNmae = ""
 
                     if (quoteMod === 1) {
@@ -92,7 +170,7 @@ function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens:
 
                     } else if (quoteMod === 0) {
                         quoteNmae = "CLOSE_VALUE";
-                        hm["quote"] = hm["quote"] - 4;
+                        tokenCounters["quote"] = tokenCounters["quote"] - 4;
                     }
 
                     resChar = {
@@ -116,52 +194,16 @@ function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens:
             buffer = "";
         }
 
-    return { tokens, hm, prevType };
+    return { tokens, tokenCounters, prevType };
 }
 
-// Function to aggregate results from all lines
-function aggregateResults(lines: string[]): [Token[], TokenInfo] {
-    const hm: TokenInfo = {
-        "object": 0,
-        "array": 0,
-        "quote": 0,
-    };
-    const allTokens: Token[] = [];
-    let prevType = "";
 
-    for (const line of lines) {
-        const { tokens, hm: updatedHm, prevType: updatedPrevType } = jsonLexerLine(line, prevType, hm);
-        allTokens.push(...tokens);
-        Object.assign(hm, updatedHm);
-        prevType = updatedPrevType;
+function processSingleToken(token: Token, state: ParseState): JsonChunk {
+    let res: JsonChunk = {
+        "index": state.objIdx,
+        "key": "",
+        "value": "",
     }
-
-    return [allTokens, hm];
-}
-
-type ParseState = {
-    keyBuffer: string;
-    valueBuffer: string;
-    inKey: boolean;
-    inValue: boolean;
-    objIdx: number;
-    results: any[];
-}
-
-function initParseState(): ParseState {
-    return {
-        keyBuffer: "",
-        valueBuffer: "",
-        inKey: false,
-        inValue: false,
-        objIdx: 0,
-        results: []
-    };
-}
-
-
-function processSingleToken(token: Token, state: ParseState): ParseState {
-    let res: any = {};
 
     if (token["name"] === "OPEN_KEY") {
         state.inKey = true;
@@ -201,27 +243,20 @@ function processSingleToken(token: Token, state: ParseState): ParseState {
         state.results.push(res);
     }
 
-    return state;
+    return res;
 }
 
-function processTokens(tokens: Token[]): any[] {
-    let state = initParseState();
 
-    for (const token of tokens) {
-        state = processSingleToken(token, state);
-    }
-
-    return state.results;
-}
-
+// External file handling:
 
 const filename = "./output_postcode_partial.txt";
 const lines = fs.readFileSync(filename, "utf8").split("\n");
-// const [tokens, info] = jsonLexer(lines);
-const [tokens, info] = aggregateResults(lines);
-const results = processTokens(tokens);
 
-console.log(tokens);
-console.log(info);
-console.log(results);
-console.log("Stream parser");
+const parser = new StreamParser();
+
+lines.forEach((line) => {
+    const res = parser.processChunk(line);
+    for (const token of res) {
+        console.log(token);
+    }
+});
