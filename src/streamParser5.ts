@@ -6,24 +6,9 @@
 // - Handle none json objects, simple bullet point list
 
 import fs from "fs";
-import { parse } from "path";
-import { buffer, json } from "stream/consumers";
 import { StreamMode } from "./utils.js";
 import { z } from "zod";
-import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
-import { Stream } from "stream";
 
-
-type Token = {
-    name: string;
-    value?: string;
-}
-
-type TokenInfo = {
-    object: number;
-    array: number;
-    quote: number;
-}
 
 enum Status {
     COMPLETED = "COMPLETED",
@@ -56,7 +41,7 @@ class StreamParser {
     // if not return empty or null
     // Output only if there was a change
     // Return based on the mode
-    parse(chunk: string): any {
+    parse(chunk: string): StreamResponseWrapper | null {
 
         let index = this.entityIndex;
         let completed = false;
@@ -107,13 +92,16 @@ class StreamParser {
         }
 
 
-        const streamRes: StreamResponseWrapper = {
-            index: index,
-            status: completed ? Status.COMPLETED : Status.PARTIAL,
-            data: outputEntity,
+        if (outputEntity) {   
+            const streamRes: StreamResponseWrapper = {
+                index: index,
+                status: completed ? Status.COMPLETED : Status.PARTIAL,
+                data: outputEntity,
+            }
+            return streamRes;
         }
 
-        return streamRes;
+        return null;
     }
 
     private parseJsonObject(content: string): any {
@@ -228,8 +216,7 @@ const parser = new StreamParser(StreamMode.StreamObjectKeyValueTokens);
 for (const line of lines) {
     const res = parser.parse(line);
 
-    if (res.data) {
+    if (res) {
         console.log(res);
-        // console.log("ENTITY", index, "STATUS:", completed ? "COMPLETED" : "PARTIAL  ", "-",  res);
     }    
 }
