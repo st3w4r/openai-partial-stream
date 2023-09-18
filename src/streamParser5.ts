@@ -7,8 +7,6 @@
 
 import fs from "fs";
 import { StreamMode } from "./utils.js";
-import { z } from "zod";
-
 
 enum Status {
     COMPLETED = "COMPLETED",
@@ -203,15 +201,8 @@ class StreamParser {
 }
 
 
-// const filename = "./output_postcode_partial.txt";
-const filename = "./output_color_list.txt";
+const filename = "./output_postcode_partial.txt";
 const lines = fs.readFileSync(filename, "utf8").split("\n");
-
-const ColorSchema = z.object({
-    hex: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-});
 
 
 const parser = new StreamParser(StreamMode.StreamObjectKeyValueTokens);
