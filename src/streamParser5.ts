@@ -7,9 +7,11 @@
 
 import fs from "fs";
 import { parse } from "path";
-import { buffer } from "stream/consumers";
+import { buffer, json } from "stream/consumers";
 import { StreamMode } from "./utils.js";
 import { z } from "zod";
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
+import { Stream } from "stream";
 
 
 type Token = {
@@ -29,7 +31,8 @@ class StreamParser {
     private buffer = "";
     private schema: z.ZodTypeAny;
     private mode: StreamMode;
-    private inString = false;
+    private inJsonObject = false;
+    private nbKeyValue = 0;
 
     constructor(schema: z.ZodTypeAny, mode: StreamMode = StreamMode.StreamObject) {
         this.schema = schema;
@@ -43,26 +46,38 @@ class StreamParser {
     // Return based on the mode
     write(chunk: string): any {
 
+        let completed = false;
         let outputEntity: any = null;
         let start = chunk.indexOf("{");
         let end = chunk.indexOf("}");
 
-
         if (start !== -1) {
-            this.inString = true;
+            this.inJsonObject = true;
         }
         if (end !== -1) {
-            this.inString = false;
+            this.inJsonObject = false;
+            // Reset
+            this.nbKeyValue = 0;
         } 
         
-        if (this.inString) {
+        if (this.inJsonObject) {
 
             if (start !== -1) {
                 this.buffer += chunk.slice(start);
             } else {
                 this.buffer += chunk;
             }
+
+
+            if (this.mode == StreamMode.StreamObjectKeyValueTokens) {
+
+            } else if (this.mode == StreamMode.StreamObjectKeyValue) {
+                outputEntity = this.partialStreamParserKeyValue(this.buffer);
+            }
+
         } else {
+
+            completed = true;
 
             if (end !== -1) {
                 this.buffer += chunk.slice(0, end+1);
@@ -70,24 +85,63 @@ class StreamParser {
 
             if (this.buffer.length) {
 
-                try {
-                    outputEntity = JSON.parse(this.buffer);
-                } catch (error) {
-                    outputEntity = null;
-                    console.log("Error:", error);
-                }
-   
+                outputEntity = this.parseJsonObject(this.buffer);
             }
-
             this.buffer = "";
         }
 
-        return outputEntity;
+        return [outputEntity, completed];
     }
 
+    private parseJsonObject(content: string): any {
+        let entity = null
 
-    
+        try {
+            entity = JSON.parse(content);
+        } catch (error) {
+            console.log("Error:", error);
+        }
+        return entity;
+    }
 
+    private partialStreamParserKeyValueTokens(content: string) {
+
+        let entity = null;
+        return entity
+    }
+
+    private partialStreamParserKeyValue(content: string): any {
+
+        function extractKeyValuePairs(s: string): string[] {
+            // Regular expression for the pattern "key": "value"
+            const regex = /(?<!\\)"[^"]+"\s*:\s*(?<!\\)"[^"]*"/g;
+            return s.match(regex) || [];
+        }
+
+        const kvList = extractKeyValuePairs(content);
+
+        if (kvList.length === 0) {
+            return null;
+        }
+
+        if (kvList.length <= this.nbKeyValue) {
+            return null;
+        }
+
+        let jsonObj = kvList?.join(",");
+
+        jsonObj = "{" + jsonObj + "}";
+
+        let entity = this.parseJsonObject(jsonObj);
+
+        if (entity) {
+            this.nbKeyValue = kvList.length;
+
+        }
+
+        return entity;
+
+    }
 }
 
 
@@ -305,9 +359,11 @@ const ColorSchema = z.object({
 });
 
 
-const parser = new StreamParser(ColorSchema, StreamMode.StreamObject);
+const parser = new StreamParser(ColorSchema, StreamMode.StreamObjectKeyValue);
 
 for (const line of lines) {
-    const res = parser.write(line);
-    console.log("ENTITY:", res);
+    const [res, completed] = parser.write(line);
+    
+    
+    console.log("ENTITY","STATUS:", completed ? "COMPLETED" : "PARTIAL  ", "-",  res);
 }
