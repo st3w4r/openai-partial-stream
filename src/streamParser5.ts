@@ -33,6 +33,8 @@ class StreamParser {
     private mode: StreamMode;
     private inJsonObject = false;
     private nbKeyValue = 0;
+    private prevValueLen = 0;
+    private entityIndex: number = 0;
 
     constructor(schema: z.ZodTypeAny, mode: StreamMode = StreamMode.StreamObject) {
         this.schema = schema;
@@ -46,6 +48,7 @@ class StreamParser {
     // Return based on the mode
     write(chunk: string): any {
 
+        let index = this.entityIndex;
         let completed = false;
         let outputEntity: any = null;
         let start = chunk.indexOf("{");
@@ -58,6 +61,7 @@ class StreamParser {
             this.inJsonObject = false;
             // Reset
             this.nbKeyValue = 0;
+            this.prevValueLen = 0;
         } 
         
         if (this.inJsonObject) {
@@ -68,18 +72,17 @@ class StreamParser {
                 this.buffer += chunk;
             }
 
-
             if (this.mode == StreamMode.StreamObjectKeyValueTokens) {
-
+                outputEntity = this.partialStreamParserKeyValueTokens(this.buffer);
             } else if (this.mode == StreamMode.StreamObjectKeyValue) {
                 outputEntity = this.partialStreamParserKeyValue(this.buffer);
             }
 
         } else {
 
-            completed = true;
-
+            
             if (end !== -1) {
+                completed = true;
                 this.buffer += chunk.slice(0, end+1);
             }
 
@@ -88,9 +91,12 @@ class StreamParser {
                 outputEntity = this.parseJsonObject(this.buffer);
             }
             this.buffer = "";
+
+            // Keep track of the number of objects
+            this.entityIndex += 1;
         }
 
-        return [outputEntity, completed];
+        return [outputEntity, completed, index];
     }
 
     private parseJsonObject(content: string): any {
@@ -105,8 +111,53 @@ class StreamParser {
     }
 
     private partialStreamParserKeyValueTokens(content: string) {
+        
+        function extractKeyValuePairsWithCorrection(s: string): string[] {
+            // 1. Regular expression for complete "key": "value" pairs
+            const completeRegex = /(?<!\\)"[^"]+"\s*:\s*(?<!\\)"[^"]*"/g;
+    
+            // 2. Regular expression for "key": "incompleteValue patterns
+            const incompleteRegex = /(?<!\\)"([^"]+)"\s*:\s*(?<!\\)"([^"]+)$/;
+    
+            let result: string[] = [...s.match(completeRegex) || []];
+    
+            const incompleteMatch = s.match(incompleteRegex);
+            if (incompleteMatch) {
+                const corrected = `"${incompleteMatch[1]}": "${incompleteMatch[2]}"`; // close the incomplete value
+                result.push(corrected);
+            }
+        
+            return result;
+        }
 
-        let entity = null;
+        const kvList = extractKeyValuePairsWithCorrection(content);
+
+        if (kvList.length === 0) {
+            return null;
+        }
+
+        // Detect if changes happened 
+        if (kvList.length > this.nbKeyValue) {
+            // Reset value length because new key have been added
+            this.prevValueLen = 0;
+        }
+        
+        const maxKey = kvList.length - 1 > 0 ? kvList.length - 1 : 0;
+        const valueLen = kvList[maxKey].length;
+
+        if (valueLen <= this.prevValueLen) {
+            // No new content added to value.
+            return null;
+        }
+
+        this.prevValueLen = valueLen;
+
+
+        let jsonObj = kvList?.join(",");
+        jsonObj = "{" + jsonObj + "}";
+
+        const entity = this.parseJsonObject(jsonObj);
+
         return entity
     }
 
@@ -132,7 +183,7 @@ class StreamParser {
 
         jsonObj = "{" + jsonObj + "}";
 
-        let entity = this.parseJsonObject(jsonObj);
+        const entity = this.parseJsonObject(jsonObj);
 
         if (entity) {
             this.nbKeyValue = kvList.length;
@@ -359,11 +410,13 @@ const ColorSchema = z.object({
 });
 
 
-const parser = new StreamParser(ColorSchema, StreamMode.StreamObjectKeyValue);
+const parser = new StreamParser(ColorSchema, StreamMode.StreamObjectKeyValueTokens);
 
 for (const line of lines) {
-    const [res, completed] = parser.write(line);
+    const [res, completed, index] = parser.write(line);
     
+    if (res) {
+        console.log("ENTITY", index, "STATUS:", completed ? "COMPLETED" : "PARTIAL  ", "-",  res);
+    }
     
-    console.log("ENTITY","STATUS:", completed ? "COMPLETED" : "PARTIAL  ", "-",  res);
 }
