@@ -25,6 +25,18 @@ type TokenInfo = {
     quote: number;
 }
 
+enum Status {
+    COMPLETED = "COMPLETED",
+    PARTIAL = "PARTIAL",
+    FAILED = "FAILED",
+}
+
+type StreamResponseWrapper = {
+    index: number,
+    status: Status,
+    data: any,
+}
+
 
 class StreamParser {
 
@@ -44,7 +56,7 @@ class StreamParser {
     // if not return empty or null
     // Output only if there was a change
     // Return based on the mode
-    write(chunk: string): any {
+    parse(chunk: string): any {
 
         let index = this.entityIndex;
         let completed = false;
@@ -59,7 +71,7 @@ class StreamParser {
             this.inJsonObject = false;
             // Reset
             this.nbKeyValue = 0;
-            this.prevValueLen = 0;g
+            this.prevValueLen = 0;
         } 
         
         if (this.inJsonObject) {
@@ -94,7 +106,14 @@ class StreamParser {
             this.entityIndex += 1;
         }
 
-        return [outputEntity, completed, index];
+
+        const streamRes: StreamResponseWrapper = {
+            index: index,
+            status: completed ? Status.COMPLETED : Status.PARTIAL,
+            data: outputEntity,
+        }
+
+        return streamRes;
     }
 
     private parseJsonObject(content: string): any {
@@ -207,9 +226,10 @@ const ColorSchema = z.object({
 const parser = new StreamParser(StreamMode.StreamObjectKeyValueTokens);
 
 for (const line of lines) {
-    const [res, completed, index] = parser.write(line);
+    const res = parser.parse(line);
 
-    if (res) {
-        console.log("ENTITY", index, "STATUS:", completed ? "COMPLETED" : "PARTIAL  ", "-",  res);
+    if (res.data) {
+        console.log(res);
+        // console.log("ENTITY", index, "STATUS:", completed ? "COMPLETED" : "PARTIAL  ", "-",  res);
     }    
 }
