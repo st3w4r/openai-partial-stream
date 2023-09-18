@@ -243,3 +243,48 @@ L5:
 {
     "name": "CLOSE_VALUE"
 }
+
+
+
+The lexer will return the token and the type of token.
+The parser will receive the token and the type of token and will return the parsed element.
+
+
+asdf``
+`asd
+
+a`
+``
+
+
+{{
+{asd
+as}
+}}
+
+
+The interface of the parser will be:
+
+```
+
+const parser = new StreamParser(schema, mode);
+
+
+parser.on('data', (data) => {
+    console.log(data);
+});
+
+parser.on('error', (error) => {
+    console.log(error);
+});
+
+parser.on('end', () => {
+    console.log('end');
+});
+
+
+for (const token of stream) {
+    parser.write(token);
+}
+
+```

@@ -108,9 +108,11 @@ class StreamParser {
         let entity = null
 
         try {
+
             entity = JSON.parse(content);
         } catch (error) {
             console.log("Error:", error);
+            console.log("Content:", content);
         }
         return entity;
     }
@@ -201,7 +203,8 @@ class StreamParser {
 }
 
 
-const filename = "./output_postcode_partial.txt";
+// const filename = "./output_postcode_partial.txt";
+const filename = "./output_color_list.txt";
 const lines = fs.readFileSync(filename, "utf8").split("\n");
 
 const ColorSchema = z.object({

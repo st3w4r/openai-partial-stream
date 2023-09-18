@@ -8,9 +8,12 @@ import { STATUS_CODES } from "http";
 import { PassThrough } from "stream";
 import { StreamMode } from "./utils.js";
 
+import { JsonChunk, StreamParser } from "./streamParser4.js";
+
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
+
 
 // const Stream = require("stream");
 // const writableStream = new Stream.Writable();
@@ -538,6 +541,78 @@ export async function* handleMockResponse(stream: any, schema: z.AnyZodObject, m
 }
 
 
+export async function* handleOpenAiResponse2(stream: any, schema: z.ZodTypeAny, mode: StreamMode) {
+    
+    let itemIdx = 0;
+    let objBuilder:any = {}
+    let prevIndex = 0;
+    let prevObject = {};
+
+
+    let noStreamBufferList: any = [];
+    
+    
+    const parser = new StreamParser();
+
+    for await (const msg of stream) {
+        const content = msg.choices[0].delta.content + "";
+        
+        process.stdout.write(content);
+        
+        if (content) {
+
+
+            const chunks: JsonChunk[] = parser.processChunk(content);
+
+            for (const chunk of chunks) {
+                // Reset if new object
+                if (chunk.index > prevIndex) {
+                    prevObject = 
+                    prevIndex = chunk.index;
+                    objBuilder = {};
+                }
+
+                objBuilder[chunk.key] = chunk.value;
+
+                const objStr = JSON.stringify(objBuilder);
+                // console.log(objStr);
+
+                const outputEntity = simpleExtractEntity(objStr, schema);
+                // console.log(outputEntity);
+                if (outputEntity) {
+                    const streamRes: StreamResponseWrapper = {
+                        index: chunk.index,
+                        status: chunk.completed ? Status.COMPLETED : Status.PARTIAL,
+                        data: outputEntity,
+                    }
+
+                    if (mode === StreamMode.NoStream) {
+                        if (chunk.completed === true) {
+                            noStreamBufferList.push(chunk);
+                        }
+                    } else {
+                        yield streamRes;
+                    }
+                }
+            }
+        }
+    }
+
+
+    if (mode === StreamMode.NoStream) {
+        const streamRes: StreamResponseWrapper = {
+            index: itemIdx,
+            status: Status.COMPLETED,
+            data: noStreamBufferList,
+        }
+        yield streamRes;
+    }
+
+
+    yield null;
+}
+
+
 
 export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny, mode: StreamMode) {
     
@@ -547,7 +622,12 @@ export async function* handleOpenAiResponse(stream: any, schema: z.ZodTypeAny, m
     let noStreamBufferList: any = [];
 
     for await (const msg of stream) {
-        const content = msg.choices[0].delta.content + "";
+        let content = "";
+        content = msg.choices[0].delta.content;
+
+        if (!content) {
+            content = msg.choices[0]?.delta?.function_call?.arguments + "";
+        }
         
         process.stdout.write(content);
         

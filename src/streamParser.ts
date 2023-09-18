@@ -20,10 +20,11 @@ type TokenInfo = {
 }
 
 // Function to process a single line
-function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens: Token[], hm: TokenInfo, prevType: string } {
+function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens: Token[], hm: TokenInfo, newType: string } {
     const tokens: Token[] = [];
     let buffer = "";
     let resChar: Token = { name: "" };
+    let newType: string = "";
 
     for (const char of line) {
 
@@ -82,17 +83,22 @@ function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens:
 
                     if (quoteMod === 1) {
                         quoteNmae = "OPEN_KEY";
-                        prevType = "KEY";
+                        newType = "KEY";
 
                     } else if (quoteMod === 2) {
                         quoteNmae = "CLOSE_KEY";
+                        newType = "STRING";
+
+
                     } else if (quoteMod === 3) {
                         quoteNmae = "OPEN_VALUE";
-                        prevType = "VALUE";
+                        newType = "VALUE";
 
                     } else if (quoteMod === 0) {
                         quoteNmae = "CLOSE_VALUE";
                         hm["quote"] = hm["quote"] - 4;
+                        newType = "STRING";
+
                     }
 
                     resChar = {
@@ -109,14 +115,14 @@ function jsonLexerLine(line: string, prevType: string, hm: TokenInfo): { tokens:
 
         if (buffer.length) {
             resChar = {
-                "name": prevType,
+                "name": newType,
                 "value": buffer,
             };
             tokens.push(resChar);
             buffer = "";
         }
 
-    return { tokens, hm, prevType };
+    return { tokens, hm, newType };
 }
 
 // Function to aggregate results from all lines
@@ -130,7 +136,7 @@ function aggregateResults(lines: string[]): [Token[], TokenInfo] {
     let prevType = "";
 
     for (const line of lines) {
-        const { tokens, hm: updatedHm, prevType: updatedPrevType } = jsonLexerLine(line, prevType, hm);
+        const { tokens, hm: updatedHm, newType: updatedPrevType } = jsonLexerLine(line, prevType, hm);
         allTokens.push(...tokens);
         Object.assign(hm, updatedHm);
         prevType = updatedPrevType;
