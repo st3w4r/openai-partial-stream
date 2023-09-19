@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { z } from "zod";
-import { readFileParseContent, genPromptSchema, handleOpenAiResponse, handleOpenAiResponse2, readFileAndStreamContent, handleMockResponse } from "./index.js";
+import { readFileParseContent, genPromptSchema, handleOpenAiResponse, handleOpenAiResponse3, readFileAndStreamContent, handleMockResponse } from "./index.js";
 
 import { StreamMode } from "./utils.js";
 
@@ -113,10 +113,13 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
     // API proposal:
     // const entityStream = streamParser(stream, PostCodeSchema);
 
-    const entityStream = handleOpenAiResponse(stream, ColorSchema, mode);
+    // const entityStream = handleOpenAiResponse(stream, ColorSchema, mode);
     
     // Version 2
     // const entityStream = handleOpenAiResponse2(stream, ColorSchema, mode);
+
+    // Version 3
+    const entityStream = handleOpenAiResponse3(stream, ColorSchema, mode);
 
     // for await (const entity of entityStream) {
     //     console.log(entity);

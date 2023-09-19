@@ -21,7 +21,7 @@ type StreamResponseWrapper = {
 }
 
 
-class StreamParser {
+export class StreamParser {
 
     private buffer = "";
     private mode: StreamMode;
@@ -77,6 +77,8 @@ class StreamParser {
             if (end !== -1) {
                 completed = true;
                 this.buffer += chunk.slice(0, end+1);
+                // Keep track of the number of objects
+                this.entityIndex += 1;
             }
 
             if (this.buffer.length) {
@@ -85,8 +87,6 @@ class StreamParser {
             }
             this.buffer = "";
 
-            // Keep track of the number of objects
-            this.entityIndex += 1;
         }
 
 
