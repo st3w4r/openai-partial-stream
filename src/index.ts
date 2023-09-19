@@ -688,7 +688,6 @@ export async function* handleOpenAiResponse3(stream: any, schema: z.ZodTypeAny, 
     let itemIdx = 0;
     let noStreamBufferList: any = [];
 
-
     const parser = new StreamParser(mode);
 
 
@@ -707,9 +706,9 @@ export async function* handleOpenAiResponse3(stream: any, schema: z.ZodTypeAny, 
         const res = parser.parse(content);
 
 
-        if (mode === StreamMode.NoStream) {
+        if (mode === StreamMode.NoStream || mode === StreamMode.Batch) {
             if (res?.status === Status.COMPLETED) {
-                noStreamBufferList.push(res.data);
+                noStreamBufferList.push(res);
             }
         } else if (res) {
             yield res;
@@ -719,10 +718,14 @@ export async function* handleOpenAiResponse3(stream: any, schema: z.ZodTypeAny, 
 
 
     if (mode === StreamMode.NoStream) {
+        for (const item of noStreamBufferList) {
+            yield item;
+        }
+    } else if (mode === StreamMode.Batch) {
         const streamRes: StreamResponseWrapper = {
             index: itemIdx,
             status: Status.COMPLETED,
-            data: noStreamBufferList,
+            data: noStreamBufferList.map((item: any) => item.data),
         }
         yield streamRes;
     }

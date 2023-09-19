@@ -279,6 +279,9 @@
     <div id="modeSelector" class="button-bar">
         <div class="active-overlay"></div>
 
+        <input type="radio" name="mode" id="Batch" value="Batch" class="mode-radio">
+        <label for="Batch" class="mode-button" data-tooltip="Loads all colors at once.">Batch</label>
+
         <input type="radio" name="mode" id="NoStream" value="NoStream" class="mode-radio">
         <label for="NoStream" class="mode-button" data-tooltip="Loads all colors at once.">All-Together</label>
 
@@ -382,7 +385,7 @@
         function processBlock(index, data) {
             // Check if the current mode is NoStream and handle the list
             const selectedMode = document.querySelector('input[name="mode"]:checked').value;
-            if (selectedMode === 'NoStream' && Array.isArray(data)) {
+            if (selectedMode === 'Batch' && Array.isArray(data)) {
                 data.forEach((item, idx) => {
                     processSingleBlock(idx, item);
                 });
