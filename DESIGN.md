@@ -416,6 +416,7 @@ STACK TOKEN:        PARENT PATH          EXAMPLE PARENT       KEY/INDEX
 }
 
 
+
 {
 "message":{
     "status":"PARTIAL",
@@ -425,6 +426,44 @@ STACK TOKEN:        PARENT PATH          EXAMPLE PARENT       KEY/INDEX
     "value": "#FF6633",
 }
 }
+
+
+{
+"message":{
+    "status":"PARTIAL",
+    "path": "colors.[4].name",
+    "value": "#FF6633",
+}
+}
+
+
+{
+"message":{
+    "status":"PARTIAL",
+    "path": ["colors",4,"name"],
+    "value": "#FF6633",
+}
+}
+{
+"message":{
+    "status":"PARTIAL",
+    "path": ["colors",3,"name"],
+    "value": "#FF2244",
+}
+}
+
+{
+"message":{
+    "status":"PARTIAL",
+    "path": ["colors", 1],
+    "data": {
+        "hex": "#FF2244",
+    },
+}
+}
+
+
+
 
 
 

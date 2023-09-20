@@ -78,6 +78,7 @@ parser.oncloseobject = function () {
     const arr = state["arrayStack"].pop();
     if (arr) {
         arr.index += 1;
+        arr.arrayOfValue = false;
         state["arrayStack"].push(arr);
     }
 
@@ -100,6 +101,7 @@ parser.onopenarray = function () {
 
     arr.inArray = true;
     arr.index = 0;
+    arr.arrayOfValue = true;
 
     state["arrayStack"].push(arr);
 
@@ -110,6 +112,27 @@ parser.onclosearray = function () {
 }
 
 parser.onvalue = function (value: any) {
+
+    console.log(value);
+
+    // If array detected update the previous item on the stack
+    let arr = state["arrayStack"].pop();
+    
+    
+    if (arr) {
+        arr.value = value;
+
+        if (arr.arrayOfValue) {
+            arr.index = -1;
+            arr.arrayOfValue = false;
+        }
+
+        if (arr.inArray) {
+            arr.index += 1;
+        }
+        state["arrayStack"].push(arr);
+    }
+
 
     console.log(state["arrayStack"]);
 
