@@ -20,6 +20,12 @@ type StreamResponseWrapper = {
     data: any,
 }
 
+type ErrorResponse = {
+    code: string,
+    error: string,
+    message: string,
+}
+
 
 export class StreamParser {
 
@@ -46,6 +52,7 @@ export class StreamParser {
         let outputEntity: any = null;
         let start = chunk.indexOf("{");
         let end = chunk.indexOf("}");
+        let error = null;
 
         if (start !== -1) {
             this.inJsonObject = true;
@@ -66,14 +73,13 @@ export class StreamParser {
             }
 
             if (this.mode == StreamMode.StreamObjectKeyValueTokens) {
-                outputEntity = this.partialStreamParserKeyValueTokens(this.buffer);
+                [outputEntity, error] = this.partialStreamParserKeyValueTokens(this.buffer);
             } else if (this.mode == StreamMode.StreamObjectKeyValue) {
-                outputEntity = this.partialStreamParserKeyValue(this.buffer);
+                [outputEntity, error] = this.partialStreamParserKeyValue(this.buffer);
             }
 
         } else {
 
-            
             if (end !== -1) {
                 completed = true;
                 this.buffer += chunk.slice(0, end+1);
@@ -83,7 +89,7 @@ export class StreamParser {
 
             if (this.buffer.length) {
 
-                outputEntity = this.parseJsonObject(this.buffer);
+                [outputEntity, error] = this.parseJsonObject(this.buffer);
             }
             this.buffer = "";
 
@@ -97,22 +103,34 @@ export class StreamParser {
                 data: outputEntity,
             }
             return streamRes;
+        } else if (error) {
+            const streamRes: StreamResponseWrapper = {
+                index: index,
+                status: Status.FAILED,
+                data: error,
+            }
+            return streamRes;
         }
 
         return null;
     }
 
-    private parseJsonObject(content: string): any {
+    private parseJsonObject(content: string): any|any  {
         let entity = null
 
         try {
-
             entity = JSON.parse(content);
         } catch (error) {
             console.log("Error:", error);
             console.log("Content:", content);
+            const err: ErrorResponse = {
+                code: "JSON_PARSE_ERROR",
+                error: "JSON Parse Error",
+                message: content,
+            }
+            return [null, err];
         }
-        return entity;
+        return [entity, null];
     }
 
     private partialStreamParserKeyValueTokens(content: string) {
@@ -138,7 +156,7 @@ export class StreamParser {
         const kvList = extractKeyValuePairsWithCorrection(content);
 
         if (kvList.length === 0) {
-            return null;
+            return [null, null];
         }
 
         // Detect if changes happened 
@@ -152,7 +170,7 @@ export class StreamParser {
 
         if (valueLen <= this.prevValueLen) {
             // No new content added to value.
-            return null;
+            return [null, null];
         }
 
         this.prevValueLen = valueLen;
@@ -161,9 +179,9 @@ export class StreamParser {
         let jsonObj = kvList?.join(",");
         jsonObj = "{" + jsonObj + "}";
 
-        const entity = this.parseJsonObject(jsonObj);
+        const [entity, error] = this.parseJsonObject(jsonObj);
 
-        return entity
+        return [entity, error];
     }
 
     private partialStreamParserKeyValue(content: string): any {
@@ -177,25 +195,25 @@ export class StreamParser {
         const kvList = extractKeyValuePairs(content);
 
         if (kvList.length === 0) {
-            return null;
+            return [null, null];
         }
 
         if (kvList.length <= this.nbKeyValue) {
-            return null;
+            return [null, null];
         }
 
         let jsonObj = kvList?.join(",");
 
         jsonObj = "{" + jsonObj + "}";
 
-        const entity = this.parseJsonObject(jsonObj);
+        const [entity, error] = this.parseJsonObject(jsonObj);
 
         if (entity) {
             this.nbKeyValue = kvList.length;
-
         }
 
-        return entity;
+
+        return [entity, error];
 
     }
 }
