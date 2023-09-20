@@ -279,8 +279,8 @@
     <div id="modeSelector" class="button-bar">
         <div class="active-overlay"></div>
 
-        <input type="radio" name="mode" id="Batch" value="Batch" class="mode-radio">
-        <label for="Batch" class="mode-button" data-tooltip="Loads all colors at once.">Batch</label>
+        <!-- <input type="radio" name="mode" id="Batch" value="Batch" class="mode-radio">
+        <label for="Batch" class="mode-button" data-tooltip="Loads all colors at once.">Batch</label> -->
 
         <input type="radio" name="mode" id="NoStream" value="NoStream" class="mode-radio">
         <label for="NoStream" class="mode-button" data-tooltip="Loads all colors at once.">All-Together</label>
@@ -353,7 +353,12 @@
             eventSource.onmessage = function (event) {
                 // Parse the data from the SSE message
                 const data = JSON.parse(event.data).message;
-                processBlock(data.index, data.data);
+
+                if (data.status === 'PARTIAL' || data.status === 'COMPLETED') {
+                    processBlock(data.index, data.data);
+                } else if (data.status === 'ERROR') {
+                    console.error('Error occurred:', data);
+                }
             };
 
             eventSource.onerror = function (event) {

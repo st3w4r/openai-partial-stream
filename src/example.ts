@@ -4,6 +4,8 @@ import { readFileParseContent, genPromptSchema, handleOpenAiResponse, handleOpen
 
 import { StreamMode } from "./utils.js";
 
+import { OpenAiHandler } from "./openAiHandler.js";
+
 // Interface for developer how to use this library
 
 
@@ -67,7 +69,7 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
             },
             {
                 role: "user",
-                content: "Give me a palette of 3 gorgeous color with the hex code, name and a description."
+                content: "Give me a palette of 5 gorgeous color with the hex code, name and a description."
             },
             {
                 role: "user",
@@ -79,31 +81,32 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
         stream: true, // ENABLE STREAMING
         // temperature: 0.7,
         temperature: 1.3,
+        // temperature:s 2,
 
         // Functions:
-        functions: [
-            {
-                name: "addColors",
-                description: "Add a list of color",
-                parameters: {
-                    type: "object",
-                    properties: {
-                        hex: {
-                            type: "string",
-                            description: "The hexadecimal code of the color"
-                        },
-                        name: {
-                            type: "string",
-                            description: "The color name"
-                        },
-                        description: {
-                            type: "string",
-                            description: "The description of the color"
-                        }
-                    }
-                }
-            }
-        ]
+        // functions: [
+        //     {
+        //         name: "addColors",
+        //         description: "Add a list of color",
+        //         parameters: {
+        //             type: "object",
+        //             properties: {
+        //                 hex: {
+        //                     type: "string",
+        //                     description: "The hexadecimal code of the color"
+        //                 },
+        //                 name: {
+        //                     type: "string",
+        //                     description: "The color name"
+        //                 },
+        //                 description: {
+        //                     type: "string",
+        //                     description: "The description of the color"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // ]
     });
 
 
@@ -119,7 +122,12 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
     // const entityStream = handleOpenAiResponse2(stream, ColorSchema, mode);
 
     // Version 3
-    const entityStream = handleOpenAiResponse3(stream, ColorSchema, mode);
+    // const entityStream = handleOpenAiResponse3(stream, ColorSchema, mode);
+
+    // Version 4
+
+    const openAiHandler = new OpenAiHandler(mode);
+    const entityStream = openAiHandler.process(stream);
 
     // for await (const entity of entityStream) {
     //     console.log(entity);

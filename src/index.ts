@@ -7,7 +7,7 @@ import { Stream } from "stream";
 import { STATUS_CODES } from "http";
 
 import { PassThrough } from "stream";
-import { StreamMode } from "./utils.js";
+import { StreamMode, Status, StreamResponseWrapper } from "./utils.js";
 
 // import { JsonChunk } from "./streamParser4.js";
 
@@ -390,17 +390,17 @@ export async function streamParser<E extends EntityType>(content: any, entityTyp
 
 // Enum for status
 
-enum Status {
-    COMPLETED = "COMPLETED",
-    PARTIAL = "PARTIAL",
-    FAILED = "FAILED",
-}
+// enum Status {
+//     COMPLETED = "COMPLETED",
+//     PARTIAL = "PARTIAL",
+//     FAILED = "FAILED",
+// }
 
-type StreamResponseWrapper = {
-    index: number;
-    status: Status;
-    data: any;
-}
+// type StreamResponseWrapper = {
+//     index: number;
+//     status: Status;
+//     data: any;
+// }
 
 
 export async function* readFileAndStreamContent(filename: string) {
