@@ -6,6 +6,8 @@ import { StreamMode } from "./utils.js";
 
 import { OpenAiHandler } from "./openAiHandler.js";
 
+import { Entity } from "./entity.js";
+
 // Interface for developer how to use this library
 
 
@@ -53,6 +55,9 @@ const openai = new OpenAI({
 
 export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObjectKeyValueTokens) {
 
+    const entity = new Entity("Color", ColorSchema);
+    const entityPostCode = new Entity("PostCode", PostCodeSchema);
+
     const stream = await openai.chat.completions.create({
         messages: [
             // { 
@@ -73,7 +78,7 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
             },
             {
                 role: "user",
-                content: genPromptSchema(ColorSchema, "Color"),
+                content: entity.generatePromptSchema(),
             },
         ],
         model: "gpt-3.5-turbo",
@@ -110,6 +115,7 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
     });
 
 
+    console.log(entity.generatePromptSchema());
 
 
     // Parser
@@ -128,12 +134,9 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
     const openAiHandler = new OpenAiHandler(mode);
     const entityStream = openAiHandler.process(stream);
+    const colorEntityStream = entity.genParse(entityStream);
 
-    // for await (const entity of entityStream) {
-    //     console.log(entity);
-    // }
-
-    return entityStream;
+    return colorEntityStream;
 
 }
 

@@ -15,7 +15,7 @@ export class OpenAiHandler {
         this.parser = new StreamParser(this.mode);
     }
 
-    async *process(stream: any) {
+    async *process(stream: any): AsyncGenerator<StreamResponseWrapper | null, void, unknown>{
 
         for await (const msg of stream) {
 
