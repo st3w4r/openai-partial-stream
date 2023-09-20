@@ -43,8 +43,29 @@ const ColorSchema = z.object({
     description: z.string().optional(),
 });
 
+// Exmaple
+// {
+//     "name": "Coffea arabica",
+//     "common_name": "Arabica",
+//     "production_percentage": "60-70%",
+//     "characteristics": [
+//        "Smooth, mild flavor",
+//        "Aromatic qualities",
+//        "Less caffeine than Robusta"
+//     ],
+//     "sub_varieties": ["Typica", "Bourbon", "Geisha", "SL28"]
+//  },
+const CoffeeOrigin = z.object({
+    name: z.string().optional(),
+    common_name: z.string().optional(),
+    production_percentage: z.string().optional(),
+    characteristics: z.array(z.string()).optional(),
+    sub_varieties: z.array(z.string()).optional(),
+});
+
 type PostCode = z.infer<typeof PostCodeSchema>;
 type Color = z.infer<typeof ColorSchema>;
+type CoffeeOrigin = z.infer<typeof CoffeeOrigin>;
 
 
 // API call
@@ -53,34 +74,73 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
+
+function getCoffeeMessages(entity: Entity): any[] {
+    return [
+        {
+            role: "system",
+            content: "Write JSON only"
+        },
+        {
+            role: "user",
+            content: "Give me a list of 5 coffee origin with their name, common name, production percentage, characteristics and sub varieties."
+        },
+        {
+            role: "user",
+            content: entity.generatePromptSchema(),
+        },
+    ];
+}
+
+function getColorMessages(entity: Entity): any[] {
+    return [
+        {
+            role: "system",
+            content: "Write JSON only"
+        },
+        {
+            role: "user",
+            content: "Give me a palette of 5 gorgeous color with the hex code, name and a description."
+        },
+        {
+            role: "user",
+            content: entity.generatePromptSchema(),
+        },
+    ];
+}
+
+function getColorFunction() {
+    return {
+        name: "addColors",
+        description: "Add a list of color",
+        parameters: {
+            type: "object",
+            properties: {
+                hex: {
+                    type: "string",
+                    description: "The hexadecimal code of the color"
+                },
+                name: {
+                    type: "string",
+                    description: "The color name"
+                },
+                description: {
+                    type: "string",
+                    description: "The description of the color"
+                }
+            }
+        }
+    }
+}
+
 export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObjectKeyValueTokens) {
 
     const entity = new Entity("Color", ColorSchema);
     const entityPostCode = new Entity("PostCode", PostCodeSchema);
+    const entityCoffee = new Entity("CoffeeOrigin", CoffeeOrigin);
 
     const stream = await openai.chat.completions.create({
-        messages: [
-            // { 
-            //     role: "user", 
-            //     content: "Give me 5 postcode in London with their council name." 
-            // },
-            // { 
-                //     role: "user", 
-                //     content: genPromptSchema(PostCodeSchema, "PostCode"),
-                // },
-            {
-                role: "system",
-                content: "Write JSON only"
-            },
-            {
-                role: "user",
-                content: "Give me a palette of 5 gorgeous color with the hex code, name and a description."
-            },
-            {
-                role: "user",
-                content: entity.generatePromptSchema(),
-            },
-        ],
+        messages: getColorMessages(entity),
         model: "gpt-3.5-turbo",
         // model: "gpt-4",
         stream: true, // ENABLE STREAMING
@@ -89,29 +149,9 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
         // temperature:s 2,
 
         // Functions:
-        // functions: [
-        //     {
-        //         name: "addColors",
-        //         description: "Add a list of color",
-        //         parameters: {
-        //             type: "object",
-        //             properties: {
-        //                 hex: {
-        //                     type: "string",
-        //                     description: "The hexadecimal code of the color"
-        //                 },
-        //                 name: {
-        //                     type: "string",
-        //                     description: "The color name"
-        //                 },
-        //                 description: {
-        //                     type: "string",
-        //                     description: "The description of the color"
-        //                 }
-        //             }
-        //         }
-        //     }
-        // ]
+        functions: [
+            getColorFunction(),
+        ]
     });
 
 
@@ -134,6 +174,8 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
     const openAiHandler = new OpenAiHandler(mode);
     const entityStream = openAiHandler.process(stream);
+    // return entityStream;
+    // COLOR
     const colorEntityStream = entity.genParse(entityStream);
 
     return colorEntityStream;
