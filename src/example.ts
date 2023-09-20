@@ -102,10 +102,10 @@ function getColorMessages(entity: Entity): any[] {
             role: "user",
             content: "Give me a palette of 5 gorgeous color with the hex code, name and a description."
         },
-        {
-            role: "user",
-            content: entity.generatePromptSchema(),
-        },
+        // {
+        //     role: "user",
+        //     content: entity.generatePromptSchema(),
+        // },
     ];
 }
 
@@ -133,6 +133,38 @@ function getColorFunction() {
     }
 }
 
+function getColorListFunction() {
+    return {
+        name: "giveColors",
+        description: "Give a list of color",
+        parameters: {
+            type: "object",
+            properties: {
+                colors: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            hex: {
+                                type: "string",
+                                description: "The hexadecimal code of the color"
+                            },
+                            name: {
+                                type: "string",
+                                description: "The color name"
+                            },
+                            description: {
+                                type: "string",
+                                description: "The description of the color"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObjectKeyValueTokens) {
 
     const entity = new Entity("Color", ColorSchema);
@@ -141,8 +173,8 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
     const stream = await openai.chat.completions.create({
         messages: getColorMessages(entity),
-        model: "gpt-3.5-turbo",
-        // model: "gpt-4",
+        // model: "gpt-3.5-turbo",
+        model: "gpt-4",
         stream: true, // ENABLE STREAMING
         // temperature: 0.7,
         temperature: 1.3,
@@ -150,7 +182,8 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
         // Functions:
         functions: [
-            getColorFunction(),
+            // getColorFunction(),
+            getColorListFunction(),
         ]
     });
 
@@ -174,7 +207,7 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
     const openAiHandler = new OpenAiHandler(mode);
     const entityStream = openAiHandler.process(stream);
-    // return entityStream;
+    return entityStream;
     // COLOR
     const colorEntityStream = entity.genParse(entityStream);
 

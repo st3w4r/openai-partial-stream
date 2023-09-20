@@ -288,3 +288,144 @@ for (const token of stream) {
 }
 
 ```
+
+
+
+
+Nested object:
+
+STACK TOKEN:        PARENT PATH          EXAMPLE PARENT       KEY/INDEX
+- OPEN_OBJECT   ->  ROOT                 ->                   root
+- OPEN_KEY      ->  ROOT                 ->                   root
+- CLOSE_KEY     ->  ROOT                 ->                   root
+- OPEN_ARRAY    ->  ROOT.KEY             -> root              colors
+- OPEN_OBJECT   ->  ROOT.KEY.[0]         -> root.colors       0
+- OPEN_KEY      ->  ROOT.KEY.[0]         -> root.colors       0
+- CLOSE_KEY     ->  ROOT.KEY.[0]         -> root.colors       0
+- OPEN_VALUE    ->  ROOT.KEY.[0].KEY0    -> root.colors[0]    hex
+- CLOSE_VALUE   ->  ROOT.KEY.[0].KEY0    -> root.colors[0]    hex
+- OPEN_KEY      ->  ROOT.KEY.[0]         -> root.colors       0
+- CLOSE_KEY     ->  ROOT.KEY.[0]         -> root.colors       0
+- OPEN_VALUE    ->  ROOT.KEY.[0].KEY1    -> root.colors[0]    name
+- CLOSE_VALUE   ->  ROOT.KEY.[0].KEY1    -> root.colors[0]    name
+- OPEN_KEY      ->  ROOT.KEY.[0]         -> root.colors       0
+- CLOSE_KEY     ->  ROOT.KEY.[0]         -> root.colors       0
+- OPEN_VALUE    ->  ROOT.KEY.[0].KEY2    -> root.colors[0]    description
+- CLOSE_VALUE   ->  ROOT.KEY.[0].KEY2    -> root.colors[0]    description
+- CLOSE_OBJECT  ->  ROOT.KEY.[0]         -> root.colors       0
+- CLOSE_ARRAY   ->  ROOT.KEY             -> root              colors
+- CLOSE_OBJECT  ->  ROOT                 ->                   root
+
+
+```json
+{
+    "message": {
+        "index":4,
+        "status":"COMPLETED",
+        "data":{
+            "hex":"#2EC4B6",
+            "name":"Harpooned Blue",
+            "description":"A stark but calming, reliable favorite for both modern and traditional designs."
+        }
+    }
+}
+
+
+{
+    "message": {
+        "path": "colors.[4]",
+        "status":"COMPLETED",
+        "data":{
+            "hex":"#2EC4B6",
+            "name":"Harpooned Blue",
+            "description":"A stark but calming, reliable favorite for both modern and traditional designs."
+        }
+    }
+}
+
+
+{
+    "message":{
+        "path": "colors",
+        "index":4,
+        "status":"PARTIAL",
+        "data":{
+            "hex":"#2EC4B6",
+            "name":"Harpooned Blue",
+            "description":"A stark but calming, reliable favorite for both modern and traditional designs."
+        }
+    }
+}
+
+
+{
+    "message":{
+        "status":"PARTIAL",
+        "path": "colors",
+        "index":4,
+        "key" "hex",
+        "value": "#2EC4B6",
+    }
+}
+{
+    "message":{
+        "status":"PARTIAL",
+        "path": "colors",
+        "index":4,
+        "key" "name",
+        "value": "Harpooned Blue",
+    }
+}
+{
+    "message":{
+        "status":"PARTIAL",
+        "path": "colors",
+        "index":4,
+        "key" "description",
+        "value": "A stark but calming, reliable",
+    }
+}
+
+
+        "data":{
+            "hex":"#2EC4B6",
+            "name":"Harpooned Blue",
+            "description":"A stark but calming, reliable favorite for both modern and traditional designs."
+        }
+
+```
+
+
+```json
+{
+"message":{
+    "status":"PARTIAL",
+    "path": "colors.[0]",
+    "value": "#FF6633",
+}
+}
+
+{
+"message":{
+    "status":"PARTIAL",
+    "path": "colors.[0]",
+    "tpye": "array",
+    "key": null,
+    "value": "#FF6633",
+}
+}
+
+
+{
+"message":{
+    "status":"PARTIAL",
+    "path": "colors.[0]",
+    "type": "object",
+    "key": "hex",
+    "value": "#FF6633",
+}
+}
+
+
+
+```
