@@ -48,20 +48,12 @@ const parser = clarinet.parser();
 
 // JSON parser
 type State = {
-    object: number;
-    array: number;
-    path: string[];
-    arrayIndex: number;
     currentKey: string;
     inArray: boolean;
     arrayStack: any[];
 }
 
 const state: State = {
-    "object": 0,
-    "array": 0,
-    "path": [],
-    "arrayIndex": 0,
     "currentKey": "",
     "inArray": false,
     "arrayStack": [],
@@ -72,93 +64,66 @@ const state: State = {
 
 parser.onopenobject = function (key: string) {
 
-    // state["path"].push(key);
-
-    
     state["currentKey"] = key;
-    
-    if (state["arrayStack"].length > 0) {
-        let arrayIdx = state["arrayIndex"];
-        state["path"].push("["+arrayIdx+"]");
-        
-        // if (state["inArray"]===true) {
-            
-            // TODO increment only on same level array
-            state["arrayIndex"] += 1;
-            // }
-    }
 
-    // let arrItem = {index: state["arrayIndex"]}
-    // state["arrayStack"].push(arrItem);
+    let arrItem = {key: state["currentKey"]}
+    state["arrayStack"].push(arrItem);
 
 }
 
 parser.oncloseobject = function () {
 
-    if (state["arrayStack"].length > 0) {
-        state["path"].pop();
+    state["arrayStack"].pop();
+
+    const arr = state["arrayStack"].pop();
+    if (arr) {
+        arr.index += 1;
+        state["arrayStack"].push(arr);
     }
+
     
 }
 
 parser.onkey = function (key: string) {
-    // console.log("object", key);
-
     state["currentKey"] = key;
+
+    state["arrayStack"].pop();
+
+    state["arrayStack"].push({key: state["currentKey"]});
 
 }
 
 parser.onopenarray = function () {
 
-    state["path"].push(state["currentKey"]);
+    // If array detected update the previous item on the stack
+    let arr = state["arrayStack"].pop();
 
-    // state["inArray"] = true;
+    arr.inArray = true;
+    arr.index = 0;
 
-    
-    // Push array to stack, reset index
-    let arrItem = {index: state["arrayIndex"]}
-    state["arrayStack"].push(arrItem);
-    state["arrayIndex"] = 0;
-
-    console.log(state["arrayStack"]);
+    state["arrayStack"].push(arr);
 
 }
 
 parser.onclosearray = function () {
 
-    state["path"].pop();
-
-    // state["inArray"] = false;
-    state["arrayStack"].pop();
-
-    let currentStack = state["arrayStack"][state["arrayStack"].length-1];
-
-    if (currentStack) {
-        state["arrayIndex"] = currentStack.index;
-    } else {
-        state["arrayIndex"] = 0;
-    }
-
-    // state["arrayStack"]
-    // state["arrayIndex"] = currentStack.index;
-
-    // console.log("CLOSE ARR:", state["arrayStack"][state["arrayStack"].length-1]);
-    
-    // state["arrayIndex"] = state["arrayStack"][state["arrayStack"].length-1].index;
-    // state["arrayStack"] = state["arrayStack"].pop()
-
-    console.log(state["arrayIndex"]);
-    console.log(state["arrayStack"]);
-
 }
 
 parser.onvalue = function (value: any) {
 
-    state["path"].push(state["currentKey"]);
-    
-    console.log(state["path"].join("."));
-    
-    state["path"].pop();
+    console.log(state["arrayStack"]);
+
+    // build path
+    let path = "";
+    for (const item of state["arrayStack"]) {
+        path += "."+item.key;
+
+        if (item.inArray) {
+            path += ".[" + item.index + "]";
+        } 
+    }
+
+    console.log(path);
 
 }
 
