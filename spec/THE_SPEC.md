@@ -188,9 +188,94 @@ This mode is the **One-by-one** mode
 We can as well have a mode where we still want all the data to arrive together or even as a batch.
 
 
-
-
 ## Specification
+
+1. Return a valid JSON
+
+Always return a valid JSON object even if the data is not complete yet.
+
+2. Return the entire key, not partial keys.
+
+The key is an element that is not supposed to be partial, it's either there or not.
+So we will wait to have the entire key before returning a partial JSON. Or we will return a valid JSON without the key that is progressivly completed.
+
+3. Return the zero value of the value type.
+
+The value is an element that can be partial, so we will return the zero value of the value type. if any character of the value have not arrived yet.
+For a string it will be an **empty string**, for a number it will be **0**, for a boolean it will be **false**, for an array it will be an **empty array**, for an object it will be an **empty object**.
+
+It certain case better to not return the key until the entire value is available, it will depend on the usecase where the zero value can cause a wrong behavior.
+
+4. Partial value
+
+Depending on the mode chosen the value can be returned as partial or not.
+- For a string it will be the beging of the string:
+- For a number it will be the beging of the number,
+- For a boolean it will be either the zero value or based on the first letter or true/false or it can be based on the first letter that arrive: t/f
+- For an array it can containts the first element.
+- For an object it can containts the first key or/and value.
+
+5. Status
+
+The status of the data returned should be available to know if the data is complete or not.
+Status:
+- **PARTIAL**   - In the case the data is not complete yet the status will be.
+- **COMPLETED** - In the case the data is complete the status will be.
+- **ERROR**     - In the case the data is not valid JSON or if the data is not valid for the schema provided an error will be returned.
+
+6. Entity
+
+When the data is an array of object we can return each object one by one when it's completed. Mark the data as an entity type.
+
+Include an `entity` field.
+Where the entity is a string. 
+e.g.: `"entity": "file"`
+
+6. Index
+
+If the data is an array of object we can return the index of the object in the array.
+
+Include an `index` field.
+
+Where the index is a number starting at 0.
+e.g.: `"index": 0`
+
+
+7. Mode
+
+The mode is the way the data is returned.
+- **`BATCH`**       - The data is returned as a batch when the entire payload have arrived. As an array of entities.
+- **`ALL-TOGETHER`** - The data is returned all together when the entire payload have arrived but with indivudal entities.
+- **`ONE-BY-ONE`**  - The data is returned as a whole entity all the keys and values of one entity at once.
+- **`PROGRESSIVE`** - The data is returned as completed Key/Value 
+- **`REALTIME`**    - The data is returned as soon as it's available with a completed key but partial value.
+
+8. Error
+
+If the data is not valid JSON or if the data is not valid for the schema provided an error will be returned.
+
+Include an `error` field.
+With an error code `code` and an error message `message`.
+    
+Where the code is a uppercase string:
+- `INVALID_JSON`  -- The data is not valid JSON
+- `INVALID_SCHEMA` -- The data is not valid for the schema provided
+
+Where the error is a string.
+
+9. Delta
+
+The delta is the difference between the previous data and the current data.
+
+Include a `delta` field.
+
+Where the delta is the new data that have arrived.
+
+10. Completed
+
+Detect the completion of an entity.
+When the entity have been completed the status will be `COMPLETED`.
+And return the entire entity.
 
 
 

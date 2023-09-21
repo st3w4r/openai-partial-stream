@@ -102,7 +102,7 @@ function getCoffeeMessages(entity: Entity): any[] {
     ];
 }
 
-function getColorMessages(entity: Entity): any[] {
+function getColorMessages(number: string, entity: Entity): any[] {
     return [
         {
             role: "system",
@@ -110,7 +110,7 @@ function getColorMessages(entity: Entity): any[] {
         },
         {
             role: "user",
-            content: "Give me a palette of 3 gorgeous color with the hex code, name and a description."
+            content: "Give me a palette of "+number+" gorgeous color with the hex code, name and a description."
         },
         // {
         //     role: "user",
@@ -287,10 +287,10 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
 
     const stream = await openai.chat.completions.create({
-        messages: getColorMessages(entity),
+        messages: getColorMessages("30", entity),
         // messages: getCodeActionMessages(),
-        // model: "gpt-3.5-turbo",
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
+        // model: "gpt-4",
         stream: true, // ENABLE STREAMING
         // temperature: 0.7,
         temperature: 1.3,
