@@ -8,6 +8,7 @@
 import fs from "fs";
 import { StreamMode } from "./utils.js";
 import { JsonCloser } from "./streamParser7.js";
+import { threadId } from "worker_threads";
 
 enum Status {
     COMPLETED = "COMPLETED",
@@ -37,10 +38,13 @@ export class StreamParser {
     private nbKeyValue = 0;
     private prevValueLen = 0;
     private entityIndex: number = 0;
+    private selectKey = "";
 
-    constructor(mode: StreamMode = StreamMode.StreamObject) {
+    constructor(mode: StreamMode = StreamMode.StreamObject, selectKey = "") {
         this.mode = mode;
         this.jsonCloser = new JsonCloser();
+
+        this.selectKey = selectKey;
     }
     
     // Write to the buffer
@@ -57,29 +61,42 @@ export class StreamParser {
         let end = chunk.indexOf("}");
         let error = null;
 
-        const entityCompleted = this.jsonCloser.append(chunk);
+        this.jsonCloser.append(chunk);
 
-        // this.jsonCloser.closeJson();
+        console.log(this.jsonCloser.closeJson());
+
         const resJson = this.jsonCloser.parse();
 
 
-        // console.log(resJson);
+        console.log(resJson);
+        // if (resJson) {
+        //     outputEntity = resJson;
+        // }
+        // if (end !== -1 && resJson) {
+        //     this.entityIndex += 1;
+        //     completed = true;
+        // }
+
         if (resJson) {
-            outputEntity = resJson;
-        }
-        if (entityCompleted && resJson) {
-            this.entityIndex += 1;
-            completed = true;
+            try {
+                // console.log("INDEX", index);
+                index = resJson[this.selectKey].length -1;
+                outputEntity = resJson[this.selectKey][index];
+                // console.log("OUTPUT ENTITY:", index, outputEntity);
+
+            } catch {
+                outputEntity = null;
+            }
         }
 
-        // if (resJson) {
-        //     try {
-        //         console.log("INDEX", index);
-        //         outputEntity = resJson["colors"][index];
-        //         console.log("OUTPUT ENTITY:", index, outputEntity);
-        //     } catch {
-        //         outputEntity = null;
-        //     }
+        if (end !== -1 && resJson) {
+            completed = true;
+            this.entityIndex = index;
+        }
+
+        // if (index > this.entityIndex) {
+        //     completed = true;
+        //     this.entityIndex = index;
         // }
         // error = null;
 
@@ -88,6 +105,9 @@ export class StreamParser {
         //     this.entityIndex += 1;
         //     completed = true;
         // }
+
+
+        // -------------
 
 
         // if (start !== -1) {

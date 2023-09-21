@@ -11,9 +11,9 @@ export class OpenAiHandler {
     private parser: StreamParser;
     private mode: StreamMode;
 
-    constructor(mode = StreamMode.StreamObjectKeyValueTokens) {
+    constructor(mode = StreamMode.StreamObjectKeyValueTokens, selectKey = "") {
         this.mode = mode;
-        this.parser = new StreamParser(this.mode);
+        this.parser = new StreamParser(this.mode, selectKey);
     }
 
     async *process(stream: any): AsyncGenerator<StreamResponseWrapper | null, void, unknown>{

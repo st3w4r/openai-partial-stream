@@ -205,7 +205,7 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
     // Version 4
 
-    const openAiHandler = new OpenAiHandler(mode);
+    const openAiHandler = new OpenAiHandler(mode, "colors");
     const entityStream = openAiHandler.process(stream);
 
 

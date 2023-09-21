@@ -58,33 +58,33 @@ export class JsonCloser {
     }
 
     append(chunk: string) {
-        let entityCompleted = false;
+        // let entityCompleted = false;
 
-        if (this.reset) {
-            this.buffer = "";
-            this.stack = [];
-            this.reset = false;
-        }
+        // if (this.reset) {
+        //     this.buffer = "";
+        //     this.stack = [];
+        //     this.reset = false;
+        // }
 
         for (const char of chunk) {
-            // When a new entity is found, reset the buffer and the stack
-            if (char === "{") {
-                this.buffer = "";
-                this.stack = [];
-            }
+            // // When a new entity is found, reset the buffer and the stack
+            // if (char === "{") {
+            //     this.buffer = "";
+            //     this.stack = [];
+            // }
             
-            // Avoid adding extra characters that can break the JSON
-            if (entityCompleted === true) {
-                break;
-            }
+            // // Avoid adding extra characters that can break the JSON
+            // if (entityCompleted === true) {
+            //     break;
+            // }
 
             this.buffer += char;
 
-            // Set the reset flag to reset on the next chunk append
-            if (char === "}") {
-                entityCompleted = true;
-                this.reset = true;
-            }
+            // // Set the reset flag to reset on the next chunk append
+            // if (char === "}") {
+            //     entityCompleted = true;
+            //     this.reset = true;
+            // }
 
             switch (char) {
 
@@ -115,7 +115,7 @@ export class JsonCloser {
                     break;
             }
         }
-        return entityCompleted;
+        // return entityCompleted;
     }
 
     closeJson(): string {
@@ -128,7 +128,6 @@ export class JsonCloser {
                     if (closeBuffer[closeBuffer.length - 1] === ",") {
                         closeBuffer = closeBuffer.slice(0, -1);
                     }
-
                     closeBuffer += "}";
                     break;
                 case "[":
