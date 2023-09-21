@@ -50,7 +50,11 @@ export class JsonCloser {
     private buffer = "";
     private stack: any[] = [];
 
-    private reset = false;
+    private prevSize = 0;
+
+    private closedObject = false;
+    private closedArray = false;
+    // private reset = false;
 
     // private completeEntityStack: any[] = [];
 
@@ -90,19 +94,23 @@ export class JsonCloser {
 
                 case "{":
                     this.stack.push(char);
+                    this.closedObject = false;
                     break;
                 case "}":
                     if (this.stack[this.stack.length - 1] === "{") {
                         this.stack.pop();
                     }
+                    this.closedObject = true;
                     break;
                 case "[":
                     this.stack.push(char);
+                    this.closedArray = false;
                     break;
                 case "]":
                     if (this.stack[this.stack.length - 1] === "[") {
                         this.stack.pop();
                     }
+                    this.closedArray = true;
                     break;
                 case "\"":
                     if (this.stack[this.stack.length - 1] === "\"") {
@@ -147,13 +155,33 @@ export class JsonCloser {
         return closeBuffer;
     }
 
-    parse(): any | null {
+    parse(): [boolean, any] {
         try {
             const closedJson = this.closeJson();
             const jsonRes = JSON.parse(closedJson);
-            return jsonRes;
+
+            const size = JSON.stringify(jsonRes).length;
+
+
+            let hasChanged = false;
+            if (size > this.prevSize) {
+                this.prevSize = size;
+                hasChanged = true;
+            }
+            // XOR operation to check if one of the two is true, but not both
+            // Do not process twice if the array and the object get closed.
+            else if (this.closedObject !== this.closedArray) {
+                // If the object have been closed consider it as a change
+                // If the array have been close the object have been closed too
+                // No need to consider it as a change
+                // This is to avoid processing twice the same completion
+                hasChanged = this.closedObject;
+                this.closedObject = false;
+            }
+
+            return [hasChanged, jsonRes];
         } catch (error) {
-            return null;
+            return [false, null];
         }
     }
 }

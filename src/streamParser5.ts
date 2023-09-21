@@ -60,36 +60,59 @@ export class StreamParser {
 
         this.jsonCloser.append(chunk);
 
-        console.log(this.jsonCloser.closeJson());
+        // console.log(this.jsonCloser.closeJson());
 
-        const resJson = this.jsonCloser.parse();
+        const [hasChanged, resJson] = this.jsonCloser.parse();
+
+        if (end !== -1) {
+            this.entityIndex += 1;
+            completed = true;
+        }
+
+        if (hasChanged && resJson) {
+            outputEntity = resJson;
+        } else {
+            outputEntity = null;
+        }
 
 
-        console.log(resJson);
+        // if (resJson) {
+        //     const streamRes: StreamResponseWrapper = {
+        //         index: index,
+        //         status: completed ? Status.COMPLETED : Status.PARTIAL,
+        //         data: outputEntity,
+        //     }
+        //     return streamRes;
+
+        // }
+        // return null;
+
+
+        // console.log(resJson);
         // if (resJson) {
         //     outputEntity = resJson;
         // }
-        // if (end !== -1 && resJson) {
+        // if (end !== -1) {
         //     this.entityIndex += 1;
         //     completed = true;
         // }
 
-        if (resJson) {
-            try {
-                // console.log("INDEX", index);
-                // console.log("OUTPUT ENTITY:", index, outputEntity);
+        // if (resJson) {
+        //     try {
+        //         // console.log("INDEX", index);
+        //         // console.log("OUTPUT ENTITY:", index, outputEntity);
 
-                outputEntity = resJson;
+        //         outputEntity = resJson;
 
-            } catch {
-                outputEntity = null;
-            }
-        }
+        //     } catch {
+        //         outputEntity = null;
+        //     }
+        // }
 
-        if (end !== -1 && resJson) {
-            completed = true;
-            this.entityIndex = index;
-        }
+        // if (end !== -1 && resJson) {
+        //     completed = true;
+        //     this.entityIndex = index;
+        // }
 
         // if (index > this.entityIndex) {
         //     completed = true;
@@ -116,7 +139,7 @@ export class StreamParser {
         //     this.nbKeyValue = 0;
         //     this.prevValueLen = 0;
         // } 
-        
+
         // if (this.inJsonObject) {
 
         //     if (start !== -1) {
