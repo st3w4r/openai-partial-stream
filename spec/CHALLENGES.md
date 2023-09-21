@@ -21,3 +21,4 @@ A set of challenges that need to be solve to implement the specification. In a p
 - One by one mode return the whole entity.
 - Batch mode return the whole payload.
 - Handle escaped characters.
+- Raw text to JSON. Convert a raw text to valid JSON entity. 
