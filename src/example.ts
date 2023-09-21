@@ -135,7 +135,7 @@ function getColorFunction() {
 
 function getColorListFunction() {
     return {
-        name: "giveColors",
+        name: "give_colors",
         description: "Give a list of color",
         parameters: {
             type: "object",
@@ -161,7 +161,7 @@ function getColorListFunction() {
                     }
                 }
             }
-        }
+        },
     }
 }
 
@@ -184,7 +184,9 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
         functions: [
             // getColorFunction(),
             getColorListFunction(),
-        ]
+        ],
+        function_call: {name: "give_colors"}
+
     });
 
 

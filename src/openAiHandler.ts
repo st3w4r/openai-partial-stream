@@ -21,7 +21,7 @@ export class OpenAiHandler {
         for await (const msg of stream) {
             //TODO: write to file each message
 
-            writeFileSync("openai.jsonl", JSON.stringify(msg) + "\n", { flag: "a" });
+            // writeFileSync("openai.jsonl", JSON.stringify(msg) + "\n", { flag: "a" });
 
 
 
