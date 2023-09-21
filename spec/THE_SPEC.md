@@ -277,6 +277,11 @@ Detect the completion of an entity.
 When the entity have been completed the status will be `COMPLETED`.
 And return the entire entity.
 
+11. Only when changes
+
+Only return the data when it changes.
+If the data is the same as the previous one don't return it.
+
 
 
 ## Feature
