@@ -57,26 +57,37 @@ export class StreamParser {
         let end = chunk.indexOf("}");
         let error = null;
 
-        this.jsonCloser.append(chunk);
+        const entityCompleted = this.jsonCloser.append(chunk);
 
         // this.jsonCloser.closeJson();
         const resJson = this.jsonCloser.parse();
 
+
+        // console.log(resJson);
         if (resJson) {
-            try {
-                console.log("INDEX", index);
-                outputEntity = resJson["colors"][index];
-                console.log("OUTPUT ENTITY:", index, outputEntity);
-            } catch {
-                outputEntity = null;
-            }
+            outputEntity = resJson;
         }
-        error = null;
-
-
-        if (end !== -1) {
+        if (entityCompleted && resJson) {
             this.entityIndex += 1;
+            completed = true;
         }
+
+        // if (resJson) {
+        //     try {
+        //         console.log("INDEX", index);
+        //         outputEntity = resJson["colors"][index];
+        //         console.log("OUTPUT ENTITY:", index, outputEntity);
+        //     } catch {
+        //         outputEntity = null;
+        //     }
+        // }
+        // error = null;
+
+
+        // if (end !== -1) {
+        //     this.entityIndex += 1;
+        //     completed = true;
+        // }
 
 
         // if (start !== -1) {

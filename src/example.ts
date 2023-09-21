@@ -100,7 +100,7 @@ function getColorMessages(entity: Entity): any[] {
         },
         {
             role: "user",
-            content: "Give me a palette of 5 gorgeous color with the hex code, name and a description."
+            content: "Give me a palette of 3 gorgeous color with the hex code, name and a description."
         },
         // {
         //     role: "user",

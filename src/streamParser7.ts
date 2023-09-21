@@ -1,6 +1,6 @@
 import clarinet from "clarinet";
 import { log } from "console";
-import fs, { stat } from "fs";
+import fs, { stat, truncate } from "fs";
 import { parseJsonSourceFileConfigFileContent } from "typescript";
 
 
@@ -50,13 +50,41 @@ export class JsonCloser {
     private buffer = "";
     private stack: any[] = [];
 
+    private reset = false;
+
+    // private completeEntityStack: any[] = [];
+
     constructor() {
     }
 
     append(chunk: string) {
+        let entityCompleted = false;
+
+        if (this.reset) {
+            this.buffer = "";
+            this.stack = [];
+            this.reset = false;
+        }
 
         for (const char of chunk) {
+            // When a new entity is found, reset the buffer and the stack
+            if (char === "{") {
+                this.buffer = "";
+                this.stack = [];
+            }
+            
+            // Avoid adding extra characters that can break the JSON
+            if (entityCompleted === true) {
+                break;
+            }
+
             this.buffer += char;
+
+            // Set the reset flag to reset on the next chunk append
+            if (char === "}") {
+                entityCompleted = true;
+                this.reset = true;
+            }
 
             switch (char) {
 
@@ -87,11 +115,10 @@ export class JsonCloser {
                     break;
             }
         }
-        return this.stack;
+        return entityCompleted;
     }
 
-    closeJson() {
-
+    closeJson(): string {
         let closeBuffer = this.buffer.trim();
 
         for (const char of [...this.stack].reverse()) {
@@ -121,10 +148,11 @@ export class JsonCloser {
         return closeBuffer;
     }
 
-    parse() {
+    parse(): any | null {
         try {
             const closedJson = this.closeJson();
-            return JSON.parse(closedJson);
+            const jsonRes = JSON.parse(closedJson);
+            return jsonRes;
         } catch (error) {
             return null;
         }
