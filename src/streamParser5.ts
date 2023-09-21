@@ -41,7 +41,7 @@ export class StreamParser {
 
     constructor(mode: StreamMode = StreamMode.StreamObject) {
         this.mode = mode;
-        this.jsonCloser = new JsonCloser();
+        this.jsonCloser = new JsonCloser(mode);
     }
     
     // Write to the buffer
@@ -73,6 +73,14 @@ export class StreamParser {
             outputEntity = resJson;
         } else {
             outputEntity = null;
+        }
+
+        if (completed === false && (
+            this.mode === StreamMode.StreamObject ||
+            this.mode === StreamMode.NoStream
+            )
+        ) {
+            return null;
         }
 
 

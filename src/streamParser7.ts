@@ -3,6 +3,7 @@ import { log } from "console";
 import fs, { stat, truncate } from "fs";
 import { parseJsonSourceFileConfigFileContent } from "typescript";
 
+import { StreamMode } from "./utils.js";
 
 
 function randomlySplit(str: string, numPieces: any) {
@@ -47,6 +48,8 @@ console.log(tokens);
 
 export class JsonCloser {
 
+    private mode: StreamMode;
+
     private buffer = "";
     private stack: any[] = [];
 
@@ -58,7 +61,9 @@ export class JsonCloser {
 
     // private completeEntityStack: any[] = [];
 
-    constructor() {
+    constructor(mode: StreamMode = StreamMode.StreamObject) {
+
+        this.mode = mode;
     }
 
     append(chunk: string) {
@@ -132,7 +137,6 @@ export class JsonCloser {
         for (const char of [...this.stack].reverse()) {
             switch (char) {
                 case "{":
-
                     if (closeBuffer[closeBuffer.length - 1] === ",") {
                         closeBuffer = closeBuffer.slice(0, -1);
                     }
@@ -145,7 +149,11 @@ export class JsonCloser {
                     closeBuffer += "]";
                     break;
                 case "\"":
-                    closeBuffer += "\"";
+
+                    if (this.mode === StreamMode.StreamObjectKeyValueTokens) {
+                        closeBuffer += "\"";
+                    }
+
                     break;
                 default:
                     break;
