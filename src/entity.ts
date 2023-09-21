@@ -42,6 +42,7 @@ export class Entity {
         for await (const item of entityObject) {
             if (item) {
                 item.data = this.parse(item.data);
+                item.entity = this.name;
             }
             yield item;
         }
@@ -51,6 +52,7 @@ export class Entity {
         for await (const item of entityObject) {
             if (item) {
                 let childrens = item.data[this.name];
+                console.log(item.data);
                 if (childrens !== undefined && childrens.length > 0) {
                     let index = childrens.length - 1
                     let latest = childrens[index];

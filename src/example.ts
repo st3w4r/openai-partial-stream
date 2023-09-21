@@ -43,6 +43,16 @@ const ColorSchema = z.object({
     description: z.string().optional(),
 });
 
+const FrenchCorrectorSchema = z.object({
+    text_input_7: z.string().optional(),
+    text_input_15: z.string().optional(),
+});
+
+const CodeActionSchema = z.object({
+    actions: z.array(z.string()).optional(),
+});
+
+
 // Exmaple
 // {
 //     "name": "Coffea arabica",
@@ -109,6 +119,30 @@ function getColorMessages(entity: Entity): any[] {
     ];
 }
 
+function getFrenchCorrectorMessages(): any[] {
+
+    return [
+		{
+			"role": "user",
+			"content": "Correct this french text: salut sa va?"
+		}
+	]
+}
+
+function getCodeActionMessages(): any[] {
+    return [
+		{
+			"role": "system",
+			"content": "Detect which action the user whants to do. Only from the enum list"
+		},
+		{
+			"role": "user",
+			"content": "The code have change"
+		}
+	];
+}
+
+
 function getColorFunction() {
     return {
         name: "addColors",
@@ -165,16 +199,98 @@ function getColorListFunction() {
     }
 }
 
+function frenchCorrectorFunction() {
+    return {
+        name: "french_corrector",
+        description: "Terminé le 0/20",
+        parameters: {
+            type: "object",
+            properties: {
+                user_inputs: {
+                    type: "object",
+                    description: "User inputs fields",
+                    properties: {
+                        text_input_7: {
+                            type: "object",
+                            properties: {
+                                value: {
+                                    type: "string",
+                                    description: "Entrer le text que vous voulez faire corriger."
+                                }
+                            },
+                            required: ["value"]
+                        },
+                        text_input_15: {
+                            type: "object",
+                            properties: {
+                                value: {
+                                    type: "string",
+                                    description: "Explication des erreurs",
+                                    enum: [
+                                        "Activé",
+                                        "Desactivé"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            required: [
+                "user_inputs"
+            ]
+        }
+    };
+}
+
+function codeActionFunction() {
+    return {
+        name: "trigger_action",
+        description: "Trigger the corresponding action",
+        parameters: {
+            type: "object",
+            properties: {
+                actions: {
+                    type: "array",
+                    description: "The action return only the one from the enum lower case with underscore",
+                    items: {
+                        type: "string",
+                        enum: [
+                            "refactor",
+                            "update_function",
+                            "add_function",
+                            "delete_function",
+                            "create_file",
+                            "delete_file",
+                            "rename_file",
+                            "UNKNOWN"
+                        ]
+                    }
+                }
+            },
+            required: [
+                "trigger_action"
+            ]
+        }
+    };
+}
+
+
 export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObjectKeyValueTokens) {
 
     const entity = new Entity("colors", ColorSchema);
     const entityPostCode = new Entity("PostCode", PostCodeSchema);
     const entityCoffee = new Entity("CoffeeOrigin", CoffeeOrigin);
+    const entityFrenchCorrector = new Entity("user_inputs", FrenchCorrectorSchema);
+
+    const entityCodeAction = new Entity("actions", CodeActionSchema);
+
 
     const stream = await openai.chat.completions.create({
         messages: getColorMessages(entity),
-        model: "gpt-3.5-turbo",
-        // model: "gpt-4",
+        // messages: getCodeActionMessages(),
+        // model: "gpt-3.5-turbo",
+        model: "gpt-4",
         stream: true, // ENABLE STREAMING
         // temperature: 0.7,
         temperature: 1.3,
@@ -184,8 +300,12 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
         functions: [
             // getColorFunction(),
             getColorListFunction(),
+            // frenchCorrectorFunction(),
+            // codeActionFunction(),
         ],
         function_call: {name: "give_colors"}
+        // function_call: {name: "french_corrector"}
+        // function_call: {name: "trigger_action"}
 
     });
 
@@ -216,12 +336,16 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
     // const colorEntityStream = entity.genParse(entityStream);
     const entityColors = new Entity("colors", ColorSchema);
     const colorEntityStream = entityColors.genParseArray(entityStream);
+    return colorEntityStream;
 
     // const entityPostCode = new Entity("PostCode", PostCodeSchema);
     // const postCodeStream = entityPostCode.genParseArray(entityStream);
 
+    // const resStream = entityFrenchCorrector.genParseArray(entityStream);
 
-    return colorEntityStream;
+    // const resStream = entityCodeAction.genParse(entityStream);
+    // const resStream = entityCodeAction.genParseArray(entityStream);
+    // return resStream;
 
 }
 
