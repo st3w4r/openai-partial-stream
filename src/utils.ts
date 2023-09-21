@@ -14,6 +14,7 @@ export enum Status {
 }
 
 export type StreamResponseWrapper = {
+    entity?: string;
     index: number;
     status: Status;
     data: any;

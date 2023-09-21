@@ -167,7 +167,7 @@ function getColorListFunction() {
 
 export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObjectKeyValueTokens) {
 
-    const entity = new Entity("Color", ColorSchema);
+    const entity = new Entity("colors", ColorSchema);
     const entityPostCode = new Entity("PostCode", PostCodeSchema);
     const entityCoffee = new Entity("CoffeeOrigin", CoffeeOrigin);
 
@@ -205,13 +205,19 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
     // Version 4
 
-    const openAiHandler = new OpenAiHandler(mode, "colors");
+    const openAiHandler = new OpenAiHandler(mode);
     const entityStream = openAiHandler.process(stream);
 
 
-    return entityStream;
+    // return entityStream;
     // COLOR
-    const colorEntityStream = entity.genParse(entityStream);
+    // const colorEntityStream = entity.genParse(entityStream);
+    const entityColors = new Entity("colors", ColorSchema);
+    const colorEntityStream = entityColors.genParseArray(entityStream);
+
+    // const entityPostCode = new Entity("PostCode", PostCodeSchema);
+    // const postCodeStream = entityPostCode.genParseArray(entityStream);
+
 
     return colorEntityStream;
 

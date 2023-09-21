@@ -38,13 +38,10 @@ export class StreamParser {
     private nbKeyValue = 0;
     private prevValueLen = 0;
     private entityIndex: number = 0;
-    private selectKey = "";
 
-    constructor(mode: StreamMode = StreamMode.StreamObject, selectKey = "") {
+    constructor(mode: StreamMode = StreamMode.StreamObject) {
         this.mode = mode;
         this.jsonCloser = new JsonCloser();
-
-        this.selectKey = selectKey;
     }
     
     // Write to the buffer
@@ -80,9 +77,9 @@ export class StreamParser {
         if (resJson) {
             try {
                 // console.log("INDEX", index);
-                index = resJson[this.selectKey].length -1;
-                outputEntity = resJson[this.selectKey][index];
                 // console.log("OUTPUT ENTITY:", index, outputEntity);
+
+                outputEntity = resJson;
 
             } catch {
                 outputEntity = null;

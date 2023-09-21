@@ -47,5 +47,21 @@ export class Entity {
         }
     }
 
+    async *genParseArray(entityObject: AsyncGenerator<StreamResponseWrapper | null, void, unknown>): any {
+        for await (const item of entityObject) {
+            if (item) {
+                let childrens = item.data[this.name];
+                if (childrens !== undefined && childrens.length > 0) {
+                    let index = childrens.length - 1
+                    let latest = childrens[index];
+                    item.entity = this.name;
+                    item.index = index;
+                    item.data = this.parse(latest);
+                    yield item;
+                }
+            }
+        }
+    }
+
 
 }
