@@ -7,6 +7,7 @@
 
 import fs from "fs";
 import { StreamMode } from "./utils.js";
+import { JsonCloser } from "./streamParser7.js";
 
 enum Status {
     COMPLETED = "COMPLETED",
@@ -29,6 +30,7 @@ type ErrorResponse = {
 
 export class StreamParser {
 
+    private jsonCloser: JsonCloser;
     private buffer = "";
     private mode: StreamMode;
     private inJsonObject = false;
@@ -38,6 +40,7 @@ export class StreamParser {
 
     constructor(mode: StreamMode = StreamMode.StreamObject) {
         this.mode = mode;
+        this.jsonCloser = new JsonCloser();
     }
     
     // Write to the buffer
@@ -54,46 +57,83 @@ export class StreamParser {
         let end = chunk.indexOf("}");
         let error = null;
 
-        if (start !== -1) {
-            this.inJsonObject = true;
+        this.jsonCloser.append(chunk);
+
+        // this.jsonCloser.closeJson();
+        const resJson = this.jsonCloser.parse();
+
+        if (resJson) {
+            try {
+                console.log("INDEX", index);
+                outputEntity = resJson["colors"][index];
+                console.log("OUTPUT ENTITY:", index, outputEntity);
+            } catch {
+                outputEntity = null;
+            }
         }
+        error = null;
+
+
         if (end !== -1) {
-            this.inJsonObject = false;
-            // Reset
-            this.nbKeyValue = 0;
-            this.prevValueLen = 0;
-        } 
-        
-        if (this.inJsonObject) {
-
-            if (start !== -1) {
-                this.buffer += chunk.slice(start);
-            } else {
-                this.buffer += chunk;
-            }
-
-            if (this.mode == StreamMode.StreamObjectKeyValueTokens) {
-                [outputEntity, error] = this.partialStreamParserKeyValueTokens(this.buffer);
-            } else if (this.mode == StreamMode.StreamObjectKeyValue) {
-                [outputEntity, error] = this.partialStreamParserKeyValue(this.buffer);
-            }
-
-        } else {
-
-            if (end !== -1) {
-                completed = true;
-                this.buffer += chunk.slice(0, end+1);
-                // Keep track of the number of objects
-                this.entityIndex += 1;
-            }
-
-            if (this.buffer.length) {
-
-                [outputEntity, error] = this.parseJsonObject(this.buffer);
-            }
-            this.buffer = "";
-
+            this.entityIndex += 1;
         }
+
+
+        // if (start !== -1) {
+        //     this.inJsonObject = true;
+        // }
+        // if (end !== -1) {
+        //     this.inJsonObject = false;
+        //     // Reset
+        //     this.nbKeyValue = 0;
+        //     this.prevValueLen = 0;
+        // } 
+        
+        // if (this.inJsonObject) {
+
+        //     if (start !== -1) {
+        //         this.buffer += chunk.slice(start);
+        //     } else {
+        //         this.buffer += chunk;
+        //     }
+
+
+        //     this.jsonCloser.closeJson();
+        //     const resJson = this.jsonCloser.parse();
+
+        //     if (resJson) {
+        //         try {
+        //             outputEntity = resJson["colors"][index];
+        //             console.log("OUTPUT ENTITY:", index, outputEntity);
+        //         } catch {
+        //             outputEntity = null;
+        //         }
+        //     }
+        //     error = null;
+            
+
+        //     if (this.mode == StreamMode.StreamObjectKeyValueTokens) {
+        //         [outputEntity, error] = this.partialStreamParserKeyValueTokens(this.buffer);
+        //     } else if (this.mode == StreamMode.StreamObjectKeyValue) {
+        //         [outputEntity, error] = this.partialStreamParserKeyValue(this.buffer);
+        //     }
+
+        // } else {
+
+        //     if (end !== -1) {
+        //         completed = true;
+        //         this.buffer += chunk.slice(0, end+1);
+        //         // Keep track of the number of objects
+        //         this.entityIndex += 1;
+        //     }
+
+        //     if (this.buffer.length) {
+
+        //         [outputEntity, error] = this.parseJsonObject(this.buffer);
+        //     }
+        //     this.buffer = "";
+
+        // }
 
 
         if (outputEntity) {   

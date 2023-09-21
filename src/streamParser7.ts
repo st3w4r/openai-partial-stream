@@ -45,17 +45,12 @@ const tokens = randomlySplit(content, 150);
 console.log(tokens);
 
 
-class JsonStreamBuilder {
+export class JsonCloser {
 
     private buffer = "";
-    private hm: any = {};
-
     private stack: any[] = [];
 
     constructor() {
-        this.hm = {
-            "object": 0,
-        };
     }
 
     append(chunk: string) {
@@ -138,7 +133,7 @@ class JsonStreamBuilder {
 
 
 // Usage example:
-// const builder = new JsonStreamBuilder();
+// const builder = new JsonCloser();
 // console.log(builder.append('{"key": "value", "list": ['));  // {"key": "value", "list": []}
 // console.log(builder.closeJson());
 // console.log(builder.append('1, 2, '));  // {"key": "value", "list": [1, 2, ]}
@@ -150,7 +145,7 @@ class JsonStreamBuilder {
 // console.log(jsonRes);
 
 
-const builder = new JsonStreamBuilder();
+const builder = new JsonCloser();
 
 let counter = 100;
 

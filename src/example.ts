@@ -173,8 +173,8 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
     const stream = await openai.chat.completions.create({
         messages: getColorMessages(entity),
-        // model: "gpt-3.5-turbo",
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
+        // model: "gpt-4",
         stream: true, // ENABLE STREAMING
         // temperature: 0.7,
         temperature: 1.3,
@@ -207,6 +207,8 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
     const openAiHandler = new OpenAiHandler(mode);
     const entityStream = openAiHandler.process(stream);
+
+
     return entityStream;
     // COLOR
     const colorEntityStream = entity.genParse(entityStream);
