@@ -112,10 +112,10 @@ function getColorMessages(number: string, entity: Entity): any[] {
             role: "user",
             content: "Give me a palette of "+number+" gorgeous color with the hex code, name and a description."
         },
-        // {
-        //     role: "user",
-        //     content: entity.generatePromptSchema(),
-        // },
+        {
+            role: "user",
+            content: entity.generatePromptSchema(),
+        },
     ];
 }
 
@@ -287,7 +287,7 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
 
     const stream = await openai.chat.completions.create({
-        messages: getColorMessages("30", entity),
+        messages: getColorMessages("5", entity),
         // messages: getCodeActionMessages(),
         model: "gpt-3.5-turbo",
         // model: "gpt-4",
@@ -297,13 +297,13 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
         // temperature:s 2,
 
         // Functions:
-        functions: [
-            // getColorFunction(),
-            getColorListFunction(),
-            // frenchCorrectorFunction(),
-            // codeActionFunction(),
-        ],
-        function_call: {name: "give_colors"}
+        // functions: [
+        // //     // getColorFunction(),
+        //     // getColorListFunction(),
+        // //     // frenchCorrectorFunction(),
+        // //     // codeActionFunction(),
+        // ],
+        // function_call: {name: "give_colors"}
         // function_call: {name: "french_corrector"}
         // function_call: {name: "trigger_action"}
 
@@ -333,9 +333,9 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
     // return entityStream;
     // COLOR
-    // const colorEntityStream = entity.genParse(entityStream);
-    const entityColors = new Entity("colors", ColorSchema);
-    const colorEntityStream = entityColors.genParseArray(entityStream);
+    const colorEntityStream = entity.genParse(entityStream);
+    // const entityColors = new Entity("colors", ColorSchema);
+    // const colorEntityStream = entityColors.genParseArray(entityStream);
     return colorEntityStream;
 
     // const entityPostCode = new Entity("PostCode", PostCodeSchema);

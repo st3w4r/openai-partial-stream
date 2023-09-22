@@ -58,31 +58,32 @@ export class StreamParser {
         let end = chunk.indexOf("}");
         let error = null;
 
-        this.jsonCloser.append(chunk);
+        // this.jsonCloser.append(chunk);
 
-        // console.log(this.jsonCloser.closeJson());
+        // // console.log(this.jsonCloser.closeJson());
 
-        const [hasChanged, resJson] = this.jsonCloser.parse();
+        // const [hasChanged, resJson] = this.jsonCloser.parse();
 
-        if (end !== -1) {
-            this.entityIndex += 1;
-            completed = true;
-        }
+        // if (end !== -1) {
+        //     this.entityIndex += 1;
+        //     completed = true;
+        // }
 
-        if (hasChanged && resJson) {
-            outputEntity = resJson;
-        } else {
-            outputEntity = null;
-        }
+        // if (hasChanged && resJson) {
+        //     outputEntity = resJson;
+        // } else {
+        //     outputEntity = null;
+        // }
 
-        if (completed === false && (
-            this.mode === StreamMode.StreamObject ||
-            this.mode === StreamMode.NoStream
-            )
-        ) {
-            return null;
-        }
+        // if (completed === false && (
+        //     this.mode === StreamMode.StreamObject ||
+        //     this.mode === StreamMode.NoStream
+        //     )
+        // ) {
+        //     return null;
+        // }
 
+        // ------
 
         // if (resJson) {
         //     const streamRes: StreamResponseWrapper = {
@@ -138,61 +139,61 @@ export class StreamParser {
         // -------------
 
 
-        // if (start !== -1) {
-        //     this.inJsonObject = true;
-        // }
-        // if (end !== -1) {
-        //     this.inJsonObject = false;
-        //     // Reset
-        //     this.nbKeyValue = 0;
-        //     this.prevValueLen = 0;
-        // } 
+        if (start !== -1) {
+            this.inJsonObject = true;
+        }
+        if (end !== -1) {
+            this.inJsonObject = false;
+            // Reset
+            this.nbKeyValue = 0;
+            this.prevValueLen = 0;
+        } 
 
-        // if (this.inJsonObject) {
+        if (this.inJsonObject) {
 
-        //     if (start !== -1) {
-        //         this.buffer += chunk.slice(start);
-        //     } else {
-        //         this.buffer += chunk;
-        //     }
+            if (start !== -1) {
+                this.buffer += chunk.slice(start);
+            } else {
+                this.buffer += chunk;
+            }
 
 
-        //     this.jsonCloser.closeJson();
-        //     const resJson = this.jsonCloser.parse();
+            // this.jsonCloser.closeJson();
+            // const resJson = this.jsonCloser.parse();
 
-        //     if (resJson) {
-        //         try {
-        //             outputEntity = resJson["colors"][index];
-        //             console.log("OUTPUT ENTITY:", index, outputEntity);
-        //         } catch {
-        //             outputEntity = null;
-        //         }
-        //     }
-        //     error = null;
+            // if (resJson) {
+            //     try {
+            //         outputEntity = resJson["colors"][index];
+            //         console.log("OUTPUT ENTITY:", index, outputEntity);
+            //     } catch {
+            //         outputEntity = null;
+            //     }
+            // }
+            error = null;
             
 
-        //     if (this.mode == StreamMode.StreamObjectKeyValueTokens) {
-        //         [outputEntity, error] = this.partialStreamParserKeyValueTokens(this.buffer);
-        //     } else if (this.mode == StreamMode.StreamObjectKeyValue) {
-        //         [outputEntity, error] = this.partialStreamParserKeyValue(this.buffer);
-        //     }
+            if (this.mode == StreamMode.StreamObjectKeyValueTokens) {
+                [outputEntity, error] = this.partialStreamParserKeyValueTokens(this.buffer);
+            } else if (this.mode == StreamMode.StreamObjectKeyValue) {
+                [outputEntity, error] = this.partialStreamParserKeyValue(this.buffer);
+            }
 
-        // } else {
+        } else {
 
-        //     if (end !== -1) {
-        //         completed = true;
-        //         this.buffer += chunk.slice(0, end+1);
-        //         // Keep track of the number of objects
-        //         this.entityIndex += 1;
-        //     }
+            if (end !== -1) {
+                completed = true;
+                this.buffer += chunk.slice(0, end+1);
+                // Keep track of the number of objects
+                this.entityIndex += 1;
+            }
 
-        //     if (this.buffer.length) {
+            if (this.buffer.length) {
 
-        //         [outputEntity, error] = this.parseJsonObject(this.buffer);
-        //     }
-        //     this.buffer = "";
+                [outputEntity, error] = this.parseJsonObject(this.buffer);
+            }
+            this.buffer = "";
 
-        // }
+        }
 
 
         if (outputEntity) {   
