@@ -302,7 +302,7 @@ If the data is the same as the previous one don't return it.
 Send the data as a stream of SSE. Do not send empty data.
 
 Each event is of type message.
-```json
+```sse
 
 data: {"index":4,"status":"PARTIAL","data":{"hex":"#9400D3","name":"Dark Violet"},"entity":"colors"}
 
