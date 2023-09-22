@@ -463,8 +463,18 @@ STACK TOKEN:        PARENT PATH          EXAMPLE PARENT       KEY/INDEX
 }
 
 
+```
 
 
+```js
 
+// Start a new buffer for each new Open object
 
+{  -> {} PARTIAL
+
+{ "color": [ -> {"color": []} PARTIAL
+
+{"hex": "asddsf" ->  {"hex": "asddsf"} PARTIAL
+
+{"hex"..."description":"..."} -> COMPLETE
 ```
