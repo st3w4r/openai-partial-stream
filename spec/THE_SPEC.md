@@ -83,13 +83,13 @@ Let take the example of the file creation again.
 If we are based on the JSON keys to perform some action we need to have the keys available to be able to perform the action.
 
 For example if the payload is only
-```
+```jsonc
 {
     "filena
 
 ```
 We can not be sure it will be the correct key for the action or even so if it's in the middle of the filename.
-```
+```jsonc
 {
     "filename": "my_fil
 ```
@@ -124,7 +124,7 @@ As well another mode it the realtime mode where the content is streamed as well 
 
 For example it is useful to start writting to the file as soon as the content is available.
 
-```json
+```jsonc
 
 // Partial content
 {
@@ -133,7 +133,7 @@ For example it is useful to start writting to the file as soon as the content is
 }
 ```
 
-```json
+```jsonc
 // Completed content
 {
     "filename": "my_file.txt",
