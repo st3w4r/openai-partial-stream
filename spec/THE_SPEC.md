@@ -299,7 +299,7 @@ If the data is the same as the previous one don't return it.
 
 ## SSE Spec
 
-Send the data as a stream of SSE.
+Send the data as a stream of SSE. Do not send empty data.
 
 Each event is of type message.
 ```json

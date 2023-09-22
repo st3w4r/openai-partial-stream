@@ -32,7 +32,7 @@ app.get('/', (req: Request, res: Response) => {
 
 import { StreamMode } from "./utils.js";
 
-import { setSSEHeaders, sendSSEResponse, closeSSEConnection } from './sse.js';
+import { setSSEHeaders, sendSSEResponse, closeSSEConnection, senderHandler } from './sse.js';
 import { set } from 'zod';
 
 
@@ -42,13 +42,9 @@ app.get('/sse', async (req: Request, res: Response) => {
     // Extract mode from the query parameter
     const mode: StreamMode = req.query.mode as StreamMode;
 
+    // Open SSE connection
+    setSSEHeaders(res);
     
-    // Set response headers for SSE
-    res.header('Content-Type', 'text/event-stream');
-    res.header('Cache-Control', 'no-cache');
-    res.header('Connection', 'keep-alive');
-    res.flushHeaders(); // flush the headers to establish SSE with the client
-
     // On client disconnect, remove them from the clients list
     req.on('close', () => {
         console.log("Client disconnected");
@@ -56,20 +52,12 @@ app.get('/sse', async (req: Request, res: Response) => {
     });
 
     const gen = await callGenerateColors(mode);
-    
-    for await (const data of gen) {
-        console.log(data);
-        if (data === null) {
-            break;
-        }
-        res.write(`data: ${JSON.stringify({ message: data })}\n\n`);
-    }
-
+    // Send each message to the client via SSE
+    await senderHandler(res, gen);
+    // Close SSE connection
+    closeSSEConnection(res);
     console.log("Done");
-    res.write('event: CLOSE\n');
-    res.write('data: Done, closing connection\n\n');
-    res.end();
-    
+
 });
 
 app.listen(PORT, () => {
