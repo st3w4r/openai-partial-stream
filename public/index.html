@@ -25,7 +25,6 @@
             word-wrap: break-word;
             min-height: 150px;
 
-            background-color: beige;
         }
 
 
@@ -411,7 +410,8 @@
                 // Block does not exist; create it
                 const block = document.createElement('div');
                 block.className = 'color-block';
-                block.style.backgroundColor = data.hex || '#FFFFFF';  // Default to white if hex isn't provided
+                // block.style.backgroundColor = data.hex || '#FFFFFF';  // Default to white if hex isn't provided
+                block.style.backgroundColor = data.hex || 'beige';  // Default to white if hex isn't provided
                 //             block.innerHTML = `
                 //     <span class="color-name">${data.name || ''}</span>
                 //     <span class="color-description">${data.description || ''}</span>

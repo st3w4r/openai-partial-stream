@@ -8,6 +8,9 @@ import { OpenAiHandler } from "./openAiHandler.js";
 
 import { Entity } from "./entity.js";
 
+import * as fs from "fs";
+import * as readline from "readline";
+
 // Interface for developer how to use this library
 
 
@@ -276,6 +279,31 @@ function codeActionFunction() {
 }
 
 
+async function* readAndParseFile(filePath: string) {
+    const fileStream = fs.createReadStream(filePath);
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity,
+    });
+
+    try {
+        for await (const line of rl) {
+            // Parse the line as needed.
+            // await new Promise((resolve) => setTimeout(resolve, 10));
+            yield JSON.parse(line);
+        }
+    } catch (error) {
+        console.log(error);
+    } finally {
+        // This will be executed after all lines are read or if an error occurs.
+        fileStream.close();
+        // yield {};
+    }
+}
+const stream = readAndParseFile("./spec/data/color_stream_fc_5.jsonl");
+
+
+
 export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObjectKeyValueTokens) {
 
     const entity = new Entity("colors", ColorSchema);
@@ -289,12 +317,12 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
     const stream = await openai.chat.completions.create({
         messages: getColorMessages("5", entity),
         // messages: getCodeActionMessages(),
-        // model: "gpt-3.5-turbo",
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
+        // model: "gpt-4",
         stream: true, // ENABLE STREAMING
         // temperature: 0.7,
         temperature: 1.3,
-        // temperature:s 2,
+        // temperature: 2,
 
         // Functions:
         functions: [
@@ -308,6 +336,9 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
         // function_call: {name: "trigger_action"}
 
     });
+
+    // Mock stream
+    // const stream = readAndParseFile("./spec/data/color_stream_fc_5.jsonl");
 
 
     console.log(entity.generatePromptSchema());
