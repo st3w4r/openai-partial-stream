@@ -287,10 +287,10 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
 
 
     const stream = await openai.chat.completions.create({
-        messages: getColorMessages("30", entity),
+        messages: getColorMessages("5", entity),
         // messages: getCodeActionMessages(),
-        model: "gpt-3.5-turbo",
-        // model: "gpt-4",
+        // model: "gpt-3.5-turbo",
+        model: "gpt-4",
         stream: true, // ENABLE STREAMING
         // temperature: 0.7,
         temperature: 1.3,
