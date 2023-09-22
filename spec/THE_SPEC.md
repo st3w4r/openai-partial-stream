@@ -296,3 +296,24 @@ If the data is the same as the previous one don't return it.
 - Produce only when changes
 - Always valid JSON
 
+
+## SSE Spec
+
+Send the data as a stream of SSE.
+
+Each event is of type message.
+```json
+
+data: {"index":4,"status":"PARTIAL","data":{"hex":"#9400D3","name":"Dark Violet"},"entity":"colors"}
+
+data: {"index":4,"status":"PARTIAL","data":{"hex":"#9400D3","name":"Dark Violet","description":"A deep, rich"},"entity":"colors"}
+```
+
+With 2 newlines at the end of each data.
+
+Close the SSE connection when the data is completed.
+With an event of type `CLOSE` and followed with [DONE] as data.
+```
+event: CLOSE
+data: [DONE]
+```

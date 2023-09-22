@@ -353,7 +353,7 @@
 
             eventSource.onmessage = function (event) {
                 // Parse the data from the SSE message
-                const data = JSON.parse(event.data).message;
+                const data = JSON.parse(event.data);
 
                 if (data.status === 'PARTIAL' || data.status === 'COMPLETED') {
                     processBlock(data.index, data.data);

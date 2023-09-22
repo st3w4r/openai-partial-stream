@@ -32,6 +32,10 @@ app.get('/', (req: Request, res: Response) => {
 
 import { StreamMode } from "./utils.js";
 
+import { setSSEHeaders, sendSSEResponse, closeSSEConnection } from './sse.js';
+import { set } from 'zod';
+
+
 
 app.get('/sse', async (req: Request, res: Response) => {
 
