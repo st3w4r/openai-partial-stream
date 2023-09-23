@@ -19,12 +19,16 @@ export function closeSSEConnection(res: Response) {
     res.end();
 }
 
-export async function senderHandler(res: Response, gen: any) {
+export async function senderHandler(res: Response, gen: any): Promise<number> {
+    let counter = 0;
     for await (const data of gen) {
         console.log(data);
         if (data === null) {
             break;
         }
         sendSSEResponse(res, data);
+        counter++;
     }
+    console.log(`Sent ${counter} messages`);
+    return counter;
 }

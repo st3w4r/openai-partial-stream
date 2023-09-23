@@ -72,9 +72,16 @@ app.get('/sse', async (req: Request, res: Response) => {
         // TODO: Stop processing
     });
 
-    const gen = await callGenerateColors(mode);
-    // Send each message to the client via SSE
-    await senderHandler(res, gen);
+    let nbMsgSent = 0;
+    let retryCount = 0;
+    while (nbMsgSent === 0 && retryCount < 3) {
+        const gen = await callGenerateColors(mode);
+        // Send each message to the client via SSE
+        nbMsgSent = await senderHandler(res, gen);
+        retryCount++;
+    }
+    console.log(`Retry count: ${retryCount-1}`);
+
     // Close SSE connection
     closeSSEConnection(res);
     console.log("Done");
