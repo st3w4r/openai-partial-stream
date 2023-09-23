@@ -270,45 +270,108 @@
             color: beige;
             /* Change color when checked if desired */
         }
+
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+            /* adjust as necessary */
+        }
+
+
+
+        /* DEV MODE */
+        .toggle-button {
+            background-color: #555;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            display: block;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .dev-panel {
+            position: fixed;
+            bottom: 36px;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            overflow: auto;
+            max-height: 40vh;
+            z-index: 1000;
+        }
+
+        .dev-panel.active {
+            transform: translateY(0);
+        }
+
+        .panel-content {
+            padding: 20px;
+        }
     </style>
 </head>
 
 <body>
-    <button id="generateColors">Generate Colors</button>
 
-    <!-- Add this right above your Generate Colors button -->
-    <div id="modeSelector" class="button-bar">
-        <div class="active-overlay"></div>
+    <main>
+        <div id="mainContainer" class="main-container">
+            <button id="generateColors">Generate Colors</button>
 
-        <!-- <input type="radio" name="mode" id="Batch" value="Batch" class="mode-radio">
+            <!-- Add this right above your Generate Colors button -->
+            <div id="modeSelector" class="button-bar">
+                <div class="active-overlay"></div>
+
+                <!-- <input type="radio" name="mode" id="Batch" value="Batch" class="mode-radio">
         <label for="Batch" class="mode-button" data-tooltip="Loads all colors at once.">Batch</label> -->
 
-        <input type="radio" name="mode" id="NoStream" value="NoStream" class="mode-radio">
-        <label for="NoStream" class="mode-button" data-tooltip="Loads all colors at once.">All-Together</label>
+                <input type="radio" name="mode" id="NoStream" value="NoStream" class="mode-radio">
+                <label for="NoStream" class="mode-button" data-tooltip="Loads all colors at once.">All-Together</label>
 
-        <input type="radio" name="mode" id="StreamObject" value="StreamObject" class="mode-radio" checked>
-        <label for="StreamObject" class="mode-button" data-tooltip="Loads colors one by one.">One-By-One</label>
+                <input type="radio" name="mode" id="StreamObject" value="StreamObject" class="mode-radio" checked>
+                <label for="StreamObject" class="mode-button" data-tooltip="Loads colors one by one.">One-By-One</label>
 
-        <input type="radio" name="mode" id="StreamObjectKeyValue" value="StreamObjectKeyValue" class="mode-radio">
-        <label for="StreamObjectKeyValue" class="mode-button"
-            data-tooltip="Loads colors as they're ready.">Progressive</label>
+                <input type="radio" name="mode" id="StreamObjectKeyValue" value="StreamObjectKeyValue"
+                    class="mode-radio">
+                <label for="StreamObjectKeyValue" class="mode-button"
+                    data-tooltip="Loads colors as they're ready.">Progressive</label>
 
-        <input type="radio" name="mode" id="StreamObjectKeyValueTokens" value="StreamObjectKeyValueTokens"
-            class="mode-radio">
-        <label for="StreamObjectKeyValueTokens" class="mode-button"
-            data-tooltip="Loads colors in real-time.">Real-time</label>
-        <!-- All together Incremental Progessive Continuous -->
+                <input type="radio" name="mode" id="StreamObjectKeyValueTokens" value="StreamObjectKeyValueTokens"
+                    class="mode-radio">
+                <label for="StreamObjectKeyValueTokens" class="mode-button"
+                    data-tooltip="Loads colors in real-time.">Real-time</label>
+                <!-- All together Incremental Progessive Continuous -->
 
-    </div>
+            </div>
 
+            <div id="blocksContainer"></div>
+            <div id="voilaContainer" class="voila-style">Voila!</div>
 
+            <button id="toggleDevPanel" class="toggle-button">Look behind the scene!</button>
 
+        </div>
+        <div id="devPanel" class="dev-panel">
+            <div class="panel-content">
+                <h3>Requset List:</h3>
+                <ul id="requestList"></ul>
+            </div>
+        </div>
 
+    </main>
 
-    <div id="blocksContainer"></div>
-
-
-    <div id="voilaContainer" class="voila-style">Voila!</div>
 
     <script type="module">
         let blocks = [];
@@ -355,6 +418,10 @@
                 // Parse the data from the SSE message
                 const data = JSON.parse(event.data);
 
+                // Add the stringify version of the message to the request list
+                // Assuming you've parsed the SSE message data:
+                addRequestToList(JSON.stringify(data, null, 2)); // Pretty-print with 2 spaces indentation
+
                 if (data.status === 'PARTIAL' || data.status === 'COMPLETED') {
                     processBlock(data.index, data.data);
                 } else if (data.status === 'ERROR') {
@@ -375,6 +442,8 @@
             eventSource.addEventListener('CLOSE', function (e) {
                 console.log(e.data);  // "Closing connection"
                 eventSource.close();  // Close the connection from the client side
+
+                addRequestToList(JSON.stringify(e.data, null, 2)); // Pretty-print with 2 spaces indentation
 
                 // Reset the button to its original state
                 btn.textContent = "Generate Colors";
@@ -506,8 +575,25 @@
             }
         });
 
+        // DEV MODE
+        document.getElementById('toggleDevPanel').addEventListener('click', function () {
+            const devPanel = document.getElementById('devPanel');
+            if (devPanel.classList.contains('active')) {
+                devPanel.classList.remove('active');
+            } else {
+                devPanel.classList.add('active');
+            }
+        });
 
+        // Example: Adding a request to the list
+        function addRequestToList(request) {
+            const list = document.getElementById('requestList');
+            const listItem = document.createElement('li');
+            listItem.textContent = request;
+            list.appendChild(listItem);
+        }
     </script>
+
 
 </body>
 
