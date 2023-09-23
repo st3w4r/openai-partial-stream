@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { callGenerateColors } from './example.js';
+import { callGenerateColors, callGenerateTagline } from './example.js';
 
 const app = express();
 const PORT: number = 3000;
@@ -35,7 +35,28 @@ import { StreamMode } from "./utils.js";
 import { setSSEHeaders, sendSSEResponse, closeSSEConnection, senderHandler } from './sse.js';
 import { set } from 'zod';
 
+app.get("/sse/tagline", async (req: Request, res: Response) => {
 
+    // Extract mode from the query parameter
+    const mode: StreamMode = req.query.mode as StreamMode;
+
+    // Open SSE connection
+    setSSEHeaders(res);
+
+    // On client disconnect, remove them from the clients list
+    req.on('close', () => {
+        console.log("Client disconnected");
+        // TODO: Stop processing
+    });
+
+    const gen = await callGenerateTagline(mode);
+    // Send each message to the client via SSE
+    await senderHandler(res, gen);
+    // Close SSE connection
+    closeSSEConnection(res);
+    console.log("Done");
+
+});
 
 app.get('/sse', async (req: Request, res: Response) => {
 

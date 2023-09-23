@@ -25,6 +25,15 @@
             word-wrap: break-word;
             min-height: 150px;
 
+            /* Transition */
+            position: relative;
+            /* Allow for relative movement */
+            left: 0;
+            /* Start at a standard position */
+            transition: left 0.5s ease-out;
+            /* Smoothly transition the left property */
+
+
         }
 
 
@@ -270,10 +279,71 @@
             color: beige;
             /* Change color when checked if desired */
         }
+
+
+
+
+        .footer-text {
+            color: darkslategray;
+            /* font-family: Arial, sans-serif; */
+            /* or any other font you're using */
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            /* This will keep the text at the bottom regardless of scroll position */
+            bottom: 10px;
+            /* Adjust as needed */
+            left: 0;
+            z-index: 1000;
+            /* Ensure the text appears above other content */
+            /* background-color: darkslategray; */
+            /* color: #FFF; */
+        }
+
+        .footer-text a {
+            color: coral;
+            /* Example blue color for link */
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-text a:hover {
+            color: darkslategray;
+        }
+
+
+        .info-text {
+            /* font-family: Arial, sans-serif; */
+            /* or any other font you're using */
+            font-size: 26px;
+            /* Adjust font size as necessary */
+            margin-bottom: 20px;
+            /* Provide some space between the text and the color block container */
+            text-align: center;
+            /* Align the text to center, modify if needed */
+            color: beige;
+            background-color: darkslategray;
+            /* Adjust color as needed */
+            max-width: 80%;
+            /* Makes sure text doesn't stretch too wide on large screens */
+            margin-left: auto;
+            margin-right: auto;
+
+            min-height: 31px;
+        }
     </style>
 </head>
 
 <body>
+
+
+    <!-- Make AI apps more interactive and responsive. -->
+    <!-- Dive into the next-gen of immersive AI experiences. -->
+    <div class="info-text">
+    </div>
+
+
     <button id="generateColors">Generate Colors</button>
 
     <!-- Add this right above your Generate Colors button -->
@@ -303,12 +373,17 @@
 
 
 
-
-
     <div id="blocksContainer"></div>
 
 
     <div id="voilaContainer" class="voila-style">Voila!</div>
+
+    <div class="footer-text">
+        Made with <a href="https://github.com/st3w4r/partial-stream" target="_blank"
+            rel="noopener noreferrer">Partial-Stream</a>
+        and ChatGPT API function calling.
+    </div>
+
 
     <script type="module">
         let blocks = [];
@@ -407,6 +482,12 @@
                     colorBlocks[index] = data.hex;
                 }
 
+                // Move all existing blocks to make space for the new one
+                // Object.values(blocks).forEach(block => {
+                //     const currentLeft = parseInt(getComputedStyle(block).left, 10);
+                //     block.style.left = (currentLeft - 10) + 'px';  // assuming each block is 240px wide
+                // });
+
                 // Block does not exist; create it
                 const block = document.createElement('div');
                 block.className = 'color-block';
@@ -504,7 +585,35 @@
                 overlay.style.left = `${checkedButton.offsetLeft}px`;
                 overlay.style.width = `${checkedButton.offsetWidth}px`;
             }
+
+            // Fetch the tagline content
+            listenForTaglineUpdates();
         });
+
+        function listenForTaglineUpdates() {
+            const eventSource = new EventSource('http://localhost:3000/sse/tagline');
+
+            eventSource.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                if (data.data && data.data.tagline) {
+                    const infoTextElement = document.querySelector('.info-text');
+                    if (infoTextElement) {
+                        infoTextElement.textContent = data.data.tagline;
+                    }
+                }
+            };
+
+            eventSource.addEventListener('CLOSE', function (e) {
+                console.log(e.data);  // "Closing connection"
+                eventSource.close();
+
+            })
+
+            eventSource.onerror = function (event) {
+                console.error('Error occurred:', event);
+                eventSource.close();
+            };
+        }
 
 
     </script>
