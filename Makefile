@@ -13,6 +13,12 @@ web:
 	npm run build:website
 
 server: build
-	node dist/server.js
+	node web/server.js
+
+pack: lib
+	cp src/package.json lib/package.json
+	cd lib && npm pack
+
+
 
 .PHONY: all install build lib web server
