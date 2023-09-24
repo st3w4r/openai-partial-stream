@@ -1,4 +1,4 @@
-# entityai
+# Partial Stream - Unlock the potential of OpenaAI Function Calling streams
 
 To install dependencies:
 
