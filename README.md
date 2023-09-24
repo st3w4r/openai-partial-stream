@@ -1,4 +1,4 @@
-# Partial Stream - Unlock the potential of OpenaAI Function Calling streams
+# Partial Stream - Unlock the potential of OpenAI function calling
 
 To install dependencies:
 
