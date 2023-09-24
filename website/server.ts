@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 
-import { StreamMode } from "../src/utils.js";
+import { StreamMode } from "../lib/utils.js";
 import { callGenerateColors, callGenerateTagline } from './example.js';
 import { setSSEHeaders, closeSSEConnection, senderHandler } from './sse.js';
 

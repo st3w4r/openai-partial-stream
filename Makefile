@@ -1,15 +1,15 @@
 all: build run
 
 build:
-	tsc
+	npm run build
 
-run: build
-	node dist/index.js
+lib:
+	npm run build:lib
 
-example: build
-	node dist/example.js
+web:
+	npm run build:website
 
 server: build
 	node dist/server.js
 
-.PHONY: all build run example server
+.PHONY: all build lib web server

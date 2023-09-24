@@ -9,7 +9,7 @@ A set of challenges that need to be solve to implement the specification. In a p
 - Detect if inside a key or inside a value.
 - Wait for the whole key.
 - Early true/false detection.
-- Early key detection. Baed on schema. Key uniqueness.
+- Early key detection. Based on schema. Key uniqueness.
 - Key only, set value on null on waiting for the value.
 - Providate delta between the previous data and the current data. In a valid format.
 - Detect if the data is valid JSON.

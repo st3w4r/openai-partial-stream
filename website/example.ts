@@ -1,9 +1,9 @@
 import OpenAI from "openai";
 import { z } from "zod";
 
-import { StreamMode } from "../src/utils.js";
-import { OpenAiHandler } from "../src/openAiHandler.js";
-import { Entity } from "../src/entity.js";
+import { StreamMode } from "../lib/utils.js";
+import { OpenAiHandler } from "../lib/openAiHandler.js";
+import { Entity } from "../lib/entity.js";
 
 
 // Interface for developer how to use this library
