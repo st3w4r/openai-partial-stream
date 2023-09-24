@@ -1,0 +1,17 @@
+{
+    "name": "partial-stream-lib",
+    "module": "index.ts",
+    "type": "module",
+    "devDependencies": {
+        "@types/node": "^20.6.0",
+        "typescript": "^5.2.2"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "openai": "^4.6.0",
+        "zod": "^3.22.2",
+        "zod-to-ts": "^1.2.0"
+    }
+}

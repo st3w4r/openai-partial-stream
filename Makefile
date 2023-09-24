@@ -1,5 +1,8 @@
 all: build run
 
+install:
+	npm install
+
 build:
 	npm run build
 
@@ -12,4 +15,4 @@ web:
 server: build
 	node dist/server.js
 
-.PHONY: all build lib web server
+.PHONY: all install build lib web server

@@ -1,24 +1,11 @@
 {
-  "name": "entityai",
+  "name": "partial-stream",
   "module": "index.ts",
   "type": "module",
-  "devDependencies": {
-    "@types/clarinet": "^0.12.1",
-    "@types/express": "^4.17.17",
-    "@types/node": "^20.6.0",
-    "bun-types": "latest",
-    "typescript": "^5.2.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "clarinet": "^0.12.6",
-    "express": "^4.18.2",
-    "openai": "^4.6.0",
-    "zod": "^3.22.2",
-    "zod-to-ts": "^1.2.0"
-  },
+  "workspaces": [
+    "src",
+    "website"
+  ],
   "scripts": {
     "build:lib": "tsc -p tsconfig.lib.json",
     "build:website": "tsc -p tsconfig.website.json",
