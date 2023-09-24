@@ -18,5 +18,10 @@
     "openai": "^4.6.0",
     "zod": "^3.22.2",
     "zod-to-ts": "^1.2.0"
+  },
+  "scripts": {
+    "build:lib": "tsc -p tsconfig.lib.json",
+    "build:website": "tsc -p tsconfig.website.json",
+    "build": "npm run build:lib && npm run build:website"
   }
 }

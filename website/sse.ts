@@ -9,7 +9,6 @@ export function setSSEHeaders(res: Response) {
 }
 
 export function sendSSEResponse(res: Response, data: any) {
-    // const msg = { "message": data }
     res.write(`data: ${JSON.stringify(data)}\n\n`);
 }
 

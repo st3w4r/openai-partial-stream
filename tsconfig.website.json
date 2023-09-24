@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "NodeNext",
+        "rootDir": "./website",
+        "outDir": "./website/dist",
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "esModuleInterop": true
+    },
+    "include": [
+        "website/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "src/**/*",
+    ]
+}
