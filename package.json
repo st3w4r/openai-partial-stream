@@ -10,5 +10,7 @@
     "build:lib": "tsc -p tsconfig.lib.json",
     "build:website": "tsc -p tsconfig.website.json",
     "build": "npm run build:lib && npm run build:website"
-  }
+  },
+  "author": "Yanael Barbier",
+  "license": "MIT"
 }
