@@ -1,4 +1,3 @@
-import fs from "fs";
 import { StreamMode } from "./utils.js";
 import { JsonCloser } from "./jsonCloser.js";
 import { Status, StreamResponseWrapper, ErrorResponse } from "./utils.js";

@@ -2,6 +2,8 @@
     "name": "partial-stream-lib",
     "module": "index.ts",
     "type": "module",
+    "main": "index.js",
+    "types": "index.d.ts",
     "devDependencies": {
         "@types/node": "^20.6.0",
         "typescript": "^5.2.2"
