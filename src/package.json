@@ -1,7 +1,7 @@
 {
     "name": "partial-stream-lib",
     "version": "0.1.0",
-    "type": "commonjs",
+    "type": "module",
     "main": "index.js",
     "types": "index.d.ts",
     "devDependencies": {
@@ -15,5 +15,17 @@
         "openai": "^4.6.0",
         "zod": "^3.22.2",
         "zod-to-ts": "^1.2.0"
+    },
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./esm/index.d.ts",
+                "default": "./esm/index.js"
+            },
+            "require": {
+                "types": "./cjs/index.d.ts",
+                "default": "./cjs/index.js"
+            }
+        }
     }
 }

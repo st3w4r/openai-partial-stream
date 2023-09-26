@@ -8,10 +8,14 @@
     "website"
   ],
   "scripts": {
-    "build:lib": "tsc -p tsconfig.lib.json",
+    "clean": "rm -rf lib",
+    "build:lib": "tsc -p tsconfig.lib.cjs.json && tsc -p tsconfig.lib.esm.json",
     "build:website": "tsc -p tsconfig.website.json",
     "build": "npm run build:lib && npm run build:website"
   },
   "author": "Yanael Barbier",
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "lib/**/*"
+  ]
 }
