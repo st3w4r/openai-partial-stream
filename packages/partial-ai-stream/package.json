@@ -20,5 +20,8 @@
     "scripts": {
         "build": "tsup src/**/*.ts --format esm,cjs --dts --clean",
         "dev": "npm run build -- --watch"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

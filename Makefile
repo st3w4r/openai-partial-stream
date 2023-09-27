@@ -30,6 +30,9 @@ pack: lib
 	cd dist && npm pack
 	cd lib && npm pack
 
+publish:
+	npx changeset version
+	npx changeset publish
 
 
 .PHONY: all install build lib web server
