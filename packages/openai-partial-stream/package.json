@@ -19,6 +19,13 @@
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "require": "./dist/index.js",
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.ts"
+        }
+    },
     "scripts": {
         "build": "tsup src/**/*.ts --format esm,cjs --dts --clean",
         "dev": "npm run build -- --watch"
