@@ -1,15 +1,29 @@
-all: build run
+all: install build
+
+install:
+	npm install
 
 build:
-	tsc
+	turbo build
 
-run: build
-	node dist/index.js
+lib:
+	turbo build --filter=openai-partial-stream
 
-example: build
-	node dist/example.js
+web:
+	turbo build --filter=partial-ai-stream-website
 
 server: build
-	node dist/server.js
+	node apps/colors/dist/server.js
 
-.PHONY: all build run example server
+pack: lib
+	cd packages/openai-partial-stream && npm pack
+
+version:
+	npx changeset
+
+publish:
+	npx changeset version
+	npx changeset publish
+
+
+.PHONY: all install build lib web server

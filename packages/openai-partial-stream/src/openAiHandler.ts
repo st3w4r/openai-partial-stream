@@ -1,7 +1,5 @@
 import { StreamMode, StreamResponseWrapper, Status } from "./utils.js";
-
-import { StreamParser } from "./streamParser5.js";
-import { writeFileSync } from "fs";
+import { StreamParser } from "./streamParser.js";
 
 
 export class OpenAiHandler {
@@ -19,19 +17,13 @@ export class OpenAiHandler {
     async *process(stream: any): AsyncGenerator<StreamResponseWrapper | null, void, unknown>{
 
         for await (const msg of stream) {
-            // TODO: write to file each message
-
-            // writeFileSync("openai.jsonl", JSON.stringify(msg) + "\n", { flag: "a" });
-
-
-
             let content = "";
 
             content = msg.choices[0].delta.content;
 
+            // If no content, check function calling content
             if (!content) {
                 content = msg.choices[0]?.delta?.function_call?.arguments + "";
-                // console.log("FUNCTION CALL:", content);
             }
 
             const res = this.parser.parse(content);;
@@ -59,7 +51,6 @@ export class OpenAiHandler {
             };
             yield streamRes;
         }
-        yield null;
     }
 
 }

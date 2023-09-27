@@ -6,7 +6,6 @@ export enum StreamMode {
     StreamObjectKeyValueTokens = "StreamObjectKeyValueTokens"
 }
 
-
 export enum Status {
     COMPLETED = "COMPLETED",
     PARTIAL = "PARTIAL",
@@ -18,4 +17,10 @@ export type StreamResponseWrapper = {
     index: number;
     status: Status;
     data: any;
+}
+
+export type ErrorResponse = {
+    code: string,
+    error: string,
+    message: string,
 }

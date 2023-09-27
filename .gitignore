@@ -167,3 +167,11 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.\*
+
+
+buid/**
+dist/**
+
+.turbo
+
+.DS_Store

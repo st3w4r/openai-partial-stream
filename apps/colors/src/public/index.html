@@ -423,7 +423,7 @@
 
 
             // Connect to the SSE endpoint using the selected mode:
-            const eventSource = new EventSource(`http://localhost:3000/sse?mode=${selectedMode}`);
+            const eventSource = new EventSource(`http://localhost:3000/sse/colors?mode=${selectedMode}`);
 
 
             eventSource.onmessage = function (event) {

@@ -1,5 +1,8 @@
 import express, { Request, Response } from 'express';
+
+import { StreamMode } from "openai-partial-stream";
 import { callGenerateColors, callGenerateTagline } from './example.js';
+import { setSSEHeaders, closeSSEConnection, senderHandler } from './sse.js';
 
 const app = express();
 const PORT: number = 3000;
@@ -26,14 +29,8 @@ app.use((req: Request, res: Response, next: Function) => {
 });
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello, World!');
+    res.send('Welcome to Partial Stream!');
 });
-
-
-import { StreamMode } from "./utils.js";
-
-import { setSSEHeaders, sendSSEResponse, closeSSEConnection, senderHandler } from './sse.js';
-import { set } from 'zod';
 
 app.get("/sse/tagline", async (req: Request, res: Response) => {
 
@@ -58,7 +55,7 @@ app.get("/sse/tagline", async (req: Request, res: Response) => {
 
 });
 
-app.get('/sse', async (req: Request, res: Response) => {
+app.get('/sse/colors', async (req: Request, res: Response) => {
 
     // Extract mode from the query parameter
     const mode: StreamMode = req.query.mode as StreamMode;
@@ -72,6 +69,7 @@ app.get('/sse', async (req: Request, res: Response) => {
         // TODO: Stop processing
     });
 
+    // Retry 3 times if no message is sent
     let nbMsgSent = 0;
     let retryCount = 0;
     while (nbMsgSent === 0 && retryCount < 3) {
