@@ -1,5 +1,7 @@
 {
     "name": "partial-ai-stream-lib",
+    "author": "Yanael Barbier",
+    "license": "MIT",
     "private": false,
     "version": "0.2.1",
     "devDependencies": {
@@ -25,6 +27,8 @@
         "access": "public"
     },
     "files": [
+        "README.md",
+        "LICENSE",
         "dist"
     ]
 }
