@@ -12,7 +12,7 @@
         "typescript": "^5.0.0"
     },
     "dependencies": {
-        "partial-ai-stream-lib": "*",
+        "openai-partial-stream": "*",
         "express": "^4.18.2",
         "openai": "^4.6.0",
         "zod": "^3.22.2",

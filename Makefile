@@ -7,7 +7,7 @@ build:
 	turbo build
 
 lib:
-	turbo build --filter=partial-ai-stream-lib
+	turbo build --filter=openai-partial-stream
 
 web:
 	turbo build --filter=partial-ai-stream-website
@@ -16,7 +16,7 @@ server: build
 	node apps/colors/dist/server.js
 
 pack: lib
-	cd packages/partial-ai-stream && npm pack
+	cd packages/openai-partial-stream && npm pack
 
 version:
 	npx changeset

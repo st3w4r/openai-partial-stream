@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { z } from "zod";
 
-import { StreamMode, OpenAiHandler, Entity } from "partial-ai-stream-lib";
+import { StreamMode, OpenAiHandler, Entity } from "openai-partial-stream";
 
 
 // Interface for developer how to use this library
