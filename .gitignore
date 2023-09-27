@@ -173,3 +173,5 @@ buid/**
 dist/**
 
 .turbo
+
+.DS_Store
