@@ -1,9 +1,6 @@
 {
     "name": "partial-stream-lib",
     "version": "0.1.0",
-    "type": "module",
-    "main": "index.js",
-    "types": "index.d.ts",
     "devDependencies": {
         "@types/node": "^20.6.0",
         "typescript": "^5.2.2"
@@ -19,10 +16,12 @@
     "exports": {
         ".": {
             "import": {
+                "main": "./esm/index.js",
                 "types": "./esm/index.d.ts",
                 "default": "./esm/index.js"
             },
             "require": {
+                "main": "./cjs/index.js",
                 "types": "./cjs/index.d.ts",
                 "default": "./cjs/index.js"
             }
