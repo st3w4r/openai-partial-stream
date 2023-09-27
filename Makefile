@@ -30,6 +30,9 @@ pack: lib
 	cd dist && npm pack
 	cd lib && npm pack
 
+version:
+	npx changeset
+
 publish:
 	npx changeset version
 	npx changeset publish
