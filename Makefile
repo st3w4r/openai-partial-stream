@@ -1,34 +1,22 @@
-all: build run
+all: install build
 
 install:
 	npm install
 
 build:
-	npm run build
+	turbo build
 
-clean:
-	npm run clean
-
-lib: clean
-	npm run build:lib
-
-lib-esm:
-	npm run build:lib:esm
-
-lib-cjs:
-	npm run build:lib:cjs
+lib:
+	turbo build --filter=partial-ai-stream-lib
 
 web:
-	npm run build:web
+	turbo build --filter=partial-ai-stream-website
 
 server: build
-	node web/server.js
+	node apps/colors/dist/server.js
 
 pack: lib
-	cp src/package.json dist/package.json
-	cp src/package.json lib/package.json
-	cd dist && npm pack
-	cd lib && npm pack
+	cd packages/partial-ai-stream && npm pack
 
 version:
 	npx changeset
