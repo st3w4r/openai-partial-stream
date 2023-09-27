@@ -1,5 +1,6 @@
 {
-    "name": "partial-stream-website",
+    "name": "partial-ai-stream-website",
+    "private": true,
     "main": "server.ts",
     "type": "commonjs",
     "devDependencies": {
@@ -11,9 +12,15 @@
         "typescript": "^5.0.0"
     },
     "dependencies": {
+        "openai-partial-stream": "*",
         "express": "^4.18.2",
         "openai": "^4.6.0",
         "zod": "^3.22.2",
         "zod-to-ts": "^1.2.0"
+    },
+    "scripts": {
+        "build": "tsup src/**/*.ts --format esm,cjs --dts --clean",
+        "dev": "npm run build -- --watch",
+        "start": "node dist/server.js"
     }
 }

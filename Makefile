@@ -1,35 +1,29 @@
-all: build run
+all: install build
 
 install:
 	npm install
 
 build:
-	npm run build
+	turbo build
 
-clean:
-	npm run clean
-
-lib: clean
-	npm run build:lib
-
-lib-esm:
-	npm run build:lib:esm
-
-lib-cjs:
-	npm run build:lib:cjs
+lib:
+	turbo build --filter=openai-partial-stream
 
 web:
-	npm run build:web
+	turbo build --filter=partial-ai-stream-website
 
 server: build
-	node web/server.js
+	node apps/colors/dist/server.js
 
 pack: lib
-	cp src/package.json dist/package.json
-	cp src/package.json lib/package.json
-	cd dist && npm pack
-	cd lib && npm pack
+	cd packages/openai-partial-stream && npm pack
 
+version:
+	npx changeset
+
+publish:
+	npx changeset version
+	npx changeset publish
 
 
 .PHONY: all install build lib web server

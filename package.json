@@ -2,25 +2,22 @@
   "name": "partial-ai",
   "version": "0.1.0",
   "type": "commonjs",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "workspaces": [
-    "src",
-    "website"
+    "packages/*",
+    "apps/*"
   ],
-  "scripts": {
-    "clean": "rm -rf dist",
-    "build:lib": "tsup src/**/*.ts --format esm,cjs --dts --clean",
-    "build:web": "tsc -p tsconfig.website.json",
-    "build": "npm run build:lib && npm run build:web"
-  },
   "author": "Yanael Barbier",
   "license": "MIT",
-  "files": [
-    "lib/**/*"
-  ],
   "devDependencies": {
+    "changeset": "^0.2.6",
     "tsup": "^7.2.0"
+  },
+  "packageManager": "npm@9.8.1",
+  "dependencies": {
+    "@changesets/cli": "^2.26.2",
+    "turbo": "^1.10.14"
+  },
+  "scripts": {
+    "publish-packages": "turbo run build && changeset version && changeset publish"
   }
 }

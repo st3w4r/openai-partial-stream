@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 
-import { StreamMode } from "../dist/index.js";
+import { StreamMode } from "openai-partial-stream";
 import { callGenerateColors, callGenerateTagline } from './example.js';
 import { setSSEHeaders, closeSSEConnection, senderHandler } from './sse.js';
 

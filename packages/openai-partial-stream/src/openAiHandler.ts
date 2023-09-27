@@ -51,7 +51,6 @@ export class OpenAiHandler {
             };
             yield streamRes;
         }
-        yield null;
     }
 
 }
