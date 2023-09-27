@@ -1,5 +1,6 @@
 {
     "name": "partial-ai-stream-website",
+    "private": true,
     "main": "server.ts",
     "type": "commonjs",
     "devDependencies": {
