@@ -1,11 +1,10 @@
 {
     "name": "partial-stream-website",
-    "module": "index.ts",
-    "type": "module",
+    "main": "server.ts",
+    "type": "commonjs",
     "devDependencies": {
         "@types/express": "^4.17.17",
         "@types/node": "^20.6.0",
-        "bun-types": "latest",
         "typescript": "^5.2.2"
     },
     "peerDependencies": {

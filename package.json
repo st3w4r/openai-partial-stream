@@ -1,18 +1,19 @@
 {
   "name": "partial-ai",
   "version": "0.1.0",
-  "module": "index.ts",
   "type": "commonjs",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "workspaces": [
     "src",
     "website"
   ],
   "scripts": {
-    "clean": "rm -rf lib",
+    "clean": "rm -rf dist",
     "build:lib": "tsup src/**/*.ts --format esm,cjs --dts --clean",
-    "build:lib:esm": "tsc -p tsconfig.lib.esm.json",
-    "build:lib:cjs": "tsc -p tsconfig.lib.cjs.json",
-    "build": "npm run build:lib && npm run build:website"
+    "build:web": "tsc -p tsconfig.website.json",
+    "build": "npm run build:lib && npm run build:web"
   },
   "author": "Yanael Barbier",
   "license": "MIT",

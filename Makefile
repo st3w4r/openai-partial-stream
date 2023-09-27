@@ -19,12 +19,12 @@ lib-cjs:
 	npm run build:lib:cjs
 
 web:
-	npm run build:website
+	npm run build:web
 
 server: build
 	node web/server.js
 
-pack: lib lib-esm lib-cjs
+pack: lib
 	cp src/package.json dist/package.json
 	cp src/package.json lib/package.json
 	cd dist && npm pack
