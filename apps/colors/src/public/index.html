@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Color Blocks</title>
+    <style>
+        .color-block {
+            /* min-width: 150px; */
+            width: 200px;
+            /* Set minimum width so it doesn't get too small */
+            padding: 20px 10px;
+            /* Padding to space out content */
+            margin: 20px;
+            text-align: left;
+            font-family: Arial, sans-serif;
+            /* border: 2px solid #ccc; */
+            border: 4px solid whitesmoke;
+            border-radius: 15px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.5s, background-color 0.3s ease;
+            opacity: 0;
+
+            word-wrap: break-word;
+            min-height: 150px;
+
+            /* Transition */
+            position: relative;
+            /* Allow for relative movement */
+            left: 0;
+            /* Start at a standard position */
+            transition: left 0.5s ease-out;
+            /* Smoothly transition the left property */
+
+
+        }
+
+
+        .color-block:hover {
+            transform: scale(1.05);
+            box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-description {
+            margin-top: 10px;
+        }
+
+        .color-code {
+            display: none;
+        }
+
+        .color-block:hover .color-code {
+            display: block;
+        }
+
+        #buttonContainer {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        body {
+            /* height: 100vh; */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            /* Changed to column to stack vertically */
+            align-items: center;
+            background-color: #f7f7f7;
+            padding-top: 150px;
+            /* Space at the top for the button */
+            background-color: beige;
+            /* This sets the entire website's background color */
+        }
+
+
+        #generateColors {
+            margin-bottom: 20px;
+            background-color: coral;
+            padding: 20px;
+            border: 0;
+            color: beige;
+            font-size: x-large;
+            font-weight: bold;
+            cursor: pointer;
+            /* Change the cursor to a hand when hovering over the button */
+            transition: background-color 0.3s, transform 0.3s;
+            /* For a smooth color and size transition on hover */
+            border-radius: 5px;
+            /* Add some rounded corners */
+        }
+
+        #generateColors:hover {
+            background-color: darkred;
+            /* Darken the button color on hover for a hover effect */
+            transform: scale(1.05);
+            /* Make the button slightly larger on hover for a hover effect */
+        }
+
+
+        #blocksContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            /* Center the blocks horizontally */
+            align-items: self-start;
+            /* Center the blocks vertically */
+            flex-grow: 1;
+            /* Allow the container to grow and take up remaining space */
+        }
+
+        .color-name {
+            color: beige;
+            font-weight: bold;
+            font-size: xxx-large;
+        }
+
+        .color-description {
+            color: beige;
+            text-align: justify
+                /* font-weight: bold; */
+                /* font-size: xxx-large; */
+        }
+
+        .color-content {
+            display: flex;
+            flex-direction: column;
+            /* Stack children vertically */
+            justify-content: center;
+            /* Vertically center children */
+            height: 100%;
+            /* Take full height of the parent */
+            transition: opacity 0.5s ease-in;
+        }
+
+        /* ... (rest of your CSS code) ... */
+
+        .voila-style {
+            text-align: center;
+            margin-top: 20px;
+            font-size: x-large;
+            font-weight: bold;
+            background-color: beige;
+            /* Background similar to your body */
+            color: darkred;
+            /* To harmonize with the hover effect of your button */
+            padding: 10px 20px 40px;
+            /* Padding to give it a bit of space */
+            /* border-radius: 5px; */
+            /* Same as your button for consistency */
+            /* box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); */
+            /* Slight shadow for depth, similar to your blocks */
+            /* border: 2px solid whitesmoke; */
+            /* Adding a border similar to your color blocks */
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+
+
+        ::selection {
+            background-color: coral;
+            /* Background color of the selected text */
+            color: white;
+            /* Text color of the selected text */
+        }
+
+        /* For Firefox, you might need to include the following as well */
+        ::-moz-selection {
+            background-color: coral;
+            color: white;
+        }
+
+        /* Additional -webkit prefix for Safari */
+        ::-webkit-selection {
+            background-color: coral;
+            color: white;
+        }
+
+
+        /* Enhanced keyframes for the light passing effect */
+        @keyframes shineEffect {
+            from {
+                background-position: -300% 0;
+            }
+
+            to {
+                background-position: 300% 0;
+            }
+        }
+
+        #generateColors.processing {
+            color: transparent;
+            /* Set text color to transparent during processing */
+            background: linear-gradient(120deg,
+                    coral,
+                    transparent,
+                    rgba(255, 255, 255, 0.1),
+                    rgba(255, 255, 255, 0.5),
+                    rgba(255, 255, 255, 0.1),
+                    transparent,
+                    coral);
+            background-size: 300% 100%;
+            animation: shineEffect 5s infinite;
+            /* Slowed down the animation to 3 seconds */
+            cursor: not-allowed;
+            -webkit-background-clip: text;
+            /* To apply gradient effect only to the text */
+            background-clip: text;
+        }
+
+
+
+        /* Add this to your CSS */
+        .button-bar {
+            display: flex;
+            align-items: center;
+            background-color: darkslategray;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            /* To hide the overflow of the moving overlay */
+            z-index: 1;
+            /* Making sure this container is above the overlay */
+
+            white-space: nowrap;
+        }
+
+
+        .active-overlay {
+            position: absolute;
+            height: 100%;
+            background-color: coral;
+            transition: left 0.3s, width 0.3s; // Add width to the transition properties.
+        }
+
+        .active-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: coral;
+            z-index: 1;
+            /* Ensures the overlay is beneath the text labels but above the gray background */
+        }
+
+
+
+        .mode-radio {
+            display: none;
+        }
+
+        .mode-button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
+            color: beige;
+            font-size: large;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+            /* Needed to set a z-index */
+            z-index: 2;
+            /* Ensures the text labels are above the overlay */
+
+        }
+
+        /* Modify the hover effect to work with labels */
+        .mode-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Add a new style for checked radio buttons */
+        .mode-radio:checked+.mode-button {
+            color: beige;
+            /* Change color when checked if desired */
+        }
+
+
+
+
+        .footer-text {
+            color: darkslategray;
+            /* font-family: Arial, sans-serif; */
+            /* or any other font you're using */
+            font-size: 16px;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            /* This will keep the text at the bottom regardless of scroll position */
+            bottom: 10px;
+            /* Adjust as needed */
+            left: 0;
+            z-index: 1000;
+            /* Ensure the text appears above other content */
+            /* background-color: darkslategray; */
+            /* color: #FFF; */
+        }
+
+        .footer-text a {
+            color: coral;
+            /* Example blue color for link */
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-text a:hover {
+            color: darkslategray;
+        }
+
+
+        .info-text {
+            /* font-family: Arial, sans-serif; */
+            /* or any other font you're using */
+            font-size: 26px;
+            /* Adjust font size as necessary */
+            margin-bottom: 20px;
+            /* Provide some space between the text and the color block container */
+            text-align: center;
+            /* Align the text to center, modify if needed */
+            color: beige;
+            background-color: darkslategray;
+            /* Adjust color as needed */
+            max-width: 80%;
+            /* Makes sure text doesn't stretch too wide on large screens */
+            margin-left: auto;
+            margin-right: auto;
+
+            min-height: 31px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- Make AI apps more interactive and responsive. -->
+    <!-- Dive into the next-gen of immersive AI experiences. -->
+    <div class="info-text">
+    </div>
+
+
+    <button id="generateColors">Generate Colors</button>
+
+    <!-- Add this right above your Generate Colors button -->
+    <div id="modeSelector" class="button-bar">
+        <div class="active-overlay"></div>
+
+        <!-- <input type="radio" name="mode" id="Batch" value="Batch" class="mode-radio">
+        <label for="Batch" class="mode-button" data-tooltip="Loads all colors at once.">Batch</label> -->
+
+        <input type="radio" name="mode" id="NoStream" value="NoStream" class="mode-radio">
+        <label for="NoStream" class="mode-button" data-tooltip="Loads all colors at once.">All-Together</label>
+
+        <input type="radio" name="mode" id="StreamObject" value="StreamObject" class="mode-radio" checked>
+        <label for="StreamObject" class="mode-button" data-tooltip="Loads colors one by one.">One-By-One</label>
+
+        <input type="radio" name="mode" id="StreamObjectKeyValue" value="StreamObjectKeyValue" class="mode-radio">
+        <label for="StreamObjectKeyValue" class="mode-button"
+            data-tooltip="Loads colors as they're ready.">Progressive</label>
+
+        <input type="radio" name="mode" id="StreamObjectKeyValueTokens" value="StreamObjectKeyValueTokens"
+            class="mode-radio">
+        <label for="StreamObjectKeyValueTokens" class="mode-button"
+            data-tooltip="Loads colors in real-time.">Real-time</label>
+        <!-- All together Incremental Progessive Continuous -->
+
+    </div>
+
+
+
+    <div id="blocksContainer"></div>
+
+
+    <div id="voilaContainer" class="voila-style">Voila!</div>
+
+    <div class="footer-text">
+        Stepping into the arena with <a href="https://github.com/st3w4r/partial-stream" target="_blank"
+            rel="noopener noreferrer">Partial-Stream</a>
+        and ChatGPT API function calling.
+    </div>
+
+
+    <script type="module">
+        let blocks = [];
+        let colorBlocks = [];
+        let copiedColors = [];  // To maintain a list of copied colors
+
+        function clearBlocks() {
+            const container = document.getElementById('blocksContainer');
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+            blocks = [];
+            document.getElementById('voilaContainer').style.opacity = "0";
+        }
+
+
+        function callGenerateColors() {
+            const btn = document.getElementById('generateColors');
+
+
+
+
+            // Change the button text to "Processing..." and disable it
+            btn.textContent = "Streaming Colors";
+            // btn.textContent = "Generate Colors";
+            btn.disabled = true;
+            btn.classList.add("processing");
+
+            clearBlocks();
+
+            // Retrieve the selected mode:
+            const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+
+            console.log("selected mode", selectedMode);
+            // OR
+            // const selectedMode = document.querySelector('.mode-radio:checked').value;
+
+
+            // Connect to the SSE endpoint using the selected mode:
+            const eventSource = new EventSource(`http://localhost:3000/sse/colors?mode=${selectedMode}`);
+
+
+            eventSource.onmessage = function (event) {
+                // Parse the data from the SSE message
+                const data = JSON.parse(event.data);
+
+                if (data.status === 'PARTIAL' || data.status === 'COMPLETED') {
+                    processBlock(data.index, data.data);
+                } else if (data.status === 'ERROR') {
+                    console.error('Error occurred:', data);
+                }
+            };
+
+            eventSource.onerror = function (event) {
+                console.error('Error occurred:', event);
+                eventSource.close();
+
+                // Error
+                btn.textContent = "Oops! Retry a bit later";
+                btn.disabled = false;
+                btn.classList.remove("processing");
+            };
+
+            eventSource.addEventListener('CLOSE', function (e) {
+                console.log(e.data);  // "Closing connection"
+                eventSource.close();  // Close the connection from the client side
+
+                // Reset the button to its original state
+                btn.textContent = "Generate Colors";
+                btn.disabled = false;
+                btn.classList.remove("processing");
+                document.getElementById('voilaContainer').style.opacity = "1";
+            });
+        }
+
+
+        document.getElementById('generateColors').addEventListener('click', () => callGenerateColors());
+
+
+        function processBlock(index, data) {
+            // Check if the current mode is NoStream and handle the list
+            const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+            if (selectedMode === 'Batch' && Array.isArray(data)) {
+                data.forEach((item, idx) => {
+                    processSingleBlock(idx, item);
+                });
+            } else {
+                processSingleBlock(index, data);
+            }
+        }
+
+        function processSingleBlock(index, data) {
+            if (!blocks[index]) {
+
+                if (data.hex) {
+                    colorBlocks[index] = data.hex;
+                }
+
+                // Move all existing blocks to make space for the new one
+                // Object.values(blocks).forEach(block => {
+                //     const currentLeft = parseInt(getComputedStyle(block).left, 10);
+                //     block.style.left = (currentLeft - 10) + 'px';  // assuming each block is 240px wide
+                // });
+
+                // Block does not exist; create it
+                const block = document.createElement('div');
+                block.className = 'color-block';
+                // block.style.backgroundColor = data.hex || '#FFFFFF';  // Default to white if hex isn't provided
+                block.style.backgroundColor = data.hex || 'beige';  // Default to white if hex isn't provided
+                //             block.innerHTML = `
+                //     <span class="color-name">${data.name || ''}</span>
+                //     <span class="color-description">${data.description || ''}</span>
+                // `;
+                block.innerHTML = `
+                        <div class="color-content">
+                            <span class="color-name">${data.name || ''}</span>
+                            <span class="color-description">${data.description || ''}</span>
+                        </div>
+                    `;
+
+
+                block.style.opacity = 0;  // Initially set to 0
+                document.getElementById('blocksContainer').appendChild(block);
+                blocks[index] = block;
+
+
+                // Add click event to copy the hex code
+                block.addEventListener('click', function () {
+                    const hexCode = colorBlocks[index];
+                    const colorNameElement = block.querySelector('.color-name');
+                    const colorDescriptionElement = block.querySelector('.color-description');
+                    const originalNameText = colorNameElement.getAttribute('data-original') || colorNameElement.textContent;
+                    const originalDescriptionText = colorDescriptionElement.getAttribute('data-original') || colorDescriptionElement.textContent;
+
+                    // Check if color is already copied
+                    if (copiedColors.includes(hexCode)) {
+                        // Color was previously copied; remove it
+                        copiedColors = copiedColors.filter(color => color !== hexCode);
+                        // Revert the texts back to original
+                        colorNameElement.textContent = originalNameText;
+                        colorDescriptionElement.textContent = originalDescriptionText;
+                    } else {
+                        // Color was not copied before; add it
+                        copiedColors.push(hexCode);
+                        // Store original texts in 'data-original' attributes for future use
+                        colorNameElement.setAttribute('data-original', originalNameText);
+                        colorDescriptionElement.setAttribute('data-original', originalDescriptionText);
+                        // Set new texts
+                        colorNameElement.textContent = 'COPIED';
+                        colorDescriptionElement.textContent = hexCode;
+                    }
+
+                    // Update the clipboard with the list of copied colors
+                    navigator.clipboard.writeText(copiedColors.join('\n')).then(() => {
+                        console.log('Clipboard updated with copied colors');
+                    }, (err) => {
+                        console.error('Could not update clipboard: ', err);
+                    });
+                });
+
+
+
+                // Delay to let the block be added to the DOM, then fade in.
+                setTimeout(() => {
+                    block.style.opacity = 1;
+                }, 50);
+            } else {
+                // Block exists; update it
+                colorBlocks[index] = data.hex;
+
+                const block = blocks[index];
+                if (data.hex) block.style.backgroundColor = data.hex;
+                if (data.name) block.querySelector('.color-name').textContent = data.name;
+                if (data.description) block.querySelector('.color-description').textContent = data.description;
+            }
+        }
+
+
+        document.querySelectorAll('.mode-button').forEach((btn, idx) => {
+            btn.addEventListener('click', () => {
+
+                const overlay = document.querySelector('.active-overlay');
+
+                overlay.style.left = `${btn.offsetLeft}px`;  // Set overlay to start at the button's left offset.
+                overlay.style.width = `${btn.offsetWidth}px`;  // Set overlay width to match the button's width.
+
+
+                // Your color generation logic can now also access the selected mode using:
+                // document.querySelector('.mode-radio:checked').value
+            });
+        });
+
+        // Initialize the overlay's position and width to match the default checked button
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add this new code to adjust the overlay based on the checked radio button
+            const checkedButton = document.querySelector('.mode-radio:checked + .mode-button');
+            if (checkedButton) {
+                const overlay = document.querySelector('.active-overlay');
+                overlay.style.left = `${checkedButton.offsetLeft}px`;
+                overlay.style.width = `${checkedButton.offsetWidth}px`;
+            }
+
+            // Fetch the tagline content
+            listenForTaglineUpdates();
+        });
+
+        function listenForTaglineUpdates() {
+            const eventSource = new EventSource('http://localhost:3000/sse/tagline');
+
+            eventSource.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                if (data.data && data.data.tagline) {
+                    const infoTextElement = document.querySelector('.info-text');
+                    if (infoTextElement) {
+                        infoTextElement.textContent = data.data.tagline;
+                    }
+                }
+            };
+
+            eventSource.addEventListener('CLOSE', function (e) {
+                console.log(e.data);  // "Closing connection"
+                eventSource.close();
+
+            })
+
+            eventSource.onerror = function (event) {
+                console.error('Error occurred:', event);
+                eventSource.close();
+            };
+        }
+
+
+    </script>
+
+</body>
+
+</html>
