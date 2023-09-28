@@ -104,7 +104,7 @@ Output:
 
 # Modes
 
-Choose from one of the following modes based on your needs:
+Select a mode from the list below that best suits your requirements:
 
 1. **NoStream**
 2. **StreamObject**
@@ -115,59 +115,59 @@ Choose from one of the following modes based on your needs:
 
 ### NoStream
 
-The entire query will be completed before returning any results.
+Results are returned only after the entire query completes.
 
 | **NoStream Details**                                         |
 |--------------------------------------------------------------|
 | ✅ **Pros:**                                                 |
-| - One query to fetch the entire data                         |
-| - Minimizes network traffic                                  |
+| - Single query retrieves all data                            |
+| - Reduces network traffic                                    |
 | ❌ **Cons:**                                                 |
-| - User experience is affected: users must wait a considerable time before consuming any data |
+| - User experience may be compromised due to extended wait times |
 
 ---
 
 ### StreamObject
 
-Returns an event for each entity/object in the list. Each object appears in the list when it's ready.
+An event is generated for each item in the list. Items appear as they become ready.
 
 | **StreamObject Details**                                     |
 |--------------------------------------------------------------|
 | ✅ **Pros:**                                                 |
-| - Each message corresponds to a complete entity/object       |
-| - Low message count                                          |
-| - All required fields arrive simultaneously                  |
+| - Each message corresponds to a fully-formed item            |
+| - Fewer messages                                            |
+| - All required fields are received at once                  |
 | ❌ **Cons:**                                                 |
-| - Slightly delayed: users must wait for the entire object to be ready before updating the UI |
+| - Some delay: users need to wait until an item is fully ready to update the UI |
 
 ---
 
 ### StreamObjectKeyValue
 
-Objects arrive partially; both the key and its associated value become available simultaneously.
+Objects are received in fragments: both a key and its corresponding value are sent together.
 
 | **StreamObjectKeyValue Details**                             |
 |--------------------------------------------------------------|
 | ✅ **Pros:**                                                 |
-| - Users can interact with parts of the interface             |
-| - Enables more frequent UI updates                           |
+| - Users can engage with portions of the UI                   |
+| - Supports more regular UI updates                           |
 | ❌ **Cons:**                                                 |
-| - Increased network traffic                                 |
-| - Partial objects make it hard to enforce required keys      |
+| - Higher network traffic                                     |
+| - Challenges in enforcing keys due to incomplete objects     |
 
 ---
 
-### StreamObjectKeyValueToken
+### StreamObjectKeyValueTokens
 
-Each key arrives fully, but the value arrives in parts until completion. This approach enhances the ability to update the UI token by token.
+Keys are received in full, while values are delivered piecemeal until they're complete. This method offers token-by-token UI updating.
 
 | **StreamObjectKeyValueToken Details**                        |
 |--------------------------------------------------------------|
 | ✅ **Pros:**                                                 |
-| - Highly interactive experience                             |
-| - Progressive content consumption                           |
-| - Reduces user wait times                                   |
+| - Offers a dynamic user experience                           |
+| - Enables realtime content consumption                      |
+| - Decreases user waiting times                              |
 | ❌ **Cons:**                                                 |
-| - Potential UI flashing: values arriving token by token may produce unexpected visuals |
-| - Increased network traffic                                 |
+| - Possible UI inconsistencies due to values arriving incrementally |
+| - Augmented network traffic                                 |
 
