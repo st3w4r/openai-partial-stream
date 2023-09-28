@@ -1,9 +1,10 @@
 all: install build
 
 install:
+	npm install turbo --global
 	npm install
 
-build:
+build: install
 	turbo build
 
 lib:

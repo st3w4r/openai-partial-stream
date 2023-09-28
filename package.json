@@ -10,13 +10,12 @@
   "license": "MIT",
   "devDependencies": {
     "changeset": "^0.2.6",
-    "tsup": "^7.2.0"
-  },
-  "packageManager": "npm@9.8.1",
-  "dependencies": {
+    "tsup": "^7.2.0",
     "@changesets/cli": "^2.26.2",
     "turbo": "^1.10.14"
   },
+  "packageManager": "npm@9.8.1",
+  "dependencies": {},
   "scripts": {
     "publish-packages": "turbo run build && changeset version && changeset publish"
   }
