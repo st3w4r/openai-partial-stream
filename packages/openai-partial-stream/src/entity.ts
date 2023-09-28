@@ -52,7 +52,6 @@ export class Entity {
         for await (const item of entityObject) {
             if (item) {
                 let childrens = item.data[this.name];
-                console.log(item.data);
                 if (childrens !== undefined && childrens.length > 0) {
                     let index = childrens.length - 1
                     let latest = childrens[index];

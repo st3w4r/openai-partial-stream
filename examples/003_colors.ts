@@ -85,7 +85,8 @@ async function callGenerateColors(mode: StreamMode = StreamMode.StreamObjectKeyV
 
 
 async function main() {
-    const mode = StreamMode.StreamObjectKeyValueTokens;
+    // Select the mode of the stream parser
+    const mode = StreamMode.StreamObject; // ONE-BY-ONE
     const colorEntityStream = await callGenerateColors(mode)
     
     for await (const item of colorEntityStream) {
