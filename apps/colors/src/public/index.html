@@ -386,6 +386,9 @@
 
 
     <script type="module">
+
+        const baseURL = "https://colors.fly.dev/"
+
         let blocks = [];
         let colorBlocks = [];
         let copiedColors = [];  // To maintain a list of copied colors
@@ -423,7 +426,7 @@
 
 
             // Connect to the SSE endpoint using the selected mode:
-            const eventSource = new EventSource(`http://localhost:3000/sse/colors?mode=${selectedMode}`);
+            const eventSource = new EventSource(`${baseURL}/sse/colors?mode=${selectedMode}`);
 
 
             eventSource.onmessage = function (event) {
@@ -591,7 +594,7 @@
         });
 
         function listenForTaglineUpdates() {
-            const eventSource = new EventSource('http://localhost:3000/sse/tagline');
+            const eventSource = new EventSource(`${baseURL}/sse/tagline`);
 
             eventSource.onmessage = function (event) {
                 const data = JSON.parse(event.data);

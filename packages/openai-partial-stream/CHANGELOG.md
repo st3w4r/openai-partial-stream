@@ -1,5 +1,11 @@
 # partial-ai-stream-lib
 
+## 0.3.0
+
+### Minor Changes
+
+- Rename package
+
 ## 0.2.1
 
 ### Patch Changes

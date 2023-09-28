@@ -3,9 +3,11 @@ import express, { Request, Response } from 'express';
 import { StreamMode } from "openai-partial-stream";
 import { callGenerateColors, callGenerateTagline } from './example.js';
 import { setSSEHeaders, closeSSEConnection, senderHandler } from './sse.js';
+import { assert } from 'console';
 
 const app = express();
-const PORT: number = 3000;
+const PORT: number = 8080;
+
 
 // Middleware to handle POST data
 app.use(express.json());

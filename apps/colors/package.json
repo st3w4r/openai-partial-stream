@@ -6,7 +6,8 @@
     "devDependencies": {
         "@types/express": "^4.17.17",
         "@types/node": "^20.6.0",
-        "typescript": "^5.2.2"
+        "typescript": "^5.2.2",
+        "tsup": "^7.2.0"
     },
     "peerDependencies": {
         "typescript": "^5.0.0"
@@ -19,7 +20,7 @@
         "zod-to-ts": "^1.2.0"
     },
     "scripts": {
-        "build": "tsup src/**/*.ts --format esm,cjs --dts --clean",
+        "build": "npx tsup src/**/*.ts --format esm,cjs --dts --clean",
         "dev": "npm run build -- --watch",
         "start": "node dist/server.js"
     }
