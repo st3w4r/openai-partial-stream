@@ -75,9 +75,30 @@
             width: 0%;
             background: linear-gradient(90deg, #e0e0e0, #e5e5e5, #e0e0e0);
             background-size: 200% 100%;
-            animation: drawLine 2s forwards, shimmer 1.5s infinite;
+            animation: drawLine 2s forwards, shimmer 1.5s infinite 2s;
             border-radius: 4px;
             /* Apply border-radius here too */
+            animation-delay: 0s;
+            /* Default delay, but will be overridden by JavaScript */
+        }
+
+        .progressive-line::before {
+            /* ... existing styles ... */
+            animation: drawLine 2s forwards, shimmer 1.5s infinite;
+        }
+
+        /* Using the data attribute to set animation delay */
+        .progressive-line[data-delay="0"]::before {
+            animation-delay: 0s, 2s;
+            /* First value is for drawLine, second is for shimmer */
+        }
+
+        .progressive-line[data-delay="2"]::before {
+            animation-delay: 2s, 4s;
+        }
+
+        .progressive-line[data-delay="4"]::before {
+            animation-delay: 4s, 6s;
         }
 
         @keyframes drawLine {
@@ -153,10 +174,13 @@
 
             // Create individual skeleton lines and append them to the text container
             const widths = ['80%', '60%', '50%'];
-            widths.forEach(width => {
+            widths.forEach((width, index) => {
                 const skeletonLine = document.createElement('div');
                 skeletonLine.className = isProgressive ? 'progressive-line' : 'skeleton-line';
                 skeletonLine.style.width = width;
+                if (isProgressive) {
+                    skeletonLine.dataset.delay = index * 2;  // Setting a data attribute for delay
+                }
                 skeletonText.appendChild(skeletonLine);
             });
 
@@ -172,12 +196,16 @@
             document.getElementById('skeleton-container').appendChild(skeletonLoader);
         }
 
+
+
+
         // Examples:
         // For a regular skeleton
         createSkeleton();
         createSkeleton();
         createSkeleton(true);
         createSkeleton(true);
+        createSkeleton();
 
 
     </script>
