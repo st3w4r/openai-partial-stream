@@ -96,37 +96,3 @@ Output:
 { index: 0, status: 'PARTIAL', data: { sentence: 'Hi, world!' }, entity: 'sentence' }
 { index: 0, status: 'COMPLETED', data: { sentence: 'Hi, world!' }, entity: 'sentence'}
 ```
-
-
-## Usage with entity parsing
-
-
-```javascript
-import { StreamMode, OpenAiHandler, Entity } from "openai-partial-stream";
-
-
-const ColorSchema = z.object({
-    hex: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-});
-
-
-const stream = await openai.chat.completions.create({ 
-// Call open ai with Function calling
-// ....
-// ....
-});
-
-const openAiHandler = new OpenAiHandler(StreamMode.StreamObjectKeyValue);
-const entityStream = openAiHandler.process(stream);
-const entityColors = new Entity("colors", ColorSchema);
-const colorEntityStream = entityColors.genParseArray(entityStream);
-
-
-for await (const item of colorEntityStream) {
-        if (item) {
-            console.log(item);
-        }
-    }
-```
