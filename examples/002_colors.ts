@@ -11,7 +11,7 @@ const ColorSchema = z.object({
 });
 
 
-async function callGenerateColors(mode: StreamMode = StreamMode.StreamObjectKeyValueTokens) {
+async function callGenerateColors(mode = StreamMode.StreamObjectKeyValueTokens) {
 
     // OPENAI INSTANCE
     if (!process.env.OPENAI_API_KEY) {

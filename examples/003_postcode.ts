@@ -3,8 +3,10 @@ import OpenAi from "openai";
 import { z } from "zod";
 
 
-const TaglineSchema = z.object({
-    tagline: z.string().optional(), // Optional because the model can return a partial result
+const PostcodeSchema = z.object({
+    name: z.string().optional(),
+    postcode: z.string().optional(),
+    population: z.number().optional(),
 });
 
 async function main() {
@@ -19,37 +21,43 @@ async function main() {
     const stream = await openai.chat.completions.create({
         messages: [{
             role: "system",
-            content: `
-                Generate a tagline related to the following text:(MAXIUM 60 CHARACTERS)
-                Partial Stream Spec is a specification for a stream of raw text or structured JSON that can be partially parsed and return early results for an early consumption.
-                Use cases are:
-                - LLM stream of token as JSON format.
-                - OpenAI Function calling, handling stream of data.
-                - Improve UI/UX by showing partial results to the end user.
-
-                What is the goal of this project?:
-                - Make AI apps more interactive and responsive. 
-                `
+            content: "Give me 3 cities and their postcodes in California."
         }],
         model: "gpt-3.5-turbo", // OR "gpt-4"
         stream: true, // ENABLE STREAMING
         temperature: 1.1,
         functions: [
             {
-                name: "tagline",
-                description: "Generate a tagline",
+                name: "set_postcode",
+                description: "Set a postcode and a city",
                 parameters: {
                     type: "object",
-                    properties: {
-                        tagline: {
-                            type: "string",
-                            description: "The tagline generated"
+                    properties: { 
+                        postcodes: { // <--The name of the entity
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    name: {
+                                        type: "string",
+                                        description: "Name of the city"
+                                    },
+                                    postcode: {
+                                        type: "string",
+                                        description: "The postcode of the city"
+                                    },
+                                    population: {
+                                        type: "number",
+                                        description: "The population of the city"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
         ],
-        function_call: { name: "tagline" }
+        function_call: { name: "set_postcode" }
     });
 
 
@@ -65,12 +73,12 @@ async function main() {
     // Process the stream
     const entityStream = openAiHandler.process(stream);
     // Create an entity with the schema to validate the data
-    const entityTagline = new Entity("tagline", TaglineSchema);
+    const entityPostcode = new Entity("postcodes", PostcodeSchema);
     // Parse the stream to an entity, using the schema to validate the data
-    const taglineEntityStream = entityTagline.genParse(entityStream);
+    const postcodeEntityStream = entityPostcode.genParseArray(entityStream);
 
     // Iterate over the stream of entities
-    for await (const item of taglineEntityStream) {
+    for await (const item of postcodeEntityStream) {
         if (item) {
             // Display the entity
             console.log(item);
