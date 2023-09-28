@@ -117,22 +117,28 @@ Choose from one of the following modes based on your needs:
 
 The entire query will be completed before returning any results.
 
-| ✅ **Pros**                                           | ❌ **Cons**                                                                                   |
-|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| One query to fetch the entire data                  | User experience is affected: users must wait a considerable time before consuming any data    |
-| Minimizes network traffic                           |                                                                                               |
+| **NoStream Details**                                         |
+|--------------------------------------------------------------|
+| ✅ **Pros:**                                                 |
+| - One query to fetch the entire data                         |
+| - Minimizes network traffic                                  |
+| ❌ **Cons:**                                                 |
+| - User experience is affected: users must wait a considerable time before consuming any data |
 
 ---
 
 ### StreamObject
 
-Returns an SSE event for each item in the list. Each object appears in the list when it's ready.
+Returns an event for each entity/object in the list. Each object appears in the list when it's ready.
 
-| ✅ **Pros**                                           | ❌ **Cons**                                                                                   |
-|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| Each message corresponds to a complete item         | Slightly delayed: users must wait for the entire object to be ready before updating the UI    |
-| Low message count                                   |                                                                                               |
-| All required fields arrive simultaneously            |                                                                                               |
+| **StreamObject Details**                                     |
+|--------------------------------------------------------------|
+| ✅ **Pros:**                                                 |
+| - Each message corresponds to a complete entity/object       |
+| - Low message count                                          |
+| - All required fields arrive simultaneously                  |
+| ❌ **Cons:**                                                 |
+| - Slightly delayed: users must wait for the entire object to be ready before updating the UI |
 
 ---
 
@@ -140,10 +146,14 @@ Returns an SSE event for each item in the list. Each object appears in the list 
 
 Objects arrive partially; both the key and its associated value become available simultaneously.
 
-| ✅ **Pros**                                           | ❌ **Cons**                                                                                   |
-|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| Users can interact with parts of the interface      | Increased network traffic                                                                     |
-| Enables more frequent UI updates                    | Partial objects make it hard to enforce required keys                                         |
+| **StreamObjectKeyValue Details**                             |
+|--------------------------------------------------------------|
+| ✅ **Pros:**                                                 |
+| - Users can interact with parts of the interface             |
+| - Enables more frequent UI updates                           |
+| ❌ **Cons:**                                                 |
+| - Increased network traffic                                 |
+| - Partial objects make it hard to enforce required keys      |
 
 ---
 
@@ -151,12 +161,13 @@ Objects arrive partially; both the key and its associated value become available
 
 Each key arrives fully, but the value arrives in parts until completion. This approach enhances the ability to update the UI token by token.
 
-| ✅ **Pros**                                           | ❌ **Cons**                                                                                   |
-|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| Highly interactive experience                       | Potential UI flashing: values arriving token by token may produce unexpected visuals          |
-| Progressive content consumption                     | Increased network traffic                                                                     |
-| Reduces user wait times                             |                                                                                               |
+| **StreamObjectKeyValueToken Details**                        |
+|--------------------------------------------------------------|
+| ✅ **Pros:**                                                 |
+| - Highly interactive experience                             |
+| - Progressive content consumption                           |
+| - Reduces user wait times                                   |
+| ❌ **Cons:**                                                 |
+| - Potential UI flashing: values arriving token by token may produce unexpected visuals |
+| - Increased network traffic                                 |
 
----
-
-Remember, when using tables in a GitHub README, ensure they're formatted correctly. This should make your README look more structured and visually appealing.
