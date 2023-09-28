@@ -116,6 +116,30 @@
                 background-position: 200% 0;
             }
         }
+
+        .skeleton-line::before {
+            /* ... existing styles ... */
+            animation: shimmer 1.5s infinite;
+            opacity: 0;
+            /* Start with opacity 0 */
+            animation-name: fadeIn, shimmer;
+            /* Add fadeIn animation */
+            animation-duration: 1s, 1.5s;
+            /* Duration for both animations */
+        }
+
+        .skeleton-line {
+            opacity: 0;
+            /* Start with opacity 0 */
+            animation: fadeIn 1s forwards, shimmer 1.5s 1s infinite;
+            /* fadeIn will run for 1s and then shimmer will start with a delay of 1s */
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
@@ -163,7 +187,7 @@
     </main>
     <script>
 
-        function createSkeleton(isProgressive = false) {
+        function createSkeleton(mode = 'normal') {
             // Create the main skeleton loader div
             const skeletonLoader = document.createElement('div');
             skeletonLoader.className = 'skeleton-loader';
@@ -176,11 +200,16 @@
             const widths = ['80%', '60%', '50%'];
             widths.forEach((width, index) => {
                 const skeletonLine = document.createElement('div');
-                skeletonLine.className = isProgressive ? 'progressive-line' : 'skeleton-line';
+                skeletonLine.className = 'skeleton-line';
                 skeletonLine.style.width = width;
-                if (isProgressive) {
-                    skeletonLine.dataset.delay = index * 2;  // Setting a data attribute for delay
+
+                if (mode === 'staggered') {
+                    skeletonLine.style.animationDelay = `${index * 1}s`;  // 1s delay for each line
+                } else if (mode === 'progressive') {
+                    skeletonLine.className = 'progressive-line';
+                    skeletonLine.dataset.delay = index * 2;
                 }
+
                 skeletonText.appendChild(skeletonLine);
             });
 
@@ -199,13 +228,12 @@
 
 
 
+
         // Examples:
         // For a regular skeleton
         createSkeleton();
-        createSkeleton();
-        createSkeleton(true);
-        createSkeleton(true);
-        createSkeleton();
+        createSkeleton('staggered');
+        createSkeleton('progressive');
 
 
     </script>
