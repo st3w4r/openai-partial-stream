@@ -166,6 +166,20 @@
         .indent {
             margin-left: 20px;
         }
+
+        .char {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(90deg, #e0e0e0, #e5e5e5, #e0e0e0);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 12px;
+            text-align: center;
+            line-height: 12px;
+        }
     </style>
 </head>
 
@@ -202,30 +216,52 @@
 
 
         <div class="json-skeleton">
-            <div class="json-skeleton">
-                <div class="brace">{</div>
-                <div class="key-value"><span class="key">KEY</span>: <span class="value">VALUE</span>,</div>
-                <div class="key-value"><span class="key">KEY</span>: <span class="value">VALUE</span>,</div>
-                <div class="key-value"><span class="key">KEY</span>: [</div>
-                <div class="indent">
-                    <div class="array-item"><span class="value">VALUE</span>,</div>
-                    <div class="array-item"><span class="value">VALUE</span>,</div>
-                    <div class="brace">{</div>
-                    <div class="indent">
-                        <div class="key-value"><span class="key">KEY</span>: <span class="value">VALUE</span></div>
-                    </div>
-                    <div class="brace">}</div>
-                </div>
-                <div class="brace">],</div>
-                <div class="key-value"><span class="key">KEY</span>: {</div>
-                <div class="indent">
-                    <div class="key-value"><span class="key">KEY</span>: <span class="value">VALUE</span></div>
-                </div>
-                <div class="brace">}</div>
-                <div class="brace">}</div>
+            <div class="brace"><span class="char">{</span></div>
+            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
+                    class="value">VALUE</span><span class="char">,</span></div>
+            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
+                    class="value">VALUE</span><span class="char">,</span></div>
+            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span class="char">[</span>
             </div>
-
+            <div class="indent">
+                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
+                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
+                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
+                <div class="brace"><span class="char">]</span></div>
+            </div>
+            <div class="brace"><span class="char">}</span></div>
         </div>
+
+        <div class="json-skeleton">
+            <div class="brace"><span class="char">{</span></div>
+            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
+                    class="value">VALUE</span><span class="char">,</span></div>
+            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
+                    class="value">VALUE</span><span class="char">,</span></div>
+            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span class="char">[</span>
+            </div>
+            <div class="indent">
+                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
+                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
+                <div class="brace"><span class="char">{</span></div>
+                <div class="indent">
+                    <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
+                            class="value">VALUE</span></div>
+                </div>
+                <div class="brace"><span class="char">}</span></div>
+            </div>
+            <div class="brace"><span class="char">]</span><span class="char">,</span></div>
+            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span class="char">{</span>
+            </div>
+            <div class="indent">
+                <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
+                        class="value">VALUE</span></div>
+            </div>
+            <div class="brace"><span class="char">}</span></div>
+            <div class="brace"><span class="char">}</span></div>
+        </div>
+
+
 
 
 
@@ -391,7 +427,7 @@
                 key6: 'value'
             }
         };
-        builder.buildSkeleton(format);
+        // builder.buildSkeleton(format);
 
 
 
