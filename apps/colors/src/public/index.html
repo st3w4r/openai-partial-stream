@@ -59,6 +59,7 @@
             text-align: center;
         }
 
+
         body {
             /* height: 100vh; */
             margin: 0;
@@ -99,6 +100,7 @@
 
 
         #blocksContainer {
+            /* min-height: 200px; */
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -290,7 +292,7 @@
             font-size: 16px;
             text-align: center;
             width: 100%;
-            position: fixed;
+            /* position: fixed; */
             /* This will keep the text at the bottom regardless of scroll position */
             bottom: 10px;
             /* Adjust as needed */
@@ -618,27 +620,31 @@
         }
 
 
-        document.querySelectorAll('.mode-button').forEach((btn, idx) => {
-            btn.addEventListener('click', () => {
-                const overlay = document.querySelector('.active-overlay');
 
-                // Check if the screen width is larger than 768px
-                if (window.innerWidth > 768) {
-                    overlay.style.left = `${btn.offsetLeft}px`;  // Set overlay to start at the button's left offset.
-                    overlay.style.width = `${btn.offsetWidth}px`;  // Set overlay width to match the button's width.
-                    overlay.style.top = ""; // Clear the top style
-                    overlay.style.height = ""; // Clear the height style
-                } else {
-                    overlay.style.top = `${btn.offsetTop}px`;  // Set overlay to start at the button's top offset.
-                    overlay.style.height = `${btn.offsetHeight}px`;  // Set overlay height to match the button's height.
-                    // Clear the left and width styles
-                    overlay.style.left = "";
-                    overlay.style.width = "";
-                }
+        function adjustOverlayPosition(clickedButton = null) {
+            const overlay = document.querySelector('.active-overlay');
+            const buttonToUse = clickedButton || document.querySelector('.mode-radio:checked + .mode-button');
 
-                // Your color generation logic can now also access the selected mode using:
-                // document.querySelector('.mode-radio:checked').value
-            });
+            if (!buttonToUse) return; // Exit if no button is checked or provided
+
+            // Check if the screen width is larger than 768px
+            if (window.innerWidth > 768) {
+                overlay.style.left = `${buttonToUse.offsetLeft}px`;  // Set overlay to start at the button's left offset.
+                overlay.style.width = `${buttonToUse.offsetWidth}px`;  // Set overlay width to match the button's width.
+                overlay.style.top = ""; // Clear the top style
+                overlay.style.height = ""; // Clear the height style
+            } else {
+                overlay.style.top = `${buttonToUse.offsetTop}px`;  // Set overlay to start at the button's top offset.
+                overlay.style.height = `${buttonToUse.offsetHeight}px`;  // Set overlay height to match the button's height.
+                overlay.style.left = ""; // Clear the left and width styles
+                overlay.style.width = "";
+            }
+        }
+
+
+        // Add event listeners to the mode buttons
+        document.querySelectorAll('.mode-button').forEach((btn) => {
+            btn.addEventListener('click', () => adjustOverlayPosition(btn));
         });
 
 
@@ -654,6 +660,9 @@
 
             // Fetch the tagline content
             listenForTaglineUpdates();
+
+            // Adjust overlay position based on the initial state
+            adjustOverlayPosition();
         });
 
         function listenForTaglineUpdates() {
