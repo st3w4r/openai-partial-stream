@@ -1,4 +1,4 @@
-import { OpenAiHandler, StreamMode, Entity } from "partial-ai-stream-lib";
+import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
 import OpenAi from "openai";
 import { z } from "zod";
 
