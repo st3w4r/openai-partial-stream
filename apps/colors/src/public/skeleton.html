@@ -140,6 +140,27 @@
                 opacity: 1;
             }
         }
+
+
+        /* SMALL LINE */
+
+        .skeleton-line-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .small-skeleton-line {
+            height: 10px;
+            width: 20%;
+            /* Explicit width for the small line */
+            background: linear-gradient(90deg, #e0e0e0, #e5e5e5, #e0e0e0);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            opacity: 0;
+            animation: fadeIn 1s forwards, shimmer 1.5s 1s infinite;
+        }
     </style>
 </head>
 
@@ -199,18 +220,32 @@
             // Create individual skeleton lines and append them to the text container
             const widths = ['80%', '60%', '50%'];
             widths.forEach((width, index) => {
-                const skeletonLine = document.createElement('div');
-                skeletonLine.className = 'skeleton-line';
-                skeletonLine.style.width = width;
+                const skeletonLineWrapper = document.createElement('div');
+                skeletonLineWrapper.className = 'skeleton-line-wrapper';
 
+                const smallSkeletonLine = document.createElement('div');
+                smallSkeletonLine.className = 'small-skeleton-line';
                 if (mode === 'staggered') {
-                    skeletonLine.style.animationDelay = `${index * 1}s`;  // 1s delay for each line
+                    smallSkeletonLine.style.animationDelay = `${index * 1 - 0.5}s`;  // 0.5s before the main line
                 } else if (mode === 'progressive') {
-                    skeletonLine.className = 'progressive-line';
-                    skeletonLine.dataset.delay = index * 2;
+                    smallSkeletonLine.style.animationDelay = `${index * 2 - 1}s`;  // 1s before the main line
                 }
 
-                skeletonText.appendChild(skeletonLine);
+                const skeletonLine = document.createElement('div');
+                if (mode === 'progressive') {
+                    skeletonLine.className = 'progressive-line';
+                    skeletonLine.dataset.delay = index * 2;
+                } else {
+                    skeletonLine.className = 'skeleton-line';
+                    if (mode === 'staggered') {
+                        skeletonLine.style.animationDelay = `${index * 1}s`;
+                    }
+                }
+                skeletonLine.style.width = width;
+
+                skeletonLineWrapper.appendChild(smallSkeletonLine);
+                skeletonLineWrapper.appendChild(skeletonLine);
+                skeletonText.appendChild(skeletonLineWrapper);
             });
 
             // Create the skeleton profile
@@ -224,6 +259,8 @@
             // Append the skeleton loader to the container in the document
             document.getElementById('skeleton-container').appendChild(skeletonLoader);
         }
+
+
 
 
 
