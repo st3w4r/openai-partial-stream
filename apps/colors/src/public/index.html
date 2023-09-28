@@ -332,6 +332,59 @@
 
             min-height: 31px;
         }
+
+
+        /* Styles for screens smaller than 768px */
+        @media (max-width: 768px) {
+            .button-bar {
+                flex-direction: column;
+                /* Change the flex direction to column to stack the children */
+            }
+
+            .mode-button {
+                width: 100%;
+                /* Set the width to 100% of the parent container */
+                box-sizing: border-box;
+                /* Ensure padding and border are included in the width */
+                /* Set a fixed height for the buttons */
+                display: flex;
+                /* Convert the button labels to flex containers */
+                align-items: center;
+                /* Vertically center the text inside the button */
+                justify-content: center;
+                /* Horizontally center the text inside the button */
+            }
+
+            .active-overlay {
+                width: 100%;
+                /* Ensure the overlay takes the full width of the button-bar */
+                left: 0;
+                /* Reset left to 0 */
+                height: calc(100% / 5);
+                /* Set the height based on the number of buttons */
+                transition: top 0.3s;
+                /* Only transition the top property */
+            }
+
+            /* Adjust the overlay position based on the checked radio button */
+            #NoStream:checked~.active-overlay {
+                top: calc(1 * (100% / 5));
+                /* Adjust top position based on the button index */
+            }
+
+            #StreamObject:checked~.active-overlay {
+                top: calc(2 * (100% / 5));
+            }
+
+            #StreamObjectKeyValue:checked~.active-overlay {
+                top: calc(3 * (100% / 5));
+            }
+
+            #StreamObjectKeyValueTokens:checked~.active-overlay {
+                top: calc(4 * (100% / 5));
+            }
+
+        }
     </style>
 </head>
 
@@ -567,17 +620,27 @@
 
         document.querySelectorAll('.mode-button').forEach((btn, idx) => {
             btn.addEventListener('click', () => {
-
                 const overlay = document.querySelector('.active-overlay');
 
-                overlay.style.left = `${btn.offsetLeft}px`;  // Set overlay to start at the button's left offset.
-                overlay.style.width = `${btn.offsetWidth}px`;  // Set overlay width to match the button's width.
-
+                // Check if the screen width is larger than 768px
+                if (window.innerWidth > 768) {
+                    overlay.style.left = `${btn.offsetLeft}px`;  // Set overlay to start at the button's left offset.
+                    overlay.style.width = `${btn.offsetWidth}px`;  // Set overlay width to match the button's width.
+                    overlay.style.top = ""; // Clear the top style
+                    overlay.style.height = ""; // Clear the height style
+                } else {
+                    overlay.style.top = `${btn.offsetTop}px`;  // Set overlay to start at the button's top offset.
+                    overlay.style.height = `${btn.offsetHeight}px`;  // Set overlay height to match the button's height.
+                    // Clear the left and width styles
+                    overlay.style.left = "";
+                    overlay.style.width = "";
+                }
 
                 // Your color generation logic can now also access the selected mode using:
                 // document.querySelector('.mode-radio:checked').value
             });
         });
+
 
         // Initialize the overlay's position and width to match the default checked button
         document.addEventListener('DOMContentLoaded', () => {
