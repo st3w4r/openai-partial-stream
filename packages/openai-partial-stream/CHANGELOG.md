@@ -1,5 +1,11 @@
 # partial-ai-stream-lib
 
+## 0.3.1
+
+### Patch Changes
+
+- Remove console logs
+
 ## 0.3.0
 
 ### Minor Changes
