@@ -13,6 +13,7 @@
             display: flex;
             align-items: start;
             gap: 15px;
+            margin: 10px;
         }
 
         .skeleton-text {
@@ -94,92 +95,6 @@
                 background-position: 200% 0;
             }
         }
-
-
-
-
-        /* JSON SKELETON */
-        .json-skeleton {
-            font-family: monospace;
-            padding: 10px;
-            background-color: #f3f3f3;
-            border-radius: 4px;
-            width: 300px;
-        }
-
-        .key-value,
-        .array-item {
-            margin-left: 10px;
-        }
-
-        .brace {
-            color: #000;
-            /* Making braces and brackets visible */
-            margin-left: 10px;
-        }
-
-        .key,
-        .value {
-            color: #fff;
-            /* Change this to adjust the text color */
-            font-size: 12px;
-            /* Change this to adjust the text size */
-            text-align: center;
-            /* Center the text horizontally */
-            line-height: 12px;
-            /* Align the text vertically */
-            /* ... (rest of your existing styles) ... */
-        }
-
-
-        .key {
-            background: linear-gradient(90deg, #e0e0e0, #e5e5e5, #e0e0e0);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            display: inline-block;
-            width: 40px;
-            height: 12px;
-            border-radius: 4px;
-            margin-right: 5px;
-        }
-
-        .value {
-            background: linear-gradient(90deg, #e0e0e0, #e5e5e5, #e0e0e0);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            display: inline-block;
-            width: 60px;
-            height: 12px;
-            border-radius: 4px;
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: -200% 0;
-            }
-
-            100% {
-                background-position: 200% 0;
-            }
-        }
-
-        .indent {
-            margin-left: 20px;
-        }
-
-        .char {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: linear-gradient(90deg, #e0e0e0, #e5e5e5, #e0e0e0);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 12px;
-            text-align: center;
-            line-height: 12px;
-        }
     </style>
 </head>
 
@@ -215,51 +130,9 @@
         </div>
 
 
-        <div class="json-skeleton">
-            <div class="brace"><span class="char">{</span></div>
-            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
-                    class="value">VALUE</span><span class="char">,</span></div>
-            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
-                    class="value">VALUE</span><span class="char">,</span></div>
-            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span class="char">[</span>
-            </div>
-            <div class="indent">
-                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
-                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
-                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
-                <div class="brace"><span class="char">]</span></div>
-            </div>
-            <div class="brace"><span class="char">}</span></div>
-        </div>
+        <div id="skeleton-container"></div>
 
-        <div class="json-skeleton">
-            <div class="brace"><span class="char">{</span></div>
-            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
-                    class="value">VALUE</span><span class="char">,</span></div>
-            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
-                    class="value">VALUE</span><span class="char">,</span></div>
-            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span class="char">[</span>
-            </div>
-            <div class="indent">
-                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
-                <div class="array-item"><span class="value">VALUE</span><span class="char">,</span></div>
-                <div class="brace"><span class="char">{</span></div>
-                <div class="indent">
-                    <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
-                            class="value">VALUE</span></div>
-                </div>
-                <div class="brace"><span class="char">}</span></div>
-            </div>
-            <div class="brace"><span class="char">]</span><span class="char">,</span></div>
-            <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span class="char">{</span>
-            </div>
-            <div class="indent">
-                <div class="key-value"><span class="key">KEY</span><span class="char">:</span> <span
-                        class="value">VALUE</span></div>
-            </div>
-            <div class="brace"><span class="char">}</span></div>
-            <div class="brace"><span class="char">}</span></div>
-        </div>
+
 
 
 
@@ -268,167 +141,43 @@
 
     </main>
     <script>
-        class SkeletonElement {
-            constructor(tag = 'div', classes = [], content = '') {
-                this.element = document.createElement(tag);
-                for (let cls of classes) {
-                    this.element.classList.add(cls);
-                }
-                this.element.innerHTML = content;
-            }
 
-            appendTo(parent) {
-                if (parent instanceof Node) {
-                    parent.appendChild(this.element);
-                } else {
-                    console.error('Invalid parent node:', parent);
-                }
-                return this;
-            }
+        function createSkeleton(isProgressive = false) {
+            // Create the main skeleton loader div
+            const skeletonLoader = document.createElement('div');
+            skeletonLoader.className = 'skeleton-loader';
 
+            // Create the text container div
+            const skeletonText = document.createElement('div');
+            skeletonText.className = 'skeleton-text';
 
-            appendChild(child) {
-                if (child instanceof SkeletonElement) {
-                    this.element.appendChild(child.element);
-                } else {
-                    console.error('Invalid child node:', child);
-                }
-                return this;
-            }
+            // Create individual skeleton lines and append them to the text container
+            const widths = ['80%', '60%', '50%'];
+            widths.forEach(width => {
+                const skeletonLine = document.createElement('div');
+                skeletonLine.className = isProgressive ? 'progressive-line' : 'skeleton-line';
+                skeletonLine.style.width = width;
+                skeletonText.appendChild(skeletonLine);
+            });
 
+            // Create the skeleton profile
+            const skeletonProfile = document.createElement('div');
+            skeletonProfile.className = 'skeleton-profile';
+
+            // Append the text container and the profile to the main skeleton loader
+            skeletonLoader.appendChild(skeletonText);
+            skeletonLoader.appendChild(skeletonProfile);
+
+            // Append the skeleton loader to the container in the document
+            document.getElementById('skeleton-container').appendChild(skeletonLoader);
         }
 
-        class SkeletonBuilder {
-            constructor(containerSelector) {
-                this.container = document.querySelector(containerSelector);
-            }
-
-            addElement(classes = [], content = '', isProgressive = false, parent = this.container) {
-                const skeleton = new SkeletonElement('div', classes, content);
-                if (isProgressive) {
-                    skeleton.element.style.opacity = 0;
-                    setTimeout(() => {
-                        skeleton.element.style.transition = 'opacity 2s';
-                        skeleton.element.style.opacity = 1;
-                    }, 50);
-                }
-
-                if (parent instanceof SkeletonElement) {
-                    skeleton.appendTo(parent.element);
-                } else {
-                    skeleton.appendTo(parent);
-                }
-
-                return skeleton;
-            }
-
-            addKeyValue(parent, isProgressiveKey = false, isProgressiveValue = false) {
-                const key = this.createSkeletonSpan(40, isProgressiveKey);
-                const value = this.createSkeletonSpan(60, isProgressiveValue);
-
-                const keyValue = new SkeletonElement('div', ['key-value']);
-                keyValue.appendChild(key);
-                keyValue.element.innerHTML += ': ';
-                keyValue.appendChild(value);
-                keyValue.element.innerHTML += ',';
-
-                if (parent instanceof SkeletonElement) {
-                    keyValue.appendTo(parent.element);
-                } else {
-                    keyValue.appendTo(parent);
-                }
-            }
-
-
-            addArray(parent) {
-                const array = new SkeletonElement('div', ['array']);
-
-                if (parent instanceof SkeletonElement) {
-                    array.appendTo(parent.element);
-                } else {
-                    array.appendTo(parent);
-                }
-
-                return array;
-            }
-
-            addBrace(content = '{', parent = this.container) {
-                const brace = this.addElement(['brace'], content);
-
-                if (parent instanceof SkeletonElement) {
-                    brace.appendTo(parent.element);
-                } else {
-                    brace.appendTo(parent);
-                }
-
-                return brace;
-            }
-
-            createSkeletonSpan(width, isProgressive = false) {
-                const skeleton = new SkeletonElement('span', ['skeleton']);
-                skeleton.element.style.width = `${width}px`;
-                if (isProgressive) {
-                    skeleton.element.style.width = 0;
-                    setTimeout(() => {
-                        skeleton.element.style.transition = 'width 2s';
-                        skeleton.element.style.width = `${width}px`;
-                    }, 50);
-                }
-                return skeleton;
-            }
-
-            buildSkeleton(format, parent = this.container) {
-                for (let key in format) {
-                    const value = format[key];
-
-                    if (Array.isArray(value)) {
-                        // Handle array
-                        this.addBrace('[').appendTo(parent);
-                        const arrayContainer = this.addArray(parent);
-                        value.forEach(item => {
-                            if (typeof item === 'object') {
-                                // Pass the .element property of arrayContainer
-                                this.buildSkeleton(item, arrayContainer.element);
-                            } else {
-                                this.addKeyValue(arrayContainer);
-                            }
-                        });
-                        this.addBrace(']').appendTo(parent);
-                    } else if (typeof value === 'object') {
-                        // Handle nested object
-                        this.addBrace('{').appendTo(parent);
-                        const objContainer = new SkeletonElement('div', ['object']);
-                        objContainer.appendTo(parent);
-                        // Pass the .element property of objContainer
-                        this.buildSkeleton(value, objContainer.element);
-                        this.addBrace('}').appendTo(parent);
-                    } else {
-                        // Handle primitive (key-value pair)
-                        this.addKeyValue(parent);
-                    }
-                }
-            }
-
-        }
-
-        // Usage:
-        const builder = new SkeletonBuilder('.json-skeleton');
-        const format = {
-            key1: 'value',
-            key2: 'value',
-            key3: [
-                'value',
-                'value',
-                {
-                    key4: 'value'
-                }
-            ],
-            key5: {
-                key6: 'value'
-            }
-        };
-        // builder.buildSkeleton(format);
-
+        // Examples:
+        // For a regular skeleton
+        createSkeleton();
+        createSkeleton();
+        createSkeleton(true);
+        createSkeleton(true);
 
 
     </script>
