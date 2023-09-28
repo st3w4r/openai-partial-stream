@@ -119,11 +119,9 @@ Results are returned only after the entire query completes.
 
 | **NoStream Details**                                         |
 |--------------------------------------------------------------|
-| ✅ **Pros:**                                                 |
-| - Single query retrieves all data                            |
-| - Reduces network traffic                                    |
-| ❌ **Cons:**                                                 |
-| - User experience may be compromised due to extended wait times |
+| ✅ Single query retrieves all data                            |
+| ✅ Reduces network traffic                                    |
+| ⚠️ User experience may be compromised due to extended wait times |
 
 ---
 
@@ -133,12 +131,10 @@ An event is generated for each item in the list. Items appear as they become rea
 
 | **StreamObject Details**                                     |
 |--------------------------------------------------------------|
-| ✅ **Pros:**                                                 |
-| - Each message corresponds to a fully-formed item            |
-| - Fewer messages                                            |
-| - All required fields are received at once                  |
-| ❌ **Cons:**                                                 |
-| - Some delay: users need to wait until an item is fully ready to update the UI |
+| ✅ Each message corresponds to a fully-formed item            |
+| ✅ Fewer messages                                            |
+| ✅ All essential fields are received at once                  |
+| ⚠️ Some delay: users need to wait until an item is fully ready to update the UI |
 
 ---
 
@@ -148,12 +144,10 @@ Objects are received in fragments: both a key and its corresponding value are se
 
 | **StreamObjectKeyValue Details**                             |
 |--------------------------------------------------------------|
-| ✅ **Pros:**                                                 |
-| - Users can engage with portions of the UI                   |
-| - Supports more regular UI updates                           |
-| ❌ **Cons:**                                                 |
-| - Higher network traffic                                     |
-| - Challenges in enforcing keys due to incomplete objects     |
+| ✅ Users can engage with portions of the UI                   |
+| ✅ Supports more regular UI updates                           |
+| ⚠️ Higher network traffic                                     |
+| ⚠️ Challenges in enforcing keys due to incomplete objects     |
 
 ---
 
@@ -163,11 +157,8 @@ Keys are received in full, while values are delivered piecemeal until they're co
 
 | **StreamObjectKeyValueToken Details**                        |
 |--------------------------------------------------------------|
-| ✅ **Pros:**                                                 |
-| - Offers a dynamic user experience                           |
-| - Enables realtime content consumption                      |
-| - Decreases user waiting times                              |
-| ❌ **Cons:**                                                 |
-| - Possible UI inconsistencies due to values arriving incrementally |
-| - Augmented network traffic                                 |
-
+| ✅ Offers a dynamic user experience                           |
+| ✅ Enables step-by-step content consumption                   |
+| ✅ Decreases user waiting times                              |
+| ⚠️ Possible UI inconsistencies due to values arriving incrementally |
+| ⚠️ Augmented network traffic                                 |
