@@ -3,27 +3,130 @@
 To install dependencies:
 
 ```bash
-bun install
+npm install --save openai-partial-stream
 ```
 
-To run:
 
-```bash
-bun run index.ts
+
+## Usage with simple stream
+
+```javascript
+const stream = await openai.chat.completions.create({
+    messages: [{ role: "system",content: "Say hello to the world." }],
+    model: "gpt-3.5-turbo", // OR "gpt-4"
+    stream: true, // ENABLE STREAMING
+    temperature: 1,
+    functions: [{
+            name: "say_hello",
+            description: "say hello",
+            parameters: {
+                type: "object", properties: {
+                sentence: { type: "string", description: "The sentence generated" }
+                }
+            }}],
+    function_call: { name: "say_hello" }
+});
+
+
+const openAiHandler = new OpenAiHandler(StreamMode.StreamObjectKeyValueTokens;);
+const entityStream = openAiHandler.process(stream);
+
+for await (const item of entityStream) {
+    console.log(item);
+}
+
 ```
 
-This project was created using `bun init` in bun v1.0.0. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
-
-
-
-
-The project have to be structured around the lib:
+Output:
+```js
+{ index: 0, status: 'PARTIAL', data: {} }
+{ index: 0, status: 'PARTIAL', data: { sentence: '' } }
+{ index: 0, status: 'PARTIAL', data: { sentence: 'Hello' } }
+{ index: 0, status: 'PARTIAL', data: { sentence: 'Hello,' } }
+{ index: 0, status: 'PARTIAL', data: { sentence: 'Hello, world' } }
+{ index: 0, status: 'PARTIAL', data: { sentence: 'Hello, world!' } }
+{ index: 0, status: 'COMPLETED', data: { sentence: 'Hello, world!' } }
 ```
-src
-├── index.ts
-├── dist
-website
-├── public
-│   ├── index.html
-├── dist
+
+## Usage with stream and entity parsing
+
+```javascript
+
+const stream = await openai.chat.completions.create({
+    messages: [{ role: "system",content: "Say hello to the world." }],
+    model: "gpt-3.5-turbo", // OR "gpt-4"
+    stream: true, // ENABLE STREAMING
+    temperature: 1,
+    functions: [{
+            name: "say_hello",
+            description: "say hello",
+            parameters: {
+                type: "object", properties: {
+                sentence: { type: "string", description: "The sentence generated" }
+                }
+            }}],
+    function_call: { name: "say_hello" }
+});
+
+
+const openAiHandler = new OpenAiHandler(StreamMode.StreamObjectKeyValueTokens;);
+const entityStream = openAiHandler.process(stream);
+
+// Entity Parsing to validate the data
+const HelloSchema = z.object({
+    sentence: z.string().optional(),
+});
+
+const entityHello = new Entity("sentence", HelloSchema);
+const helloEntityStream = entityHello.genParse(entityStream);
+
+for await (const item of helloEntityStream) {
+    console.log(item);
+}
+
+```
+
+Output:
+```js
+{ index: 0, status: 'PARTIAL', data: {}, entity: 'sentence' }
+{ index: 0, status: 'PARTIAL', data: { sentence: '' }, entity: 'sentence' }
+{ index: 0, status: 'PARTIAL', data: { sentence: 'Hi' }, entity: 'sentence' }
+{ index: 0, status: 'PARTIAL', data: { sentence: 'Hi,' }, entity: 'sentence' }
+{ index: 0, status: 'PARTIAL', data: { sentence: 'Hi, world' }, entity: 'sentence' }
+{ index: 0, status: 'PARTIAL', data: { sentence: 'Hi, world!' }, entity: 'sentence' }
+{ index: 0, status: 'COMPLETED', data: { sentence: 'Hi, world!' }, entity: 'sentence'}
+```
+
+
+## Usage with entity parsing
+
+
+```javascript
+import { StreamMode, OpenAiHandler, Entity } from "openai-partial-stream";
+
+
+const ColorSchema = z.object({
+    hex: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+});
+
+
+const stream = await openai.chat.completions.create({ 
+// Call open ai with Function calling
+// ....
+// ....
+});
+
+const openAiHandler = new OpenAiHandler(StreamMode.StreamObjectKeyValue);
+const entityStream = openAiHandler.process(stream);
+const entityColors = new Entity("colors", ColorSchema);
+const colorEntityStream = entityColors.genParseArray(entityStream);
+
+
+for await (const item of colorEntityStream) {
+        if (item) {
+            console.log(item);
+        }
+    }
 ```
