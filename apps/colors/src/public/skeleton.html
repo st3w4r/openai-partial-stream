@@ -161,6 +161,39 @@
             opacity: 0;
             animation: fadeIn 1s forwards, shimmer 1.5s 1s infinite;
         }
+
+
+        .skeleton-wrapper {
+            animation: appear 0.001s;
+            /* A short animation to leverage the delay */
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .skeleton-wrapper {
+            opacity: 0;
+            transition: opacity 0.5s;
+            /* A transition for smoother appearance */
+        }
+
+
+        /* Delayed appearance based on the animation-delay */
+        .skeleton-wrapper:not(:first-child) {
+            transition-delay: 3s;
+            /* Default delay */
+        }
+
+        .skeleton-wrapper.progressive:not(:first-child) {
+            transition-delay: 6s;
+        }
     </style>
 </head>
 
@@ -261,16 +294,43 @@
         }
 
 
+        function createSkeletonGroup(count = 1, mode = 'normal') {
+            const delayDuration = (mode === 'staggered') ? 3000 : (mode === 'progressive') ? 6000 : 1000;
 
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const skeletonWrapper = document.createElement('div');
+                    skeletonWrapper.className = 'skeleton-wrapper';
 
+                    createSkeleton(mode);
 
+                    const lastSkeleton = document.getElementById('skeleton-container').lastChild;
+                    skeletonWrapper.appendChild(lastSkeleton);
 
+                    document.getElementById('skeleton-container').appendChild(skeletonWrapper);
+
+                    // Immediately make the skeleton visible after adding to the DOM
+                    skeletonWrapper.style.opacity = '1';
+                }, i * delayDuration);
+            }
+        }
 
         // Examples:
         // For a regular skeleton
-        createSkeleton();
-        createSkeleton('staggered');
-        createSkeleton('progressive');
+        // createSkeleton();
+        // createSkeleton();
+
+        // createSkeleton('staggered');
+        // createSkeleton('staggered');
+
+        // createSkeleton('progressive');
+        // createSkeleton('progressive');
+
+        // createSkeletonGroup(3, 'normal');
+        // createSkeletonGroup(3, 'staggered');
+        createSkeletonGroup(3, 'progressive');
+
+
 
 
     </script>
