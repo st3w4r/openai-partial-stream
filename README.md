@@ -102,67 +102,61 @@ Output:
 ```
 
 
-## Modes
+# Modes
 
-- NoStream
-- StreamObject
-- StreamObjectKeyValue
-- StreamObjectKeyValueTokens
+Choose from one of the following modes based on your needs:
 
+1. **NoStream**
+2. **StreamObject**
+3. **StreamObjectKeyValue**
+4. **StreamObjectKeyValueTokens**
 
-**NoStream:**
-- The entire query will wait to be completed before returning anything
+---
 
-Pros:
-- One query to receive the whole data
-- Low network traffic
+### NoStream
 
-Cons:
-- User experience is impacted, user can not consume anything user have to wait long time
+The entire query will be completed before returning any results.
 
-**StreamObject:**
-- Will return a SSE event for each item in the list.
-- The whole object will appear in the list when it is ready
+| ✅ **Pros**                                           | ❌ **Cons**                                                                                   |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| One query to fetch the entire data                  | User experience is affected: users must wait a considerable time before consuming any data    |
+| Minimizes network traffic                           |                                                                                               |
 
-Pros:
+---
 
-- One message is one item. The object is completed when it arrive. It can be use straight away in the UI, no update needed.
-- Low message number
-- All the required fields arrive in the same time
+### StreamObject
 
-Cons:
+Returns an SSE event for each item in the list. Each object appears in the list when it's ready.
 
-- Less realtime, the user have to wait the entire object to cosume the UI.
+| ✅ **Pros**                                           | ❌ **Cons**                                                                                   |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| Each message corresponds to a complete item         | Slightly delayed: users must wait for the entire object to be ready before updating the UI    |
+| Low message count                                   |                                                                                               |
+| All required fields arrive simultaneously            |                                                                                               |
 
+---
 
-**StreamObjectKeyValue:**
+### StreamObjectKeyValue
 
-- The object will arrive partially, the key and value will be available.
-- Each key and it’s associated value will arrive in the same time.
+Objects arrive partially; both the key and its associated value become available simultaneously.
 
-Pros:
+| ✅ **Pros**                                           | ❌ **Cons**                                                                                   |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| Users can interact with parts of the interface      | Increased network traffic                                                                     |
+| Enables more frequent UI updates                    | Partial objects make it hard to enforce required keys                                         |
 
-- User can consume part of the interface
-- UI can be upadted with more update.
+---
 
-Cons:
+### StreamObjectKeyValueToken
 
-- Increase the network traffic
-- Partial object, can not enforce required key
+Each key arrives fully, but the value arrives in parts until completion. This approach enhances the ability to update the UI token by token.
 
+| ✅ **Pros**                                           | ❌ **Cons**                                                                                   |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| Highly interactive experience                       | Potential UI flashing: values arriving token by token may produce unexpected visuals          |
+| Progressive content consumption                     | Increased network traffic                                                                     |
+| Reduces user wait times                             |                                                                                               |
 
-**StreamObjectKeyValueToken:**
+---
 
-- Each Key will arrive entirely, the value will arrive partially until the full value is completed
-- Enhance the power to token per token for UI
-
-Pros:
-
-- Feeling really interactive
-- Can consume the content progressively
-- Minium waiting time for the user
-
-Cons:
-
-- Can cause UI flashing, for example if a color or number arrive token per token the value may not be known.
-- Increase network traffic.
+Remember, when using tables in a GitHub README, ensure they're formatted correctly. This should make your README look more structured and visually appealing.
