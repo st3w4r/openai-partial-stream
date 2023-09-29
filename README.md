@@ -1,6 +1,6 @@
 # Partial Stream - Unlock the potential of OpenAI function calling in streaming
 
-![json_stream](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/json_stream.gif)
+![json_stream](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/json_stream_color.gif)
 
 
 To install dependencies:
