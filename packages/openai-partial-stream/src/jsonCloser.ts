@@ -93,7 +93,6 @@ export class JsonCloser {
     parse(): [boolean, any] {
         try {
             const closedJson = this.closeJson();
-            console.log("CLOSED JSON", closedJson);
             const jsonRes = JSON.parse(closedJson);
 
 

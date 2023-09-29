@@ -161,3 +161,34 @@ test.skip("parse partial JSON with escape quote", async () => {
     expect(hasChanged).toBe(true);
     expect(resJson).toMatchObject(expected);
 });
+
+
+test("close array", async () => {
+    let jsonCloser = new JsonCloser(StreamMode.StreamObjectKeyValueTokens);
+    const json = `{"a": 1, "b": ["ok", "super"`;
+    jsonCloser.append(json);
+    const expected = {a: 1, b: ["ok", "super"]};
+    const [hasChanged, resJson] = jsonCloser.parse();
+    expect(hasChanged).toBe(true);
+    expect(resJson).toMatchObject(expected);
+});
+
+test("parse array and object", async () => {
+    let jsonCloser = new JsonCloser(StreamMode.StreamObjectKeyValueTokens);
+    const json = `{"a": 1, "b": ["ok", "super"], "c": {"ok": "super"}`;
+    jsonCloser.append(json);
+    const expected = {a: 1, b: ["ok", "super"], c: {ok: "super"}};
+    const [hasChanged, resJson] = jsonCloser.parse();
+    expect(hasChanged).toBe(true);
+    expect(resJson).toMatchObject(expected);
+});
+
+test("parse array and object", async () => {
+    let jsonCloser = new JsonCloser(StreamMode.StreamObjectKeyValueTokens);
+    const json = `{"a": 1, "b": ["ok", "super", {"ok": "super`;
+    jsonCloser.append(json);
+    const expected = {a: 1, b: ["ok", "super", {ok: "super"}]};
+    const [hasChanged, resJson] = jsonCloser.parse();
+    expect(hasChanged).toBe(true);
+    expect(resJson).toMatchObject(expected);
+});
