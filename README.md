@@ -4,10 +4,6 @@
 
 
 
-Demo app:
-![stream_colors](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/Color_Streaming_Mode_3_colors.gif)
-
-
 To install dependencies:
 
 ```bash
@@ -170,3 +166,8 @@ Keys are received in full, while values are delivered piecemeal until they're co
 | ✅ Decreases user waiting times                              |
 | ⚠️ Possible UI inconsistencies due to values arriving incrementally |
 | ⚠️ Augmented network traffic                                 |
+
+
+## Demo
+
+![stream_colors](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/Color_Streaming_Mode_3_colors.gif)
