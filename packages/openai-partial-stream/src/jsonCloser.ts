@@ -1,4 +1,4 @@
-import { StreamMode } from "./utils.js";
+import { StreamMode } from "./utils";
 
 
 export class JsonCloser {

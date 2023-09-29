@@ -1,4 +1,4 @@
-export { StreamMode } from "./utils.js";
-export { StreamParser } from "./streamParser.js";
-export { OpenAiHandler } from "./openAiHandler.js";
-export { Entity } from "./entity.js";
+export { StreamMode } from "./utils";
+export { StreamParser } from "./streamParser";
+export { OpenAiHandler } from "./openAiHandler";
+export { Entity } from "./entity";

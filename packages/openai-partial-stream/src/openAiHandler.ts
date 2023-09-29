@@ -1,5 +1,5 @@
-import { StreamMode, StreamResponseWrapper, Status } from "./utils.js";
-import { StreamParser } from "./streamParser.js";
+import { StreamMode, StreamResponseWrapper, Status } from "./utils";
+import { StreamParser } from "./streamParser";
 
 
 export class OpenAiHandler {

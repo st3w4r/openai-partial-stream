@@ -22,6 +22,7 @@
     "scripts": {
         "build": "npx tsup src/**/*.ts --format esm,cjs --dts --clean",
         "dev": "npm run build -- --watch",
-        "start": "node dist/server.js"
+        "start": "node dist/server.js",
+        "lint": "tsc"
     }
 }

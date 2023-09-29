@@ -12,6 +12,12 @@ lib:
 web:
 	turbo build --filter=partial-ai-stream-website
 
+test:
+	turbo test
+
+test-watch:
+	turbo test:watch
+
 server: build
 	node apps/colors/dist/server.js
 
@@ -26,4 +32,4 @@ publish:
 	npx changeset publish
 
 
-.PHONY: all install build lib web server
+.PHONY: all install build lib web test test-watch server pack version publish

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zodToTs, printNode } from "zod-to-ts";
 
-import { StreamResponseWrapper } from "./utils.js";
+import { StreamResponseWrapper } from "./utils";
 
 
 export class Entity {

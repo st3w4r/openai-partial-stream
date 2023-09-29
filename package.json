@@ -19,6 +19,8 @@
     "turbo": "^1.10.14"
   },
   "scripts": {
-    "publish-packages": "turbo run build && changeset version && changeset publish"
+    "publish-packages": "turbo run build && changeset version && changeset publish",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch"
   }
 }

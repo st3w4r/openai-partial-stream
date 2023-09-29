@@ -12,6 +12,11 @@
         "dev": {
             "cache": false,
             "persistent": true
+        },
+        "lint": {},
+        "test": {},
+        "test:watch": {
+            "cache": false
         }
     }
 }

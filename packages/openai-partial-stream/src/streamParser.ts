@@ -1,6 +1,6 @@
-import { StreamMode } from "./utils.js";
-import { JsonCloser } from "./jsonCloser.js";
-import { Status, StreamResponseWrapper, ErrorResponse } from "./utils.js";
+import { StreamMode } from "./utils";
+import { JsonCloser } from "./jsonCloser";
+import { Status, StreamResponseWrapper, ErrorResponse } from "./utils";
 
 
 export class StreamParser {
