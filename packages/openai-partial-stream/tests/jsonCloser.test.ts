@@ -118,3 +118,46 @@ test("parse partial JSON multiple parse", async () => {
     expect(hasChanged2).toBe(true); // TODO: Need to improve the parser
     expect(resJson2).toMatchObject(expected);
 });
+
+
+// TODO: Should return null, need to improve the parser, malfroemd JSON
+test("parse partial JSON with malformed json", async () => {
+    runAndExpectClose([`{"a": 1, "b": "o\"k"`], `{"a": 1, "b": "o\"k"}`);
+});
+
+test("parse partial JSON with escape quote", async () => {
+    runAndExpectClose([`{"a": 1, "b": "o\"k"`], `{"a": 1, "b": "o\"k"}`);
+});
+
+test("parse partial JSON with escape quote", async () => {
+    runAndExpectClose([`{"a": 1, "b": "o\\"sup\\"k"`], `{"a": 1, "b": "o\\"sup\\"k"}`);
+});
+
+// TODO: Need to improve the parser, fix the test
+test.skip("parse partial JSON with escape quote", async () => {
+    runAndExpectClose([`{"a": 1, "b": "o\\"k"}`], `{"a": 1, "b": "o\\"k"}`);
+});
+
+
+test("parse partial JSON with escape quote", async () => {
+    let jsonCloser = new JsonCloser(StreamMode.StreamObjectKeyValue);
+    const json = `{"a": 1, "b": "o\\"k"`;
+    jsonCloser.append(json);
+    const expected = {a: 1, b: "o\"k"};
+    const [hasChanged, resJson] = jsonCloser.parse();
+    expect(hasChanged).toBe(true);
+    expect(resJson).toMatchObject(expected);
+});
+
+
+// TODO: Need to improve the parser, fix the test
+// Current closed json: {"a": 1, "b": "o\"k""}
+test.skip("parse partial JSON with escape quote", async () => {
+    let jsonCloser = new JsonCloser(StreamMode.StreamObjectKeyValueTokens);
+    const json = `{"a": 1, "b": "o\\"k"`;
+    jsonCloser.append(json);
+    const expected = {a: 1, b: "o\"k"};
+    const [hasChanged, resJson] = jsonCloser.parse();
+    expect(hasChanged).toBe(true);
+    expect(resJson).toMatchObject(expected);
+});
