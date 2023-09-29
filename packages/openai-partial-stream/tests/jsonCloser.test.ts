@@ -74,3 +74,47 @@ test("close partial JSON many appends", async () => {
         `}}`,
     ], `{"a": 1, "b": {"ok": "super"}}`);
 });
+
+
+// PARSE
+
+test("parse complete JSON", async () => {
+    const json = `{"a": 1, "b": 2, "c": 3}`;
+    jsonCloser.append(json);
+    const [hasChanged, resJson] = jsonCloser.parse();
+    expect(hasChanged).toBe(true);
+    expect(resJson).toEqual(JSON.parse(json));
+});
+
+test("parse partial JSON", async () => {
+    const json = `{"a": 1, "b": 2`;
+    const expected = {a: 1, b: 2};
+    jsonCloser.append(json);
+    const [hasChanged, resJson] = jsonCloser.parse();
+    expect(hasChanged).toBe(true);
+    expect(resJson).toMatchObject(expected);
+});
+
+test("parse partial JSON with missing quote", async () => {
+    const json = `{"a": 1, "b`;
+    jsonCloser.append(json);
+    const [hasChanged, resJson] = jsonCloser.parse();
+    expect(hasChanged).toBe(false);
+    expect(resJson).toBeNull();
+});
+
+test("parse partial JSON multiple parse", async () => {
+    const json = `{"a": 1, "b": "ok"`;
+    jsonCloser.append(json);
+    const expected = {a: 1, b: "ok"};
+
+    const [hasChanged, resJson] = jsonCloser.parse();
+    expect(hasChanged).toBe(true);
+    expect(resJson).toMatchObject(expected);
+
+    jsonCloser.append(`}`);
+
+    const [hasChanged2, resJson2] = jsonCloser.parse();
+    expect(hasChanged2).toBe(true); // TODO: Need to improve the parser
+    expect(resJson2).toMatchObject(expected);
+});

@@ -97,7 +97,6 @@ export class JsonCloser {
 
             const size = JSON.stringify(jsonRes).length;
 
-
             let hasChanged = false;
             if (size > this.prevSize) {
                 this.prevSize = size;
