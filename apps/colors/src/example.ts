@@ -81,7 +81,7 @@ function getTaglineMessages(): any[] {
                 - Dive into the next-gen of immersive AI experiences.
                 - Unlock the power of interactive AI experiences.
                 - Elevate AI apps with partial parsing and early results.
-                - Partial Stream Spec: Unleash the Power of Early Consumption
+                - Partial Stream Spec: Enable the Power of Early Consumption
             `
         },
 
