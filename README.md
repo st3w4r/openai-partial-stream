@@ -3,6 +3,11 @@
 ![json_stream](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/json_stream_color.gif)
 
 
+
+Demo app:
+![stream_colors](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/Color_Streaming_Mode_3_colors.gif)
+
+
 To install dependencies:
 
 ```bash
