@@ -449,9 +449,16 @@
             document.getElementById('voilaContainer').style.opacity = "0";
         }
 
+        let firstTimeDisplayed = false;
+        let startTime;
 
         function callGenerateColors() {
             const btn = document.getElementById('generateColors');
+
+            // Check timer
+            firstTimeDisplayed = false;
+            startTime = new Date();
+
 
 
 
@@ -479,6 +486,19 @@
             eventSource.onmessage = function (event) {
                 // Parse the data from the SSE message
                 const data = JSON.parse(event.data);
+
+                if (!firstTimeDisplayed && data && Object.keys(data.data).length !== 0) {
+                    console.log(data.data);
+                    const elapsedTime = new Date() - startTime;
+                    const elapsedSeconds = (elapsedTime / 1000).toFixed(2); // Convert to seconds and keep 2 decimal places
+                    const voilaContainer = document.getElementById('voilaContainer');
+
+                    // Update the text of the voilaContainer with the elapsed time in seconds
+                    voilaContainer.textContent = `Kick-off ${elapsedSeconds} seconds.`;
+
+                    firstTimeDisplayed = true;
+                }
+
 
                 if (data.status === 'PARTIAL' || data.status === 'COMPLETED') {
                     processBlock(data.index, data.data);
