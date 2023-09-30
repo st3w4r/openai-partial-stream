@@ -488,7 +488,6 @@
                 const data = JSON.parse(event.data);
 
                 if (!firstTimeDisplayed && data && Object.keys(data.data).length !== 0) {
-                    console.log(data.data);
                     const elapsedTime = new Date() - startTime;
                     const elapsedSeconds = (elapsedTime / 1000).toFixed(2); // Convert to seconds and keep 2 decimal places
                     const voilaContainer = document.getElementById('voilaContainer');
