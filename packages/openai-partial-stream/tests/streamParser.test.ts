@@ -64,3 +64,37 @@ test("stream partial parser", async () => {
     expect(results).toEqual(expected);
 
 });
+
+test("stream partial parser tokens", async () => {
+
+    const streamParser = new StreamParser(StreamMode.StreamObjectKeyValueTokens);
+
+    let content = [
+        `{"a":`,
+        ` "ok`,
+        ` su`,
+        `per",`,
+        `"b": 2`,
+        `, "c": `,
+        `3}`,
+    ];
+
+    let results: (StreamResponseWrapper|null)[] = [];
+
+    for (const item of content) {
+        results.push(streamParser.parse(item))
+    }
+
+    const expected = [
+        null,
+        { index: 0, status: 'PARTIAL', data: { a: "ok" } },
+        { index: 0, status: 'PARTIAL', data: { a: "ok su" } },
+        { index: 0, status: 'PARTIAL', data: { a: "ok super" } },
+        { index: 0, status: 'PARTIAL', data: { a: "ok super", b: 2 } },
+        null,
+        { index: 0, status: 'COMPLETED', data: { a: "ok super", b: 2, c: 3 } },
+    ]
+
+    expect(results).toEqual(expected);
+
+});
