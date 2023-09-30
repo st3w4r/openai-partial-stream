@@ -1,5 +1,11 @@
 # partial-ai-stream-lib
 
+## 0.3.2
+
+### Patch Changes
+
+- small fixes
+
 ## 0.3.1
 
 ### Patch Changes
