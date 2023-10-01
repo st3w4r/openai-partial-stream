@@ -1,13 +1,12 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response } from "express";
 
 import { StreamMode } from "openai-partial-stream";
-import { callGenerateColors, callGenerateTagline } from './example.js';
-import { setSSEHeaders, closeSSEConnection, senderHandler } from './sse.js';
-import { assert } from 'console';
+import { callGenerateColors, callGenerateTagline } from "./example";
+import { setSSEHeaders, closeSSEConnection, senderHandler } from "./sse";
+import { assert } from "console";
 
 const app = express();
 const PORT: number = 8080;
-
 
 // Middleware to handle POST data
 app.use(express.json());
@@ -17,25 +16,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req: Request, res: Response, next: Function) => {
     // Setting headers to handle the CORS issues
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept",
+    );
+
     // Proceed to the next middleware
     next();
 });
 
 // SSE setup
 app.use((req: Request, res: Response, next: Function) => {
-    res.header('Cache-Control', 'no-cache');
-    res.header('Connection', 'keep-alive');
+    res.header("Cache-Control", "no-cache");
+    res.header("Connection", "keep-alive");
     next();
 });
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Welcome to Partial Stream!');
+app.get("/", (req: Request, res: Response) => {
+    res.send("Welcome to Partial Stream!");
 });
 
 app.get("/sse/tagline", async (req: Request, res: Response) => {
-
     // Extract mode from the query parameter
     const mode: StreamMode = req.query.mode as StreamMode;
 
@@ -43,7 +44,7 @@ app.get("/sse/tagline", async (req: Request, res: Response) => {
     setSSEHeaders(res);
 
     // On client disconnect, remove them from the clients list
-    req.on('close', () => {
+    req.on("close", () => {
         console.log("Client disconnected");
         // TODO: Stop processing
     });
@@ -54,19 +55,17 @@ app.get("/sse/tagline", async (req: Request, res: Response) => {
     // Close SSE connection
     closeSSEConnection(res);
     console.log("Done");
-
 });
 
-app.get('/sse/colors', async (req: Request, res: Response) => {
-
+app.get("/sse/colors", async (req: Request, res: Response) => {
     // Extract mode from the query parameter
     const mode: StreamMode = req.query.mode as StreamMode;
 
     // Open SSE connection
     setSSEHeaders(res);
-    
+
     // On client disconnect, remove them from the clients list
-    req.on('close', () => {
+    req.on("close", () => {
         console.log("Client disconnected");
         // TODO: Stop processing
     });
@@ -80,12 +79,11 @@ app.get('/sse/colors', async (req: Request, res: Response) => {
         nbMsgSent = await senderHandler(res, gen);
         retryCount++;
     }
-    console.log(`Retry count: ${retryCount-1}`);
+    console.log(`Retry count: ${retryCount - 1}`);
 
     // Close SSE connection
     closeSSEConnection(res);
     console.log("Done");
-
 });
 
 app.listen(PORT, () => {

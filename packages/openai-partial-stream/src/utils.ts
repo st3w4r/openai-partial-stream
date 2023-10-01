@@ -3,7 +3,7 @@ export enum StreamMode {
     NoStream = "NoStream",
     StreamObject = "StreamObject",
     StreamObjectKeyValue = "StreamObjectKeyValue",
-    StreamObjectKeyValueTokens = "StreamObjectKeyValueTokens"
+    StreamObjectKeyValueTokens = "StreamObjectKeyValueTokens",
 }
 
 export enum Status {
@@ -17,10 +17,10 @@ export type StreamResponseWrapper = {
     index: number;
     status: Status;
     data: any;
-}
+};
 
 export type ErrorResponse = {
-    code: string,
-    error: string,
-    message: string,
-}
+    code: string;
+    error: string;
+    message: string;
+};

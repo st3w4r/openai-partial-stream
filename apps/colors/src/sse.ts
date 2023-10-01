@@ -1,10 +1,10 @@
-import { Response } from 'express';
+import { Response } from "express";
 
 export function setSSEHeaders(res: Response) {
     // Set response headers for SSE
-    res.header('Content-Type', 'text/event-stream');
-    res.header('Cache-Control', 'no-cache');
-    res.header('Connection', 'keep-alive');
+    res.header("Content-Type", "text/event-stream");
+    res.header("Cache-Control", "no-cache");
+    res.header("Connection", "keep-alive");
     res.flushHeaders(); // flush the headers to establish SSE with the client
 }
 
@@ -13,7 +13,7 @@ export function sendSSEResponse(res: Response, data: any) {
 }
 
 export function closeSSEConnection(res: Response) {
-    res.write("event: CLOSE\n")
+    res.write("event: CLOSE\n");
     res.write("data: [DONE]\n\n");
     res.end();
 }

@@ -14,6 +14,7 @@
             "persistent": true
         },
         "lint": {},
+        "format": {},
         "test": {},
         "test:watch": {
             "cache": false

@@ -1,9 +1,7 @@
 import { StreamMode, StreamResponseWrapper, Status } from "./utils";
 import { StreamParser } from "./streamParser";
 
-
 export class OpenAiHandler {
-
     private itemIdx = 0;
     private noStreamBufferList: any = [];
     private parser: StreamParser;
@@ -14,8 +12,9 @@ export class OpenAiHandler {
         this.parser = new StreamParser(this.mode);
     }
 
-    async *process(stream: any): AsyncGenerator<StreamResponseWrapper | null, void, unknown>{
-
+    async *process(
+        stream: any,
+    ): AsyncGenerator<StreamResponseWrapper | null, void, unknown> {
         for await (const msg of stream) {
             let content = "";
 
@@ -26,10 +25,12 @@ export class OpenAiHandler {
                 content = msg.choices[0]?.delta?.function_call?.arguments + "";
             }
 
-            const res = this.parser.parse(content);;
+            const res = this.parser.parse(content);
 
-            if (this.mode === StreamMode.NoStream || this.mode === StreamMode.Batch) {
-            
+            if (
+                this.mode === StreamMode.NoStream ||
+                this.mode === StreamMode.Batch
+            ) {
                 if (res) {
                     this.noStreamBufferList.push(res);
                 }
@@ -43,7 +44,6 @@ export class OpenAiHandler {
                 yield item;
             }
         } else if (this.mode === StreamMode.Batch) {
-            
             const streamRes: StreamResponseWrapper = {
                 index: this.itemIdx,
                 status: Status.COMPLETED,
@@ -52,5 +52,4 @@ export class OpenAiHandler {
             yield streamRes;
         }
     }
-
 }

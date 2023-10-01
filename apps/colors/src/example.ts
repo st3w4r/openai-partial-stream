@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { StreamMode, OpenAiHandler, Entity } from "openai-partial-stream";
 
-
 // Interface for developer how to use this library
 
 // Setps:
@@ -14,7 +13,6 @@ import { StreamMode, OpenAiHandler, Entity } from "openai-partial-stream";
 // - Create an enity, with zod schema
 // - Parse the valid json to entity
 
-
 // OPENAI INSTANCE
 if (!process.env.OPENAI_API_KEY) {
     console.error("OPENAI_API_KEY environment variable not found");
@@ -24,7 +22,6 @@ if (!process.env.OPENAI_API_KEY) {
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
-
 
 // SCHEMA
 
@@ -38,28 +35,29 @@ const TaglineSchema = z.object({
     tagline: z.string().optional(),
 });
 
-
-// PROMPTS 
+// PROMPTS
 
 function getColorMessages(number: string): any[] {
     return [
         {
             role: "system",
-            content: "Write JSON only"
+            content: "Write JSON only",
         },
         {
             role: "user",
-            content: "Give me a palette of "+number+" gorgeous color with the hex code, name and a description."
+            content:
+                "Give me a palette of " +
+                number +
+                " gorgeous color with the hex code, name and a description.",
         },
     ];
 }
 
 function getTaglineMessages(): any[] {
-
     return [
         {
-            "role": "system",
-            "content": `
+            role: "system",
+            content: `
                 Generate a tagline related to the following text:(MAXIUM 60 CHARACTERS)
                 Partial Stream Spec is a specification for a stream of raw text or structured JSON that can be partially parsed and return early results for an early consumption.
                 Use cases are:
@@ -82,10 +80,9 @@ function getTaglineMessages(): any[] {
                 - Unlock the power of interactive AI experiences.
                 - Elevate AI apps with partial parsing and early results.
                 - Partial Stream Spec: Enable the Power of Early Consumption
-            `
+            `,
         },
-
-    ]
+    ];
 }
 
 // FUNCTIONS
@@ -104,22 +101,23 @@ function getColorListFunction() {
                         properties: {
                             hex: {
                                 type: "string",
-                                description: "The hexadecimal code of the color"
+                                description:
+                                    "The hexadecimal code of the color",
                             },
                             name: {
                                 type: "string",
-                                description: "The color name"
+                                description: "The color name",
                             },
                             description: {
                                 type: "string",
-                                description: "The description of the color"
-                            }
-                        }
-                    }
-                }
-            }
+                                description: "The description of the color",
+                            },
+                        },
+                    },
+                },
+            },
         },
-    }
+    };
 }
 
 function getTaglineFunction() {
@@ -131,26 +129,25 @@ function getTaglineFunction() {
             properties: {
                 tagline: {
                     type: "string",
-                    description: "The tagline generated"
-                }
-            }
-        }
-    }
+                    description: "The tagline generated",
+                },
+            },
+        },
+    };
 }
 
 // CALLS
 
-export async function callGenerateTagline(mode: StreamMode = StreamMode.StreamObjectKeyValueTokens) {
-
+export async function callGenerateTagline(
+    mode: StreamMode = StreamMode.StreamObjectKeyValueTokens,
+) {
     const stream = await openai.chat.completions.create({
         messages: getTaglineMessages(),
         model: "gpt-3.5-turbo", // OR "gpt-4"
         stream: true, // ENABLE STREAMING - Server Sent Event (SSE)
         temperature: 1.1,
-        functions: [
-            getTaglineFunction(),
-        ],
-        function_call: {name: "tagline"}
+        functions: [getTaglineFunction()],
+        function_call: { name: "tagline" },
     });
 
     const openAiHandler = new OpenAiHandler(mode);
@@ -161,9 +158,9 @@ export async function callGenerateTagline(mode: StreamMode = StreamMode.StreamOb
     return taglineEntityStream;
 }
 
-
-export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObjectKeyValueTokens) {
-
+export async function callGenerateColors(
+    mode: StreamMode = StreamMode.StreamObjectKeyValueTokens,
+) {
     // Call OpenAI API, with function calling
     // Function calling: https://openai.com/blog/function-calling-and-other-api-updates
     const stream = await openai.chat.completions.create({
@@ -171,11 +168,8 @@ export async function callGenerateColors(mode: StreamMode = StreamMode.StreamObj
         model: "gpt-3.5-turbo", // OR "gpt-4"
         stream: true, // ENABLE STREAMING - Server Sent Event (SSE)
         temperature: 1.3,
-        functions: [
-            getColorListFunction(),
-        ],
-        function_call: {name: "give_colors"}
-
+        functions: [getColorListFunction()],
+        function_call: { name: "give_colors" },
     });
 
     // Handle the stream from OpenAI client

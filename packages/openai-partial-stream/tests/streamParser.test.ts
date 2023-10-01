@@ -1,4 +1,4 @@
-import {test, expect} from "@jest/globals";
+import { test, expect } from "@jest/globals";
 
 import { StreamMode, StreamResponseWrapper } from "../src/utils";
 import { StreamParser } from "../src/streamParser";
@@ -6,18 +6,11 @@ import { z } from "zod";
 import { Entity } from "../src/entity";
 
 test("stream parser", async () => {
-    
     const streamParser = new StreamParser(StreamMode.StreamObject);
 
-    let content = [
-        `{"a":`,
-        ` 1, `,
-        `"b": 2`,
-        `, "c": `,
-        `3}`,
-    ];
+    let content = [`{"a":`, ` 1, `, `"b": 2`, `, "c": `, `3}`];
 
-    let results: (StreamResponseWrapper|null)[] = [];
+    let results: (StreamResponseWrapper | null)[] = [];
 
     for (const item of content) {
         const res = streamParser.parse(item);
@@ -29,78 +22,59 @@ test("stream parser", async () => {
         null,
         null,
         null,
-        { index: 0, status: 'COMPLETED', data: { a: 1, b: 2, c: 3 } }
-    ]
-
-    expect(results).toEqual(expected);
-
-});
-
-
-test("stream partial parser", async () => {
-
-    const streamParser = new StreamParser(StreamMode.StreamObjectKeyValue);
-
-    let content = [
-        `{"a":`,
-        ` 1, `,
-        `"b": 2`,
-        `, "c": `,
-        `3}`,
+        { index: 0, status: "COMPLETED", data: { a: 1, b: 2, c: 3 } },
     ];
 
-    let results: (StreamResponseWrapper|null)[] = [];
+    expect(results).toEqual(expected);
+});
+
+test("stream partial parser", async () => {
+    const streamParser = new StreamParser(StreamMode.StreamObjectKeyValue);
+
+    let content = [`{"a":`, ` 1, `, `"b": 2`, `, "c": `, `3}`];
+
+    let results: (StreamResponseWrapper | null)[] = [];
 
     for (const item of content) {
-        results.push(streamParser.parse(item))
+        results.push(streamParser.parse(item));
     }
 
     const expected = [
         null,
-        { index: 0, status: 'PARTIAL', data: { a: 1 } },
-        { index: 0, status: 'PARTIAL', data: { a: 1, b: 2 } },
+        { index: 0, status: "PARTIAL", data: { a: 1 } },
+        { index: 0, status: "PARTIAL", data: { a: 1, b: 2 } },
         null,
-        { index: 0, status: 'COMPLETED', data: { a: 1, b: 2, c: 3 } },
-    ]
+        { index: 0, status: "COMPLETED", data: { a: 1, b: 2, c: 3 } },
+    ];
 
     expect(results).toEqual(expected);
-
 });
 
 test("stream partial parser tokens", async () => {
+    const streamParser = new StreamParser(
+        StreamMode.StreamObjectKeyValueTokens,
+    );
 
-    const streamParser = new StreamParser(StreamMode.StreamObjectKeyValueTokens);
+    let content = [`{"a":`, ` "ok`, ` su`, `per",`, `"b": 2`, `, "c": `, `3}`];
 
-    let content = [
-        `{"a":`,
-        ` "ok`,
-        ` su`,
-        `per",`,
-        `"b": 2`,
-        `, "c": `,
-        `3}`,
-    ];
-
-    let results: (StreamResponseWrapper|null)[] = [];
+    let results: (StreamResponseWrapper | null)[] = [];
 
     for (const item of content) {
-        results.push(streamParser.parse(item))
+        results.push(streamParser.parse(item));
     }
 
     const expected = [
         null,
-        { index: 0, status: 'PARTIAL', data: { a: "ok" } },
-        { index: 0, status: 'PARTIAL', data: { a: "ok su" } },
-        { index: 0, status: 'PARTIAL', data: { a: "ok super" } },
-        { index: 0, status: 'PARTIAL', data: { a: "ok super", b: 2 } },
+        { index: 0, status: "PARTIAL", data: { a: "ok" } },
+        { index: 0, status: "PARTIAL", data: { a: "ok su" } },
+        { index: 0, status: "PARTIAL", data: { a: "ok super" } },
+        { index: 0, status: "PARTIAL", data: { a: "ok super", b: 2 } },
         null,
-        { index: 0, status: 'COMPLETED', data: { a: "ok super", b: 2, c: 3 } },
-    ]
+        { index: 0, status: "COMPLETED", data: { a: "ok super", b: 2, c: 3 } },
+    ];
 
     expect(results).toEqual(expected);
-
 });
-
 
 async function* arrayToGenerator<T>(arr: T[]): AsyncGenerator<T> {
     for await (const item of arr) {
@@ -140,22 +114,22 @@ const COLORS_INPUT = {
 const EXPECTED_COLORS = [
     {
         index: 0,
-        status: 'COMPLETED',
+        status: "COMPLETED",
         data: COLORS_INPUT.colors[0],
-        entity: 'colors'
+        entity: "colors",
     },
     {
         index: 1,
-        status: 'COMPLETED',
+        status: "COMPLETED",
         data: COLORS_INPUT.colors[1],
-        entity: 'colors'
+        entity: "colors",
     },
     {
         index: 2,
-        status: 'COMPLETED',
+        status: "COMPLETED",
         data: COLORS_INPUT.colors[2],
-        entity: 'colors'
-    }
+        entity: "colors",
+    },
 ];
 
 test("stream partial array", async () => {
@@ -163,7 +137,7 @@ test("stream partial array", async () => {
     const streamParser = new StreamParser(StreamMode.StreamObject);
     const entityColors = new Entity("colors", ColorSchema);
 
-    const results = [...jsonInputs].map(item => streamParser.parse(item));
+    const results = [...jsonInputs].map((item) => streamParser.parse(item));
 
     const streamGen = arrayToGenerator(results);
     const colorEntityStream = entityColors.genParseArray(streamGen);

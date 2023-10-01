@@ -1,8 +1,6 @@
 import { StreamMode } from "./utils";
 
-
 export class JsonCloser {
-
     private mode: StreamMode;
 
     private buffer = "";
@@ -18,13 +16,10 @@ export class JsonCloser {
     }
 
     append(chunk: string) {
-
         for (const char of chunk) {
-            
             this.buffer += char;
 
             switch (char) {
-
                 case "{":
                     this.stack.push(char);
                     this.closedObject = false;
@@ -45,8 +40,8 @@ export class JsonCloser {
                     }
                     this.closedArray = true;
                     break;
-                case "\"":
-                    if (this.stack[this.stack.length - 1] === "\"") {
+                case '"':
+                    if (this.stack[this.stack.length - 1] === '"') {
                         this.stack.pop();
                     } else {
                         this.stack.push(char);
@@ -75,10 +70,9 @@ export class JsonCloser {
                     }
                     closeBuffer += "]";
                     break;
-                case "\"":
-
+                case '"':
                     if (this.mode === StreamMode.StreamObjectKeyValueTokens) {
-                        closeBuffer += "\"";
+                        closeBuffer += '"';
                     }
 
                     break;
@@ -94,7 +88,6 @@ export class JsonCloser {
         try {
             const closedJson = this.closeJson();
             const jsonRes = JSON.parse(closedJson);
-
 
             const size = JSON.stringify(jsonRes).length;
 

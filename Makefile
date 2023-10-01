@@ -32,4 +32,7 @@ publish:
 	npx changeset publish
 
 
-.PHONY: all install build lib web test test-watch server pack version publish
+format:
+	turbo format
+
+.PHONY: all install build lib web test test-watch server pack version publish format

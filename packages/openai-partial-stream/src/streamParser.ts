@@ -2,9 +2,7 @@ import { StreamMode } from "./utils";
 import { JsonCloser } from "./jsonCloser";
 import { Status, StreamResponseWrapper, ErrorResponse } from "./utils";
 
-
 export class StreamParser {
-
     private jsonCloser: JsonCloser;
     private mode: StreamMode;
     private entityIndex: number = 0;
@@ -13,14 +11,13 @@ export class StreamParser {
         this.mode = mode;
         this.jsonCloser = new JsonCloser(mode);
     }
-    
+
     // Write to the buffer
     // Return a value if the parsing is possible
     // if not return empty or null
     // Output only if there was a change
     // Return based on the mode
     parse(chunk: string): StreamResponseWrapper | null {
-
         let index = this.entityIndex;
         let completed = false;
         let outputEntity: any = null;
@@ -42,28 +39,27 @@ export class StreamParser {
             outputEntity = null;
         }
 
-        if (completed === false && (
-            this.mode === StreamMode.StreamObject ||
-            this.mode === StreamMode.NoStream
-            )
+        if (
+            completed === false &&
+            (this.mode === StreamMode.StreamObject ||
+                this.mode === StreamMode.NoStream)
         ) {
             return null;
         }
 
-
-        if (outputEntity) {   
+        if (outputEntity) {
             const streamRes: StreamResponseWrapper = {
                 index: index,
                 status: completed ? Status.COMPLETED : Status.PARTIAL,
                 data: outputEntity,
-            }
+            };
             return streamRes;
         } else if (error) {
             const streamRes: StreamResponseWrapper = {
                 index: index,
                 status: Status.FAILED,
                 data: error,
-            }
+            };
             return streamRes;
         }
         return null;
