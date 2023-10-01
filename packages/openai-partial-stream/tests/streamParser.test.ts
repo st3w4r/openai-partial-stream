@@ -108,99 +108,75 @@ async function* arrayToGenerator<T>(arr: T[]): AsyncGenerator<T> {
     }
 }
 
+const ColorSchema = z.object({
+    hex: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+});
+
+const COLORS_INPUT = {
+    colors: [
+        {
+            hex: "#cd5268",
+            name: "Passionate Pink",
+            description:
+                "This is a vibrant, dramatic pink with a romantic charm. It adds a fashionable and bold accent to your designs.",
+        },
+        {
+            hex: "#287d8e",
+            name: "Serene Ocean",
+            description:
+                "A calming yet energetic shade of blue that represents the ocean. It provides a sense of tranquility and inspiration.",
+        },
+        {
+            hex: "#fcdab7",
+            name: "Soft Peach",
+            description:
+                "A delicate and warm peach color. It carries a sense of freshness, gentleness, and positivity.",
+        },
+    ],
+};
+
+const EXPECTED_COLORS = [
+    {
+        index: 0,
+        status: 'COMPLETED',
+        data: COLORS_INPUT.colors[0],
+        entity: 'colors'
+    },
+    {
+        index: 1,
+        status: 'COMPLETED',
+        data: COLORS_INPUT.colors[1],
+        entity: 'colors'
+    },
+    {
+        index: 2,
+        status: 'COMPLETED',
+        data: COLORS_INPUT.colors[2],
+        entity: 'colors'
+    }
+];
 
 test("stream partial array", async () => {
-
-    const ColorSchema = z.object({
-        hex: z.string().optional(),
-        name: z.string().optional(),
-        description: z.string().optional(),
-    });
-
-    const inputs = {
-        colors: [
-            {
-                hex: "#cd5268",
-                name: "Passionate Pink",
-                description:
-                    "This is a vibrant, dramatic pink with a romantic charm. It adds a fashionable and bold accent to your designs.",
-            },
-            {
-                hex: "#287d8e",
-                name: "Serene Ocean",
-                description:
-                    "A calming yet energetic shade of blue that represents the ocean. It provides a sense of tranquility and inspiration.",
-            },
-            {
-                hex: "#fcdab7",
-                name: "Soft Peach",
-                description:
-                    "A delicate and warm peach color. It carries a sense of freshness, gentleness, and positivity.",
-            },
-        ],
-    };
-
-    const jsonInputs = JSON.stringify(inputs);
-
-
+    const jsonInputs = JSON.stringify(COLORS_INPUT);
     const streamParser = new StreamParser(StreamMode.StreamObject);
-
     const entityColors = new Entity("colors", ColorSchema);
 
-    let results: (StreamResponseWrapper|null)[] = [];
+    const results = [...jsonInputs].map(item => streamParser.parse(item));
 
-    for (const item of jsonInputs) {
-        results.push(streamParser.parse(item))
-    }
-
-    let streamGen = arrayToGenerator(results);
-
+    const streamGen = arrayToGenerator(results);
     const colorEntityStream = entityColors.genParseArray(streamGen);
 
-    let colors: any[] = [];
-
+    const colors: any[] = [];
     for await (const item of colorEntityStream) {
         if (item) {
             colors.push(item);
         }
     }
 
-    expect(colors.length).toEqual(3);
-
-    const expectedFirst = {
-        index: 0,
-        status: 'COMPLETED',
-        data: {
-            hex: '#cd5268',
-            name: 'Passionate Pink',
-            description: 'This is a vibrant, dramatic pink with a romantic charm. It adds a fashionable and bold accent to your designs.'
-        },
-        entity: 'colors'
-    };
-    const expectedSecond = {
-        index: 1,
-        status: 'COMPLETED',
-        data: {
-            hex: '#287d8e',
-            name: 'Serene Ocean',
-            description: 'A calming yet energetic shade of blue that represents the ocean. It provides a sense of tranquility and inspiration.'
-        },
-        entity: 'colors'
-    };
-
-    const expectedLast = {
-        index: 2,
-        status: 'COMPLETED',
-        data: {
-            hex: '#fcdab7',
-            name: 'Soft Peach',
-            description: 'A delicate and warm peach color. It carries a sense of freshness, gentleness, and positivity.'
-        },
-        entity: 'colors'
-    };
-
-    expect(colors[0]).toEqual(expectedFirst);
-    expect(colors[1]).toEqual(expectedSecond);
-    expect(colors[2]).toEqual(expectedLast);
-
+    expect(colors).toHaveLength(3);
+    colors.forEach((color, idx) => {
+        expect(color).toEqual(EXPECTED_COLORS[idx]);
+    });
 });
