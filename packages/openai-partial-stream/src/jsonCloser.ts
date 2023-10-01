@@ -103,8 +103,8 @@ export class JsonCloser {
                 this.prevSize = size;
                 hasChanged = true;
             }
-            // XOR operation to check if one of the two is true, but not both
             // Do not process twice if the array and the object get closed.
+            // XOR operation to check if one of the two is true, but not both
             else if (this.closedObject !== this.closedArray) {
                 // If the object have been closed consider it as a change
                 // If the array have been close the object have been closed too
