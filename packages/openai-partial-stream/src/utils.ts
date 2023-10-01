@@ -13,10 +13,16 @@ export enum Status {
 }
 
 export type StreamResponseWrapper = {
-    entity?: string;
     index: number;
     status: Status;
-    data: any;
+    data: Record<string, unknown | undefined>;
+};
+
+export type ParsedResponse<K extends string, T> = {
+    entity: K;
+    index: number;
+    status: Status;
+    data: T;
 };
 
 export type ErrorResponse = {
