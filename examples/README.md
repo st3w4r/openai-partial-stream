@@ -1,6 +1,5 @@
 # Examples
 
-
 Examples of how to use the library.
 
 ```bash

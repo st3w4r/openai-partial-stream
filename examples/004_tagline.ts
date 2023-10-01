@@ -2,14 +2,11 @@ import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
 import OpenAi from "openai";
 import { z } from "zod";
 
-
 const TaglineSchema = z.object({
     tagline: z.string().optional(), // Optional because the model can return a partial result
 });
 
 async function main() {
-
-
     // Intanciate OpenAI client with your API key
     const openai = new OpenAi({
         apiKey: process.env.OPENAI_API_KEY,
@@ -17,9 +14,10 @@ async function main() {
 
     // Call the API with stream enabled and a function
     const stream = await openai.chat.completions.create({
-        messages: [{
-            role: "system",
-            content: `
+        messages: [
+            {
+                role: "system",
+                content: `
                 Generate a tagline related to the following text:(MAXIUM 60 CHARACTERS)
                 Partial Stream Spec is a specification for a stream of raw text or structured JSON that can be partially parsed and return early results for an early consumption.
                 Use cases are:
@@ -29,8 +27,9 @@ async function main() {
 
                 What is the goal of this project?:
                 - Make AI apps more interactive and responsive. 
-                `
-        }],
+                `,
+            },
+        ],
         model: "gpt-3.5-turbo", // OR "gpt-4"
         stream: true, // ENABLE STREAMING
         temperature: 1.1,
@@ -43,18 +42,17 @@ async function main() {
                     properties: {
                         tagline: {
                             type: "string",
-                            description: "The tagline generated"
-                        }
-                    }
-                }
-            }
+                            description: "The tagline generated",
+                        },
+                    },
+                },
+            },
         ],
-        function_call: { name: "tagline" }
+        function_call: { name: "tagline" },
     });
 
-
     // Select the mode of the stream parser
-    // - StreamObjectKeyValueTokens: (REALTIME)     Stream of JSON objects, key value pairs and tokens 
+    // - StreamObjectKeyValueTokens: (REALTIME)     Stream of JSON objects, key value pairs and tokens
     // - StreamObjectKeyValue:       (PROGRESSIVE)  Stream of JSON objects and key value pairs
     // - StreamObject:               (ONE-BY-ONE)   Stream of JSON objects
     // - NoStream:                   (ALL-TOGETHER) All the data is returned at the end of the process

@@ -3,16 +3,15 @@ import { z } from "zod";
 
 import { StreamMode, OpenAiHandler, Entity } from "openai-partial-stream";
 
-
 const ColorSchema = z.object({
     hex: z.string().optional(),
     name: z.string().optional(),
     description: z.string().optional(),
 });
 
-
-async function callGenerateColors(mode = StreamMode.StreamObjectKeyValueTokens) {
-
+async function callGenerateColors(
+    mode = StreamMode.StreamObjectKeyValueTokens,
+) {
     // OPENAI INSTANCE
     if (!process.env.OPENAI_API_KEY) {
         console.error("OPENAI_API_KEY environment variable not found");
@@ -29,8 +28,9 @@ async function callGenerateColors(mode = StreamMode.StreamObjectKeyValueTokens) 
         messages: [
             {
                 role: "user",
-                content: "Give me a palette of 5 gorgeous color with the hex code, name and a description."
-            }
+                content:
+                    "Give me a palette of 5 gorgeous color with the hex code, name and a description.",
+            },
         ],
         model: "gpt-3.5-turbo", // OR "gpt-4"
         stream: true, // ENABLE STREAMING
@@ -49,25 +49,26 @@ async function callGenerateColors(mode = StreamMode.StreamObjectKeyValueTokens) 
                                 properties: {
                                     hex: {
                                         type: "string",
-                                        description: "The hexadecimal code of the color"
+                                        description:
+                                            "The hexadecimal code of the color",
                                     },
                                     name: {
                                         type: "string",
-                                        description: "The color name"
+                                        description: "The color name",
                                     },
                                     description: {
                                         type: "string",
-                                        description: "The description of the color"
-                                    }
-                                }
-                            }
-                        }
-                    }
+                                        description:
+                                            "The description of the color",
+                                    },
+                                },
+                            },
+                        },
+                    },
                 },
             },
         ],
-        function_call: {name: "give_colors"}
-
+        function_call: { name: "give_colors" },
     });
 
     // Handle the stream from OpenAI client
@@ -79,16 +80,15 @@ async function callGenerateColors(mode = StreamMode.StreamObjectKeyValueTokens) 
     // Transfrom each item of an array to a unique entity
     const colorEntityStream = entityColors.genParseArray(entityStream);
     // Return the stream of entity
-    
+
     return colorEntityStream;
 }
-
 
 async function main() {
     // Select the mode of the stream parser
     const mode = StreamMode.StreamObject; // ONE-BY-ONE
-    const colorEntityStream = await callGenerateColors(mode)
-    
+    const colorEntityStream = await callGenerateColors(mode);
+
     for await (const item of colorEntityStream) {
         if (item) {
             console.log(item);
