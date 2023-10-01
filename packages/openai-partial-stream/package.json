@@ -3,7 +3,7 @@
     "author": "Yanael Barbier",
     "license": "MIT",
     "private": false,
-    "version": "0.3.2",
+    "version": "0.3.3",
     "devDependencies": {
         "@jest/globals": "^29.7.0",
         "@types/jest": "^29.5.5",

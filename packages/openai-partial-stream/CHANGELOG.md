@@ -1,5 +1,11 @@
 # partial-ai-stream-lib
 
+## 0.3.3
+
+### Patch Changes
+
+- Add types over entity
+
 ## 0.3.2
 
 ### Patch Changes
