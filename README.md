@@ -13,6 +13,11 @@ npm install --save openai-partial-stream
 Turn a stream of token into a parsable JSON object as soon as possible.
 
 ```javascript
+import OpenAi from "openai";
+
+// Set your OpenAI API key as an environment variable: OPENAI_API_KEY
+const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
+
 const stream = await openai.chat.completions.create({
     messages: [{ role: "system", content: "Say hello to the world." }],
     model: "gpt-3.5-turbo", // OR "gpt-4"
@@ -61,6 +66,11 @@ Output:
 Validate the data against a schema and only return the data when it is valid.
 
 ```javascript
+import OpenAi from "openai";
+
+// Set your OpenAI API key as an environment variable: OPENAI_API_KEY
+const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
+
 const stream = await openai.chat.completions.create({
     messages: [{ role: "system", content: "Say hello to the world." }],
     model: "gpt-3.5-turbo", // OR "gpt-4"
