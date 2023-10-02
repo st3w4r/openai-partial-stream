@@ -26,9 +26,15 @@ export class StreamParser {
 
         this.jsonCloser.append(chunk);
 
-        const [hasChanged, resJson] = this.jsonCloser.parse();
+        const [hasChanged, resJson, stack] = this.jsonCloser.parse();
 
-        if (end !== -1) {
+        // If an object have been closed
+        // Check if an array is open or if the stack is empty
+        // Meaning the object is completed and a new entity can be created
+        if (
+            end !== -1 &&
+            ("[" === stack[stack.length - 1] || stack.length === 0)
+        ) {
             this.entityIndex += 1;
             completed = true;
         }

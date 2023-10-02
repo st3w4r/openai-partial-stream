@@ -74,7 +74,6 @@ export class JsonCloser {
                     if (this.mode === StreamMode.StreamObjectKeyValueTokens) {
                         closeBuffer += '"';
                     }
-
                     break;
                 default:
                     break;
@@ -84,7 +83,7 @@ export class JsonCloser {
         return closeBuffer;
     }
 
-    parse(): [boolean, any] {
+    parse(): [boolean, any, any[]] {
         try {
             const closedJson = this.closeJson();
             const jsonRes = JSON.parse(closedJson);
@@ -107,9 +106,9 @@ export class JsonCloser {
                 this.closedObject = false;
             }
 
-            return [hasChanged, jsonRes];
+            return [hasChanged, jsonRes, this.stack];
         } catch (error) {
-            return [false, null];
+            return [false, null, this.stack];
         }
     }
 }

@@ -156,7 +156,7 @@ test("stream partial array", async () => {
 });
 
 // TODO: Improve the parer to handle this case
-test.skip("stream partial", async () => {
+test("stream partial", async () => {
     const inputs = [
         `{
             "hello": "world",
