@@ -154,3 +154,68 @@ test("stream partial array", async () => {
         expect(color).toEqual(EXPECTED_COLORS[idx]);
     });
 });
+
+// TODO: Improve the parer to handle this case
+test.skip("stream partial", async () => {
+    const inputs = [
+        `{
+            "hello": "world",
+        `,
+        `
+            "name": "jack",
+        `,
+        `
+            "address": {
+                "street": "123 Fake St",
+                "city": "Springfield",
+                "state": "NY"
+            },
+        `,
+        `
+            "age": 30
+        }`,
+    ];
+    const streamParser = new StreamParser(StreamMode.StreamObjectKeyValue);
+
+    const results = inputs.map((item) => streamParser.parse(item));
+
+    console.log(results);
+
+    const expected = [
+        { index: 0, status: "PARTIAL", data: { hello: "world" } },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: { hello: "world", name: "jack" },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: {
+                hello: "world",
+                name: "jack",
+                address: {
+                    street: "123 Fake St",
+                    city: "Springfield",
+                    state: "NY",
+                },
+            },
+        },
+        {
+            index: 0,
+            status: "COMPLETED",
+            data: {
+                hello: "world",
+                name: "jack",
+                address: {
+                    street: "123 Fake St",
+                    city: "Springfield",
+                    state: "NY",
+                },
+                age: 30,
+            },
+        },
+    ];
+
+    expect(results).toEqual(expected);
+});
