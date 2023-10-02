@@ -1,5 +1,11 @@
 # partial-ai-stream-lib
 
+## 0.3.4
+
+### Patch Changes
+
+- Improve completion on object closure
+
 ## 0.3.3
 
 ### Patch Changes
