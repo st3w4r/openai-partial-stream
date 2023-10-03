@@ -1,4 +1,4 @@
-# Partial Stram - Turn your slow AI app into an engaging real-time app
+# Partial Stream - Turn your slow AI app into an engaging real-time app
 
 By unlcoking the potential of OpenAI function calling in streaming, you can stream your UI components at token speed.
 
