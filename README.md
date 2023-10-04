@@ -293,8 +293,10 @@ Keys are received in full, while values are delivered piecemeal until they're co
 
 ## Demo
 
+Stream of JSON object with progressively by key value pairs:
+
 ![json_stream_colors](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/Color_Streaming_Mode_3_colors.gif)
 
-Stream of JSON objects in realtime
+Stream of JSON objects in realtime:
 
 ![json_stream_sf](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/json_stream_sf.gif)
