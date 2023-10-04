@@ -8,7 +8,6 @@
 
 ![json_stream](https://github.com/st3w4r/partial-stream/assets/4228332/86044be5-f39a-4bac-9ec1-5160352e0698)
 
-
 ## Install
 
 To install dependencies:
@@ -294,7 +293,7 @@ Keys are received in full, while values are delivered piecemeal until they're co
 
 ## Demo
 
-Stream of JSON object with progressively by key value pairs:
+Stream of JSON object progressively by key value pairs:
 
 https://github.com/st3w4r/partial-stream/assets/4228332/5c7b826b-bb07-4b49-8918-2e5272f52ad0
 
