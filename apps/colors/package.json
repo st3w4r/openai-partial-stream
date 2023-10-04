@@ -16,7 +16,7 @@
         "openai-partial-stream": "*",
         "express": "^4.18.2",
         "openai": "^4.6.0",
-        "zod": "^3.22.2",
+        "zod": "^3.22.3",
         "zod-to-ts": "^1.2.0"
     },
     "scripts": {
