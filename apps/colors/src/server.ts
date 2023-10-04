@@ -4,8 +4,14 @@ import { StreamMode } from "openai-partial-stream";
 import { callGenerateColors } from "./entityColors";
 import { callGenerateTagline } from "./entitytTagline";
 import { callGenerateSF } from "./entitySf";
-import { setSSEHeaders, closeSSEConnection, senderHandler } from "./sse";
+import {
+    setSSEHeaders,
+    closeSSEConnection,
+    senderHandler,
+    sendSSEEvent,
+} from "./sse";
 import OpenAI from "openai";
+import { sendRateLimitError, sendSSEErrorEvent } from "./error";
 
 // Express setup
 const app = express();
@@ -49,83 +55,90 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Welcome to Partial Stream!");
 });
 
-app.get("/sse/tagline", async (req: Request, res: Response) => {
-    // Extract mode from the query parameter
-    const mode: StreamMode = req.query.mode as StreamMode;
+// Common error handling
+function handleError(e: any, res: Response) {
+    console.error(e);
+    if (e?.status === 429) {
+        sendRateLimitError(res);
+    } else {
+        sendSSEErrorEvent(res, {
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong on the server side.",
+        });
+    }
+}
 
-    // Open SSE connection
-    setSSEHeaders(res);
-
-    // On client disconnect, remove them from the clients list
-    req.on("close", () => {
-        console.log("Client disconnected");
-        // TODO: Stop processing
-    });
-
-    const gen = await callGenerateTagline(openai, mode);
-    // Send each message to the client via SSE
-    await senderHandler(res, gen);
-    // Close SSE connection
-    closeSSEConnection(res);
-    console.log("Done");
-});
-
-app.get("/sse/colors", async (req: Request, res: Response) => {
-    // Extract mode from the query parameter
-    const mode: StreamMode = req.query.mode as StreamMode;
-
-    // Open SSE connection
-    setSSEHeaders(res);
-
-    // On client disconnect, remove them from the clients list
-    req.on("close", () => {
-        console.log("Client disconnected");
-        // TODO: Stop processing
-    });
-
-    // Retry 3 times if no message is sent
+// Retry logic
+async function processWithRetry(
+    callback: () => Promise<any>,
+    maxRetries: number,
+) {
     let nbMsgSent = 0;
     let retryCount = 0;
-    while (nbMsgSent === 0 && retryCount < 3) {
-        const gen = await callGenerateColors(openai, mode);
-        // Send each message to the client via SSE
-        nbMsgSent = await senderHandler(res, gen);
+    while (nbMsgSent === 0 && retryCount < maxRetries) {
+        nbMsgSent = await callback();
         retryCount++;
     }
     console.log(`Retry count: ${retryCount - 1}`);
+}
 
-    // Close SSE connection
-    closeSSEConnection(res);
-    console.log("Done");
-});
-
-app.get("/sse/sf", async (req: Request, res: Response) => {
-    // Extract mode from the query parameter
+// Unified SSE handler
+async function handleSSE(
+    req: Request,
+    res: Response,
+    mainLogic: () => Promise<any>,
+) {
     const mode: StreamMode = req.query.mode as StreamMode;
-
-    // Open SSE connection
     setSSEHeaders(res);
 
-    // On client disconnect, remove them from the clients list
     req.on("close", () => {
         console.log("Client disconnected");
         // TODO: Stop processing
     });
 
-    // Retry 3 times if no message is sent
-    let nbMsgSent = 0;
-    let retryCount = 0;
-    while (nbMsgSent === 0 && retryCount < 3) {
-        const gen = await callGenerateSF(openai, mode);
-        // Send each message to the client via SSE
-        nbMsgSent = await senderHandler(res, gen);
-        retryCount++;
+    try {
+        await mainLogic();
+    } catch (e: any) {
+        handleError(e, res);
+    } finally {
+        closeSSEConnection(res);
+        console.log("Done");
     }
-    console.log(`Retry count: ${retryCount - 1}`);
+}
 
-    // Close SSE connection
-    closeSSEConnection(res);
-    console.log("Done");
+// Endpoints using the refactored functions
+app.get("/sse/tagline", (req, res) => {
+    handleSSE(req, res, async () => {
+        const gen = await callGenerateTagline(
+            openai,
+            req.query.mode as StreamMode,
+        );
+        await senderHandler(res, gen);
+    });
+});
+
+app.get("/sse/colors", (req, res) => {
+    handleSSE(req, res, async () => {
+        await processWithRetry(async () => {
+            const gen = await callGenerateColors(
+                openai,
+                req.query.mode as StreamMode,
+            );
+            return await senderHandler(res, gen);
+        }, 3);
+    });
+});
+
+app.get("/sse/sf", (req, res) => {
+    handleSSE(req, res, async () => {
+        await processWithRetry(async () => {
+            const gen = await callGenerateSF(
+                openai,
+                req.query.mode as StreamMode,
+            );
+            return await senderHandler(res, gen);
+        }, 3);
+    });
 });
 
 app.listen(PORT, () => {

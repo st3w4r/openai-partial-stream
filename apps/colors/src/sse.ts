@@ -18,6 +18,11 @@ export function closeSSEConnection(res: Response) {
     res.end();
 }
 
+export function sendSSEEvent(res: Response, event: string, data: any) {
+    res.write(`event: ${event}\n`);
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+}
+
 export async function senderHandler(res: Response, gen: any): Promise<number> {
     let counter = 0;
     for await (const data of gen) {
