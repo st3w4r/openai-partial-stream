@@ -1,8 +1,14 @@
-# Partial Stream - Turn your slow AI app into an engaging real-time app
+# Parse Partial JSON Stream - Turn your slow AI app into an engaging real-time app
 
-By unlcoking the potential of OpenAI function calling in streaming, you can stream your UI components at token speed.
+-   Convert a **stream of token** into a **parsable JSON** object before the stream ends.
+-   Implement **Streaming UI** in **LLM**-based AI application.
+-   Leverage **OpenAI Function Calling** for early stream processing.
+-   Parse **JSON stream** into distinct **entities**.
+-   Engage your users with a **real-time** experience.
 
-![json_stream](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/json_stream_color.gif)
+![json_stream](https://github.com/st3w4r/partial-stream/assets/4228332/86044be5-f39a-4bac-9ec1-5160352e0698)
+
+## Install
 
 To install dependencies:
 
@@ -16,6 +22,7 @@ Turn a stream of token into a parsable JSON object as soon as possible.
 
 ```javascript
 import OpenAi from "openai";
+import { OpenAiHandler, StreamMode } from "openai-partial-stream";
 
 // Set your OpenAI API key as an environment variable: OPENAI_API_KEY
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
@@ -68,7 +75,9 @@ Output:
 Validate the data against a schema and only return the data when it is valid.
 
 ```javascript
+import { z } from "zod";
 import OpenAi from "openai";
+import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
 
 // Set your OpenAI API key as an environment variable: OPENAI_API_KEY
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
@@ -127,9 +136,19 @@ Output:
 ## Usage with stream and entity parsing with multiple entities
 
 ```javascript
+import { z } from "zod";
+import OpenAi from "openai";
+import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
+
 // Intanciate OpenAI client with your API key
 const openai = new OpenAi({
     apiKey: process.env.OPENAI_API_KEY,
+});
+
+const PostcodeSchema = z.object({
+    name: z.string().optional(),
+    postcode: z.string().optional(),
+    population: z.number().optional(),
 });
 
 // Call the API with stream enabled and a function
@@ -274,4 +293,10 @@ Keys are received in full, while values are delivered piecemeal until they're co
 
 ## Demo
 
-![stream_colors](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/Color_Streaming_Mode_3_colors.gif)
+Stream of JSON object progressively by key value pairs:
+
+https://github.com/st3w4r/partial-stream/assets/4228332/5c7b826b-bb07-4b49-8918-2e5272f52ad0
+
+Stream of JSON objects in realtime:
+
+https://github.com/st3w4r/partial-stream/assets/4228332/d3015670-5935-42a3-af32-597c63460ce2

@@ -3,6 +3,17 @@ import { z } from "zod";
 
 import { StreamMode, OpenAiHandler, Entity } from "openai-partial-stream";
 
+// OPENAI INSTANCE
+if (!process.env.OPENAI_API_KEY) {
+    console.error("OPENAI_API_KEY environment variable not found");
+    process.exit(1);
+}
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Schema of the entity
 const ColorSchema = z.object({
     hex: z.string().optional(),
     name: z.string().optional(),
@@ -12,16 +23,6 @@ const ColorSchema = z.object({
 async function callGenerateColors(
     mode = StreamMode.StreamObjectKeyValueTokens,
 ) {
-    // OPENAI INSTANCE
-    if (!process.env.OPENAI_API_KEY) {
-        console.error("OPENAI_API_KEY environment variable not found");
-        process.exit(1);
-    }
-
-    const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-
     // Call OpenAI API, with function calling
     // Function calling: https://openai.com/blog/function-calling-and-other-api-updates
     const stream = await openai.chat.completions.create({

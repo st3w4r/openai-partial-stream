@@ -2,6 +2,12 @@ import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
 import OpenAi from "openai";
 import { z } from "zod";
 
+// Intanciate OpenAI client with your API key
+const openai = new OpenAi({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Schema of the entity
 const PostcodeSchema = z.object({
     name: z.string().optional(),
     postcode: z.string().optional(),
@@ -9,11 +15,6 @@ const PostcodeSchema = z.object({
 });
 
 async function main() {
-    // Intanciate OpenAI client with your API key
-    const openai = new OpenAi({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-
     // Call the API with stream enabled and a function
     const stream = await openai.chat.completions.create({
         messages: [

@@ -1,12 +1,17 @@
-import { OpenAiHandler, StreamMode } from "openai-partial-stream";
+import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
 import OpenAi from "openai";
+import { z } from "zod";
+
+const HelloSchema = z.object({
+    sentence: z.string().optional(),
+});
+
+// Intanciate OpenAI client with your API key
+const openai = new OpenAi({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
 async function main() {
-    // Intanciate OpenAI client with your API key
-    const openai = new OpenAi({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-
     // Call the API with stream enabled and a function
     const stream = await openai.chat.completions.create({
         messages: [
@@ -47,9 +52,13 @@ async function main() {
     const openAiHandler = new OpenAiHandler(mode);
     // Process the stream
     const entityStream = openAiHandler.process(stream);
+    // Create an entity with the schema to validate the data
+    const entityHello = new Entity("sentence", HelloSchema);
+    // Parse the stream to an entity, using the schema to validate the data
+    const helloEntityStream = entityHello.genParse(entityStream);
 
     // Iterate over the stream of entities
-    for await (const item of entityStream) {
+    for await (const item of helloEntityStream) {
         if (item) {
             // Display the entity
             console.log(item);
