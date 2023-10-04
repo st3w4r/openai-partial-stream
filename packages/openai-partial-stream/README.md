@@ -1,9 +1,17 @@
-# Partial AI Stream Library
+# OpenaAI Partial Stream Library
 
-Turn a stream of token into a parsable JSON object as soon as possible.
+- Convert a **stream of token** into a **parsable JSON** object before the stream ends.
+- Implement **Streaming UI** in **LLM**-based AI application.
+- Leverage **OpenAI Function Calling** for early stream processing.
+- Parse **JSON stream** into distinct **entities**.
+- Engage your users with a **real-time** experience.
 
 ## Installation
 
 ```bash
 npm install openai-partial-stream
 ```
+
+# Usage Example on GitHub
+
+- [GitHub repo](https://github.com/st3w4r/partial-stream)
