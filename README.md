@@ -300,3 +300,7 @@ https://github.com/st3w4r/openai-partial-stream/assets/4228332/55643614-b92b-4b1
 Stream of JSON objects in realtime:
 
 https://github.com/st3w4r/openai-partial-stream/assets/4228332/73289d38-8526-46cf-a68c-ac80019092ab
+
+## References
+
+[npm pakcage](https://www.npmjs.com/package/openai-partial-stream)
