@@ -1,12 +1,6 @@
 import express, { Request, Response } from "express";
 
 import { StreamMode } from "openai-partial-stream";
-// import {
-//     callGenerateColors,
-//     callGenerateSF,
-//     callGenerateTagline,
-// } from "./example";
-
 import { callGenerateColors } from "./entityColors";
 import { callGenerateTagline } from "./entitytTagline";
 import { callGenerateSF } from "./entitySf";
