@@ -41,7 +41,7 @@
     },
     "dependencies": {
         "openai": "^4.6.0",
-        "zod": "^3.22.2",
+        "zod": "^3.22.3",
         "zod-to-ts": "^1.2.0"
     },
     "main": "./dist/index.js",
