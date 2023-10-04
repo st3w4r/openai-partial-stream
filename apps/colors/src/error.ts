@@ -9,19 +9,17 @@ export type SSEErrorResponse = {
 
 export type SSEErrorEvent = {
     status: "ERROR";
-    data: {
-        error: SSEErrorResponse;
-    };
+    error: SSEErrorResponse;
+    data: any;
 };
 
 export function sendSSEErrorEvent(res: Response, error: SSEErrorResponse) {
     const event: SSEErrorEvent = {
         status: "ERROR",
-        data: {
-            error: error,
-        },
+        error: error,
+        data: null,
     };
-    sendSSEEvent(res, "ERROR", event);
+    sendSSEEvent(res, "error", event);
 }
 
 export function sendRateLimitError(res: Response) {
