@@ -26,6 +26,7 @@
         }
 
         p {
+            /* margin: 0px; */
             color: #666;
         }
 
@@ -41,6 +42,16 @@
     <div id="neighborhoods"></div>
 
     <script>
+
+        function scrollToBottom() {
+            window.scroll({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+
+
         const neighborhoodsDiv = document.getElementById('neighborhoods');
 
         // Create a new EventSource that listens to the SSE endpoint
@@ -51,6 +62,11 @@
 
             if (data.entity === 'neighborhoods') {
                 const neighborhoodData = data.data;
+
+                neighborhoodData.name = neighborhoodData.name ?? "";
+                neighborhoodData.date = neighborhoodData.date ?? "";
+                neighborhoodData.postcode = neighborhoodData.postcode ?? "";
+                neighborhoodData.description = neighborhoodData.description ?? "";
 
                 // Check if the neighborhood with the specific index already exists
                 let neighborhoodDiv = document.getElementById('neighborhood-' + data.index);
@@ -86,6 +102,7 @@
                     neighborhoodDiv.appendChild(descriptionP);
 
                     neighborhoodsDiv.appendChild(neighborhoodDiv);
+                    scrollToBottom();
                 }
 
                 if (data.status === "COMPLETED") {
@@ -98,6 +115,11 @@
             console.error('EventSource failed:', event);
             eventSource.close();
         };
+
+        eventSource.addEventListener('CLOSE', function (e) {
+            console.log(e.data);  // "Closing connection"
+            eventSource.close();  // Close the connection from the client side
+        });
 
     </script>
 </body>
