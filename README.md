@@ -295,8 +295,11 @@ Keys are received in full, while values are delivered piecemeal until they're co
 
 Stream of JSON object progressively by key value pairs:
 
-https://github.com/st3w4r/partial-stream/assets/4228332/5c7b826b-bb07-4b49-8918-2e5272f52ad0
+https://github.com/st3w4r/partial-stream/assets/4228332/55643614-b92b-4b1f-9cf9-e60d6d783a0c
+
 
 Stream of JSON objects in realtime:
 
-https://github.com/st3w4r/partial-stream/assets/4228332/d3015670-5935-42a3-af32-597c63460ce2
+
+https://github.com/st3w4r/partial-stream/assets/4228332/73289d38-8526-46cf-a68c-ac80019092ab
+
