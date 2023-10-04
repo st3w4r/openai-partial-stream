@@ -1,5 +1,11 @@
 # partial-ai-stream-lib
 
+## 0.3.5
+
+### Patch Changes
+
+- Update readme
+
 ## 0.3.4
 
 ### Patch Changes
