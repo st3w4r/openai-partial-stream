@@ -9,6 +9,25 @@
         "url": "https://github.com/st3w4r/partial-stream.git",
         "directory": "packages/openai-partial-stream"
     },
+    "keywords": [
+        "stream",
+        "tokens",
+        "openai",
+        "json-parser",
+        "json-parsing",
+        "token-passing",
+        "ai-app",
+        "gpt-3",
+        "openai-api",
+        "gpt-4",
+        "llm",
+        "chatgpt",
+        "chatgpt-api",
+        "openai-function-calling",
+        "llm-apps",
+        "streaming-ui",
+        "blocking-ui"
+    ],
     "devDependencies": {
         "@jest/globals": "^29.7.0",
         "@types/jest": "^29.5.5",
