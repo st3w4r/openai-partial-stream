@@ -1,6 +1,6 @@
 # Partial Stream - Turn your slow AI app into an engaging real-time app
 
-By unlcoking the potential of OpenAI function calling in streaming, you can stream your UI components at token speed.
+By unlocking the potential of OpenAI function calling in streaming, you can stream your UI components at token speed.
 
 ![json_stream](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/json_stream_color.gif)
 
