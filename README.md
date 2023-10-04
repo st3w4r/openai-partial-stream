@@ -6,7 +6,7 @@
 - Parse **JSON stream** into distinct **entities**.
 - Engage your users with a **real-time** experience.
 
-![json_stream](https://github.com/st3w4r/openai-partial-stream/assets/4228332/86044be5-f39a-4bac-9ec1-5160352e0698)
+![json_stream_color](https://github.com/st3w4r/openai-partial-stream/assets/4228332/04c4bdfc-d991-4ad0-85fc-04eb35b106f3)
 
 ## Install
 
