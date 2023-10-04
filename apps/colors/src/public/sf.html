@@ -55,7 +55,8 @@
         const neighborhoodsDiv = document.getElementById('neighborhoods');
 
         // Create a new EventSource that listens to the SSE endpoint
-        const eventSource = new EventSource('http://localhost:8080/sse/sf');
+        const baseURL = "http://localhost:8080"
+        const eventSource = new EventSource(`${baseURL}/sse/sf`);
 
         eventSource.onmessage = function (event) {
             const data = JSON.parse(event.data);
