@@ -6,7 +6,7 @@
     "version": "0.3.5",
     "repository": {
         "type": "git",
-        "url": "https://github.com/st3w4r/partial-stream.git",
+        "url": "https://github.com/st3w4r/openai-partial-stream.git",
         "directory": "packages/openai-partial-stream"
     },
     "keywords": [

@@ -1,12 +1,12 @@
 # Parse Partial JSON Stream - Turn your slow AI app into an engaging real-time app
 
--   Convert a **stream of token** into a **parsable JSON** object before the stream ends.
--   Implement **Streaming UI** in **LLM**-based AI application.
--   Leverage **OpenAI Function Calling** for early stream processing.
--   Parse **JSON stream** into distinct **entities**.
--   Engage your users with a **real-time** experience.
+- Convert a **stream of token** into a **parsable JSON** object before the stream ends.
+- Implement **Streaming UI** in **LLM**-based AI application.
+- Leverage **OpenAI Function Calling** for early stream processing.
+- Parse **JSON stream** into distinct **entities**.
+- Engage your users with a **real-time** experience.
 
-![json_stream](https://github.com/st3w4r/partial-stream/assets/4228332/86044be5-f39a-4bac-9ec1-5160352e0698)
+![json_stream](https://github.com/st3w4r/openai-partial-stream/assets/4228332/86044be5-f39a-4bac-9ec1-5160352e0698)
 
 ## Install
 
@@ -28,33 +28,33 @@ import { OpenAiHandler, StreamMode } from "openai-partial-stream";
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
 
 const stream = await openai.chat.completions.create({
-    messages: [{ role: "system", content: "Say hello to the world." }],
-    model: "gpt-3.5-turbo", // OR "gpt-4"
-    stream: true, // ENABLE STREAMING
-    temperature: 1,
-    functions: [
-        {
-            name: "say_hello",
-            description: "say hello",
-            parameters: {
-                type: "object",
-                properties: {
-                    sentence: {
-                        type: "string",
-                        description: "The sentence generated",
-                    },
-                },
-            },
+  messages: [{ role: "system", content: "Say hello to the world." }],
+  model: "gpt-3.5-turbo", // OR "gpt-4"
+  stream: true, // ENABLE STREAMING
+  temperature: 1,
+  functions: [
+    {
+      name: "say_hello",
+      description: "say hello",
+      parameters: {
+        type: "object",
+        properties: {
+          sentence: {
+            type: "string",
+            description: "The sentence generated",
+          },
         },
-    ],
-    function_call: { name: "say_hello" },
+      },
+    },
+  ],
+  function_call: { name: "say_hello" },
 });
 
 const openAiHandler = new OpenAiHandler(StreamMode.StreamObjectKeyValueTokens);
 const entityStream = openAiHandler.process(stream);
 
 for await (const item of entityStream) {
-    console.log(item);
+  console.log(item);
 }
 ```
 
@@ -83,26 +83,26 @@ import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
 
 const stream = await openai.chat.completions.create({
-    messages: [{ role: "system", content: "Say hello to the world." }],
-    model: "gpt-3.5-turbo", // OR "gpt-4"
-    stream: true, // ENABLE STREAMING
-    temperature: 1,
-    functions: [
-        {
-            name: "say_hello",
-            description: "say hello",
-            parameters: {
-                type: "object",
-                properties: {
-                    sentence: {
-                        type: "string",
-                        description: "The sentence generated",
-                    },
-                },
-            },
+  messages: [{ role: "system", content: "Say hello to the world." }],
+  model: "gpt-3.5-turbo", // OR "gpt-4"
+  stream: true, // ENABLE STREAMING
+  temperature: 1,
+  functions: [
+    {
+      name: "say_hello",
+      description: "say hello",
+      parameters: {
+        type: "object",
+        properties: {
+          sentence: {
+            type: "string",
+            description: "The sentence generated",
+          },
         },
-    ],
-    function_call: { name: "say_hello" },
+      },
+    },
+  ],
+  function_call: { name: "say_hello" },
 });
 
 const openAiHandler = new OpenAiHandler(StreamMode.StreamObjectKeyValueTokens);
@@ -110,14 +110,14 @@ const entityStream = openAiHandler.process(stream);
 
 // Entity Parsing to validate the data
 const HelloSchema = z.object({
-    sentence: z.string().optional(),
+  sentence: z.string().optional(),
 });
 
 const entityHello = new Entity("sentence", HelloSchema);
 const helloEntityStream = entityHello.genParse(entityStream);
 
 for await (const item of helloEntityStream) {
-    console.log(item);
+  console.log(item);
 }
 ```
 
@@ -142,59 +142,59 @@ import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
 
 // Intanciate OpenAI client with your API key
 const openai = new OpenAi({
-    apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 const PostcodeSchema = z.object({
-    name: z.string().optional(),
-    postcode: z.string().optional(),
-    population: z.number().optional(),
+  name: z.string().optional(),
+  postcode: z.string().optional(),
+  population: z.number().optional(),
 });
 
 // Call the API with stream enabled and a function
 const stream = await openai.chat.completions.create({
-    messages: [
-        {
-            role: "system",
-            content: "Give me 3 cities and their postcodes in California.",
-        },
-    ],
-    model: "gpt-3.5-turbo", // OR "gpt-4"
-    stream: true, // ENABLE STREAMING
-    temperature: 1.1,
-    functions: [
-        {
-            name: "set_postcode",
-            description: "Set a postcode and a city",
-            parameters: {
-                type: "object",
-                properties: {
-                    // The name of the entity
-                    postcodes: {
-                        type: "array",
-                        items: {
-                            type: "object",
-                            properties: {
-                                name: {
-                                    type: "string",
-                                    description: "Name of the city",
-                                },
-                                postcode: {
-                                    type: "string",
-                                    description: "The postcode of the city",
-                                },
-                                population: {
-                                    type: "number",
-                                    description: "The population of the city",
-                                },
-                            },
-                        },
-                    },
+  messages: [
+    {
+      role: "system",
+      content: "Give me 3 cities and their postcodes in California.",
+    },
+  ],
+  model: "gpt-3.5-turbo", // OR "gpt-4"
+  stream: true, // ENABLE STREAMING
+  temperature: 1.1,
+  functions: [
+    {
+      name: "set_postcode",
+      description: "Set a postcode and a city",
+      parameters: {
+        type: "object",
+        properties: {
+          // The name of the entity
+          postcodes: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                name: {
+                  type: "string",
+                  description: "Name of the city",
                 },
+                postcode: {
+                  type: "string",
+                  description: "The postcode of the city",
+                },
+                population: {
+                  type: "number",
+                  description: "The population of the city",
+                },
+              },
             },
+          },
         },
-    ],
-    function_call: { name: "set_postcode" },
+      },
+    },
+  ],
+  function_call: { name: "set_postcode" },
 });
 
 // Select the mode of the stream parser
@@ -215,10 +215,10 @@ const postcodeEntityStream = entityPostcode.genParseArray(entityStream);
 
 // Iterate over the stream of entities
 for await (const item of postcodeEntityStream) {
-    if (item) {
-        // Display the entity
-        console.log(item);
-    }
+  if (item) {
+    // Display the entity
+    console.log(item);
+  }
 }
 ```
 
@@ -295,11 +295,8 @@ Keys are received in full, while values are delivered piecemeal until they're co
 
 Stream of JSON object progressively by key value pairs:
 
-https://github.com/st3w4r/partial-stream/assets/4228332/55643614-b92b-4b1f-9cf9-e60d6d783a0c
-
+https://github.com/st3w4r/openai-partial-stream/assets/4228332/55643614-b92b-4b1f-9cf9-e60d6d783a0c
 
 Stream of JSON objects in realtime:
 
-
-https://github.com/st3w4r/partial-stream/assets/4228332/73289d38-8526-46cf-a68c-ac80019092ab
-
+https://github.com/st3w4r/openai-partial-stream/assets/4228332/73289d38-8526-46cf-a68c-ac80019092ab

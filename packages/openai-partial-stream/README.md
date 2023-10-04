@@ -14,4 +14,4 @@ npm install openai-partial-stream
 
 # Usage Example on GitHub
 
-- [GitHub repo](https://github.com/st3w4r/partial-stream)
+- [GitHub repo](https://github.com/st3w4r/openai-partial-stream)
