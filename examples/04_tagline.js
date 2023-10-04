@@ -2,16 +2,17 @@ import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
 import OpenAi from "openai";
 import { z } from "zod";
 
+// Intanciate OpenAI client with your API key
+const openai = new OpenAi({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Schema of the entity
 const TaglineSchema = z.object({
     tagline: z.string().optional(), // Optional because the model can return a partial result
 });
 
 async function main() {
-    // Intanciate OpenAI client with your API key
-    const openai = new OpenAi({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-
     // Call the API with stream enabled and a function
     const stream = await openai.chat.completions.create({
         messages: [

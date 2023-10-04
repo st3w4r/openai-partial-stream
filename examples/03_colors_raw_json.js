@@ -2,19 +2,20 @@ import OpenAI from "openai";
 
 import { StreamMode, OpenAiHandler } from "openai-partial-stream";
 
+// OPENAI INSTANCE
+if (!process.env.OPENAI_API_KEY) {
+    console.error("OPENAI_API_KEY environment variable not found");
+    process.exit(1);
+}
+
+// Intanciate OpenAI client with your API key
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+
 async function callGenerateColors(
     mode = StreamMode.StreamObjectKeyValueTokens,
 ) {
-    // OPENAI INSTANCE
-    if (!process.env.OPENAI_API_KEY) {
-        console.error("OPENAI_API_KEY environment variable not found");
-        process.exit(1);
-    }
-
-    const openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-
     // Call OpenAI API, with function calling
     // Function calling: https://openai.com/blog/function-calling-and-other-api-updates
     const stream = await openai.chat.completions.create({
