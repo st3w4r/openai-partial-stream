@@ -179,8 +179,6 @@ test("stream partial", async () => {
 
     const results = inputs.map((item) => streamParser.parse(item));
 
-    console.log(results);
-
     const expected = [
         { index: 0, status: "PARTIAL", data: { hello: "world" } },
         {
