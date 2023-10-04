@@ -16,6 +16,7 @@ Turn a stream of token into a parsable JSON object as soon as possible.
 
 ```javascript
 import OpenAi from "openai";
+import { OpenAiHandler, StreamMode } from "openai-partial-stream";
 
 // Set your OpenAI API key as an environment variable: OPENAI_API_KEY
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
@@ -68,7 +69,9 @@ Output:
 Validate the data against a schema and only return the data when it is valid.
 
 ```javascript
+import { z } from "zod";
 import OpenAi from "openai";
+import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
 
 // Set your OpenAI API key as an environment variable: OPENAI_API_KEY
 const openai = new OpenAi({ apiKey: process.env.OPENAI_API_KEY });
@@ -127,9 +130,19 @@ Output:
 ## Usage with stream and entity parsing with multiple entities
 
 ```javascript
+import { z } from "zod";
+import OpenAi from "openai";
+import { OpenAiHandler, StreamMode, Entity } from "openai-partial-stream";
+
 // Intanciate OpenAI client with your API key
 const openai = new OpenAi({
     apiKey: process.env.OPENAI_API_KEY,
+});
+
+const PostcodeSchema = z.object({
+    name: z.string().optional(),
+    postcode: z.string().optional(),
+    population: z.number().optional(),
 });
 
 // Call the API with stream enabled and a function
