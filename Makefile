@@ -12,6 +12,9 @@ lib:
 web:
 	turbo build --filter=partial-ai-stream-website
 
+dev:
+	turbo dev
+
 test:
 	turbo test
 
@@ -35,4 +38,4 @@ publish:
 format:
 	turbo format
 
-.PHONY: all install build lib web test test-watch server pack version publish format
+.PHONY: all install build lib web test test-watch server pack version publish format dev

@@ -510,6 +510,16 @@
                 console.error('Error occurred:', event);
                 eventSource.close();
 
+                // Extract the error message from the event
+                const data = event?.data;
+                if (data) {
+                    const dataObj = JSON.parse(data);
+                    if (dataObj?.error) {
+                        // Display the error code and message
+                        console.error(`Error ${dataObj.error.code}: ${dataObj.error.message}`);
+                    }
+                }
+
                 // Error
                 btn.textContent = "Oops! Retry a bit later";
                 btn.disabled = false;
