@@ -1,11 +1,17 @@
 # Parse Partial JSON Stream - Turn your slow AI app into an engaging real-time app
 
--   Turn a **stream of token** into a **parsable JSON** object before the end of the stream.
--   Enable **Streaming UI** for AI app based on **LLM**.
--   Use OpenAI **function calling** in streaming with early consumption.
--   Parse **JSON stream** into entities.
+---
+
+-   Convert a **stream of token** into a **parsable JSON** object before the stream ends.
+-   Implement **Streaming UI** in **LLM**-based AI application.
+-   Leverage **OpenAI Function Calling** for early stream processing.
+-   Parse **JSON stream** into distinct **entities**.
+
+---
 
 ![json_stream](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/json_stream_color.gif)
+
+## Install
 
 To install dependencies:
 
