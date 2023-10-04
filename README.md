@@ -6,7 +6,8 @@
 -   Parse **JSON stream** into distinct **entities**.
 -   Engage your users with a **real-time** experience.
 
-![json_stream](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/json_stream_color.gif)
+![json_stream](https://github.com/st3w4r/partial-stream/assets/4228332/86044be5-f39a-4bac-9ec1-5160352e0698)
+
 
 ## Install
 
@@ -295,8 +296,8 @@ Keys are received in full, while values are delivered piecemeal until they're co
 
 Stream of JSON object with progressively by key value pairs:
 
-![json_stream_colors](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/Color_Streaming_Mode_3_colors.gif)
+https://github.com/st3w4r/partial-stream/assets/4228332/5c7b826b-bb07-4b49-8918-2e5272f52ad0
 
 Stream of JSON objects in realtime:
 
-![json_stream_sf](https://pub-4dd8731c175f4032bb1e9f7019daccfe.r2.dev/json_stream_sf.gif)
+https://github.com/st3w4r/partial-stream/assets/4228332/d3015670-5935-42a3-af32-597c63460ce2
