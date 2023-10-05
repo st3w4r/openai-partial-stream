@@ -10,9 +10,9 @@
 
 ## Follow the Work
 
-- [X/Twitter](https://twitter.com/YanaelBarbier)
-- [Threads](https://www.threads.net/@yanaelbarbier)
-- [Blog](https://yanael.io/subscribe/)
+- [✖️ Twitter](https://twitter.com/YanaelBarbier)
+- [🧵 Threads](https://www.threads.net/@yanaelbarbier)
+- [📰 Blog](https://yanael.io/subscribe/)
 
 ## Install
 
