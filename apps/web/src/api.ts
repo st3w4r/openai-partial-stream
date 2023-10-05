@@ -20,8 +20,6 @@ const api = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 api.use("*", async (c, next) => {
     const openai = new OpenAI({ apiKey: c.env.OPENAI_API_KEY });
-    console.log(c.env.AWESOME);
-    console.log(openai);
     c.set("openai", openai);
     await next();
 });
