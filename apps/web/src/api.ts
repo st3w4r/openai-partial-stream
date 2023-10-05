@@ -9,7 +9,6 @@ import { zValidator } from "@hono/zod-validator";
 
 type Bindings = {
     OPENAI_API_KEY: string;
-    AWESOME: string;
 };
 
 type Variables = {
@@ -79,8 +78,12 @@ api.get(
 
             for await (const data of gen) {
                 const jsonStr = JSON.stringify(data);
-                // const itemIndex = data.index;g
+
+                // Add id to the stream
+                // const itemIndex = data.index;
                 // stream.write(`id: ${itemIndex}\n`);
+
+                // Return the json as the message
                 stream.write(`data: ${jsonStr}\n\n`);
             }
             // Stream is done

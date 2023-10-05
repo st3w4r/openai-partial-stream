@@ -1,7 +1,5 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
 
 import { api } from "./api";
 
