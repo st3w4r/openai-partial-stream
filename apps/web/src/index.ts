@@ -3,6 +3,8 @@ import { cors } from "hono/cors";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 
+import { api } from "./api";
+
 const app = new Hono();
 
 app.use(
@@ -13,6 +15,8 @@ app.use(
         allowHeaders: ["Content-Type"],
     }),
 );
+
+app.route("/api", api);
 
 app.get("/", (c) => c.text("Hello Hono!"));
 

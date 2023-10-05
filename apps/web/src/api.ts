@@ -9,13 +9,18 @@ type Bindings = {
     AWESOME: string;
 };
 
-const api = new Hono<{ Bindings: Bindings }>();
+type Variables = {
+    openai: OpenAI;
+};
+
+const api = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 api.use("*", async (c, next) => {
     const openai = new OpenAI({ apiKey: c.env.OPENAI_API_KEY });
     console.log(c.env.AWESOME);
     console.log(openai);
-    next();
+    c.set("openai", openai);
+    await next();
 });
 
 api.get("/", (c) => {
@@ -24,13 +29,16 @@ api.get("/", (c) => {
     });
 });
 
-api.get("/sse/tagline", (c) => {
-    const openai = new OpenAI({ apiKey: c.env.OPENAI_API_KEY });
-
+api.use("/sse/*", async (c, next) => {
     // Set SSE headers
     c.header("Content-Type", "text/event-stream");
     c.header("Cache-Control", "no-cache");
     c.header("Connection", "keep-alive");
+    await next();
+});
+
+api.get("/sse/tagline", (c) => {
+    const openai = c.get("openai");
 
     return c.stream(async (stream) => {
         const gen = await callGenerateTagline(
