@@ -1,5 +1,3 @@
-<!-- FILEPATH: /workspaces/entityai/apps/web/public/index.html -->
-
 <!DOCTYPE html>
 <html>
 
@@ -16,8 +14,7 @@
         const baseURL = "http://localhost:8888";
         const sseData = document.getElementById('sse-data');
 
-        // const eventSource = new EventSource(`${baseURL}/api/sse/tagline`);
-        const eventSource = new EventSource(`${baseURL}/api/sse/colors`);
+        const eventSource = new EventSource(`${baseURL}/api/sse/tagline`);
 
         eventSource.onmessage = (event) => {
             sseData.innerHTML += event.data + '<br>';
