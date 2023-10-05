@@ -1,7 +1,8 @@
+import { Hono } from "hono";
 import { OpenAI } from "openai";
 
-import { Hono } from "hono";
 import { callGenerateTagline } from "./entitytTagline";
+import { callGenerateColors } from "./entityColors";
 import { StreamMode } from "openai-partial-stream";
 
 type Bindings = {
@@ -48,6 +49,27 @@ api.get("/sse/tagline", (c) => {
 
         for await (const data of gen) {
             const jsonStr = JSON.stringify(data);
+            stream.write(`data: ${jsonStr}\n\n`);
+        }
+        // Stream is done
+        stream.write(`event: CLOSE\n`);
+        stream.write(`data: [DONE]\n\n`);
+    });
+});
+
+api.get("/sse/colors", (c) => {
+    const openai = c.get("openai");
+
+    return c.stream(async (stream) => {
+        const gen = await callGenerateColors(
+            openai,
+            StreamMode.StreamObjectKeyValueTokens,
+        );
+
+        for await (const data of gen) {
+            const jsonStr = JSON.stringify(data);
+            // const itemIndex = data.index;
+            // stream.write(`id: ${itemIndex}\n`);
             stream.write(`data: ${jsonStr}\n\n`);
         }
         // Stream is done
