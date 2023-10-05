@@ -12,28 +12,33 @@ function getTaglineMessages(): any[] {
         {
             role: "system",
             content: `
-                Generate a tagline related to the following text:(MAXIUM 60 CHARACTERS)
-                Partial Stream Spec is a specification for a stream of raw text or structured JSON that can be partially parsed and return early results for an early consumption.
-                Use cases are:
-                - LLM stream of token as JSON format.
-                - OpenAI Function calling, handling stream of data.
-                - Improve UI/UX by showing partial results to the end user.
+            Write for developers who are skilled into frontend, backend, API, who build AI app based on Large Language Model.
+            The project:
+            Partial Stream Spec is a specification for a stream of raw text or structured JSON that can be partially parsed and return early results for an early consumption.
+            Use cases are:
+            - Parse Partial JSON Stream
+            - Turn your slow AI app into an engaging real-time app
+            - Convert a stream of token into a parsable JSON object before the stream ends.
+            - Implement Streaming UI in LLM-based AI application.
+            - Leverage OpenAI Function Calling for early stream processing.
+            - Parse JSON streams into distinct entities.
+            - Engage your users with a real-time experience.
+            Keywords:
+            - Parse
+            - Json
+            - Stream
+            - UI
+            - LLM
+            - APP
+            - Fast
+            - Realtime
+            - User experience
+            - Blocking UI
+            Ban words:
+            - Elevate
+            - Unleash
 
-                What is the goal of this project?:
-                - Make AI apps more interactive and responsive. 
-                - Elevate AI experiences to new interactive heights.
-                - Bring your AI applications to life with dynamic interactivity.
-                - Turbocharge your AI apps with unparalleled responsiveness.
-                - Transforming AI apps from static to sensational.
-                - Push the boundaries of AI with enhanced interactivity.
-                - Elevate every AI interaction, every time.
-                - Breathe life into AI: more dynamic, more responsive.
-                - Where AI meets interactivity and redefines possibility.
-                - Seamless interactivity is the future of AI applications.
-                - Dive into the next-gen of immersive AI experiences.
-                - Unlock the power of interactive AI experiences.
-                - Elevate AI apps with partial parsing and early results.
-                - Partial Stream Spec: Enable the Power of Early Consumption
+            Generate a technical tagline with the keywords without the banned words. (MAXIUM 60 CHARACTERS)"
             `,
         },
     ];
@@ -63,7 +68,7 @@ export async function callGenerateTagline(
         messages: getTaglineMessages(),
         model: "gpt-3.5-turbo", // OR "gpt-4"
         stream: true, // ENABLE STREAMING - Server Sent Event (SSE)
-        temperature: 1.1,
+        temperature: 0.8,
         functions: [getTaglineFunction()],
         function_call: { name: "tagline" },
     });
