@@ -63,17 +63,24 @@ app.get("/stream", (c) => {
 
 app.get("/stream/json", (c) => {
     c.header("Content-Type", "text/event-stream");
+    c.header("Cache-Control", "no-cache");
+    c.header("Connection", "keep-alive");
     return c.stream(async (stream) => {
         const jsonString = JSON.stringify({ hello: "world" });
 
-        const retry = 5000;
-        await stream.write(`retry: ${retry}\n\n`);
+        const retryWaitMs = 5000;
+        await stream.write(`retry: ${retryWaitMs}\n\n`);
 
+        await stream.write(`id: 0\n`);
         await stream.write(`data: ${jsonString}\n\n`);
-        await stream.sleep(1000);
+        await stream.sleep(500);
+        await stream.write(`id: 1\n`);
         await stream.write(`data: ${jsonString}\n\n`);
-        await stream.sleep(1000);
+        await stream.sleep(500);
+        await stream.write(`id: 2\n`);
         await stream.write(`data: ${jsonString}\n\n`);
+
+        await stream.write(`event: CLOSE\n`);
         await stream.write(`data: [DONE]\n\n`);
     });
 });
