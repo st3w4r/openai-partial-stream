@@ -17,6 +17,17 @@ type Variables = {
 
 const api = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
+const queryMode = z.object({
+    mode: z
+        .enum([
+            StreamMode.StreamObjectKeyValueTokens,
+            StreamMode.StreamObjectKeyValue,
+            StreamMode.StreamObject,
+            StreamMode.NoStream,
+        ])
+        .optional(),
+});
+
 api.use("*", async (c, next) => {
     const openai = new OpenAI({ apiKey: c.env.OPENAI_API_KEY });
     c.set("openai", openai);
@@ -56,41 +67,27 @@ api.get("/sse/tagline", (c) => {
     });
 });
 
-api.get(
-    "/sse/colors",
-    zValidator(
-        "query",
-        z.object({
-            mode: z.enum([
-                StreamMode.StreamObjectKeyValueTokens,
-                StreamMode.StreamObjectKeyValue,
-                StreamMode.StreamObject,
-                StreamMode.NoStream,
-            ]),
-        }),
-    ),
-    (c) => {
-        const { mode } = c.req.valid("query");
-        const openai = c.get("openai");
+api.get("/sse/colors", zValidator("query", queryMode), (c) => {
+    const { mode } = c.req.valid("query");
+    const openai = c.get("openai");
 
-        return c.stream(async (stream) => {
-            const gen = await callGenerateColors(openai, mode);
+    return c.stream(async (stream) => {
+        const gen = await callGenerateColors(openai, mode);
 
-            for await (const data of gen) {
-                const jsonStr = JSON.stringify(data);
+        for await (const data of gen) {
+            const jsonStr = JSON.stringify(data);
 
-                // Add id to the stream
-                // const itemIndex = data.index;
-                // stream.write(`id: ${itemIndex}\n`);
+            // Add id to the stream
+            // const itemIndex = data.index;
+            // stream.write(`id: ${itemIndex}\n`);
 
-                // Return the json as the message
-                stream.write(`data: ${jsonStr}\n\n`);
-            }
-            // Stream is done
-            stream.write(`event: CLOSE\n`);
-            stream.write(`data: [DONE]\n\n`);
-        });
-    },
-);
+            // Return the json as the message
+            stream.write(`data: ${jsonStr}\n\n`);
+        }
+        // Stream is done
+        stream.write(`event: CLOSE\n`);
+        stream.write(`data: [DONE]\n\n`);
+    });
+});
 
 export { api };
