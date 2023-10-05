@@ -4,6 +4,7 @@
     "deploy": "wrangler deploy --minify src/index.ts"
   },
   "dependencies": {
+    "openai-partial-stream": "*",
     "@hono/zod-validator": "^0.1.9",
     "hono": "^3.7.2",
     "zod": "^3.22.4"
