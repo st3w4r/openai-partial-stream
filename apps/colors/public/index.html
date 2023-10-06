@@ -389,7 +389,7 @@
         /* Description */
 
         .odd-section {
-            color: white;
+            color: beige;
             background-color: darkslategray;
             width: 100%;
             height: 100%;
@@ -400,7 +400,7 @@
         }
 
         .how-to {
-            color: white;
+            color: beige;
             max-width: 500px;
             font-size: x-large;
             text-align: justify;
@@ -411,7 +411,9 @@
         }
 
         .how-to span {
-            background-color: darkred;
+            /* background-color: darkred; */
+            background-color: beige;
+            color: darkslategray;
         }
 
         .prompt-function {
@@ -510,11 +512,11 @@
     <div id="second-section" class="odd-section">
         <div class="how-to-container">
             <div id="how-to" class="how-to">
-                <strong>How AI generated colors works</strong><br />
+                <strong>How AI color generation works</strong><br />
                 <!-- <strong>How it works</strong><br /> -->
-                We start by sending a <span>prompt to ChatGPT</span>, asking for colors using Function Calling. In
+                We start by sending a <span>prompt to ChatGPT</span>, asking for colors using OpenAI Function Calling.
+                In
                 response, the API
-                quickly
                 sends
                 back
                 a <span>JSON text stream</span> that isn't fully formatted yet. But here's where the efficiency kicks
@@ -526,36 +528,39 @@
                 color entities. And seamlessly send each of these entities straight to the browser using Server Sent
                 Events,
                 ensuring a real-time experience.
+                <br />
+                <br />
+                <strong>Modes</strong><br />
+                <span>All-Together</span> the UI waits for complete data.<br />
+                <span>One-By-One</span> goes entity by entity.<br />
+                <span>Progressive</span> operates via key-value pairs.<br />
+                <span>Real-time</span> feeds data by individual tokens.<br />
 
             </div>
 
             <div id="prompt-function" class="prompt-function">
                 <strong>The Prompt</strong><br />
-                Give me a palette of 5 gorgeous color with the hex code, name and a description.
+                Give me a palette of 5 gorgeous colors with their hex codes, names, and descriptions.
                 <br />
                 <br />
                 <strong>The Function</strong><br />
                 <!-- <div> -->
-                {"name": "give_colors","description": "Give a list of color",
+                {"name": "give_colors","description": "Give a list of colors",
                 "parameters": {"type": "object","properties": {"colors": {"type": "array","items": {"type": "object",
                 "properties": {"hex": { "type": "string", "description": "The hexadecimal code of the color" },"name": {
                 "type": "string", "description": "The color name" }, "description": { "type": "string", "description":
                 "The description of the color" }
                 }}}}}}
                 <!-- </div> -->
-
                 <br />
                 <br />
                 <strong>The raw stream of tokens</strong><br />
-
                 data: {"he <br />
                 data: x":"#FF <br />
                 data: 69B4" <br />
                 data: ,"na <br />
                 data: me":"Ho <br />
                 data: t Pink" <br />
-
-                <br />
                 <br />
                 <strong>The parsable entity stream </strong><br />
                 {"index":0,"status":"PARTIAL","data":{"hex":"#FF69B4","name":"Hot Pink"},"entity":"colors"}<br /><br />
