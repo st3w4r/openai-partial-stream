@@ -468,7 +468,7 @@
             /* Rounds the corners */
         }
 
-        @media screen and (max-width: 768px) {
+        @media screen and (max-width: 1024px) {
             .how-to-container {
                 grid-template-columns: 1fr;
                 /* One column for smaller screens */
@@ -556,32 +556,69 @@
 
             </div>
 
+            <style>
+                pre {
+                    /* background-color: #292929; */
+                    /* background-color: rgb(54, 77, 77); */
+                    padding: 10px;
+                    border-radius: 4px;
+                    overflow-x: auto;
+                    margin: 0px;
+                    line-height: 1.2;
+                }
+
+                /* code {
+                    background-color: #292929;
+                } */
+            </style>
             <div id="prompt-function" class="prompt-function">
                 <strong>The Prompt</strong><br />
+                <code>
                 Give me a palette of 5 gorgeous colors with their hex codes, names, and descriptions.
+                </code>
                 <br />
                 <br />
-                <strong>The Function</strong><br />
-                <!-- <div> -->
-                {"name": "give_colors","description": "Give a list of colors",
-                "parameters": {"type": "object","properties": {"colors": {"type": "array","items": {"type": "object",
-                "properties": {"hex": { "type": "string", "description": "The hexadecimal code of the color" },"name": {
-                "type": "string", "description": "The color name" }, "description": { "type": "string", "description":
-                "The description of the color" }
-                }}}}}}
-                <!-- </div> -->
-                <br />
-                <br />
-                <strong>The raw stream of tokens</strong><br />
-                data: {"he <br />
-                data: x":"#FF <br />
-                data: 69B4" <br />
-                data: ,"na <br />
-                data: me":"Ho <br />
-                data: t Pink" <br />
-                <br />
-                <strong>The parsable entity stream </strong><br />
-                {"index":0,"status":"PARTIAL","data":{"hex":"#FF69B4","name":"Hot Pink"},"entity":"colors"}<br /><br />
+                <strong>The Function</strong>
+                <!-- <pre><code>
+                    {"name": "give_colors","description": "Give a list of colors",
+                    "parameters": {"type": "object","properties": {"colors": {"type": "array","items": {"type": "object",
+                    "properties": {"hex": { "type": "string", "description": "The hexadecimal code of the color" },"name": {
+                        "type": "string", "description": "The color name" }, "description": { "type": "string", "description":
+                        "The description of the color" }
+                    }}}}}}
+                </code></pre> -->
+                <pre><code>name: give_colors
+description: Give a list of colors
+parameters:
+  type: object
+  properties:
+    colors:
+      type: array
+      items:
+        type: object
+        properties:
+          hex:
+            type: string
+            description: The hexadecimal code of the color
+          name:
+            type: string
+            description: The color name
+          description:
+            type: string
+            description: The description of the color</code></pre>
+                <!-- <br /> -->
+                <!-- <br /> -->
+                <strong>The raw stream of tokens</strong>
+                <pre><code>data: {"he
+data: x":"#FF
+data: 69B4"
+data: ,"na
+data: me":"Ho
+data: t Pink"</code></pre>
+                <strong>The parsable entity stream </strong>
+                <pre><code>{ "index": 0, "status": "PARTIAL",
+"data": { "hex": "#FF69B4", "name": "Hot Pink" },
+"entity": "colors" }</code></pre>
 
             </div>
         </div>
