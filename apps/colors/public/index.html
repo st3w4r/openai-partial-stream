@@ -226,7 +226,8 @@
             position: absolute;
             height: 100%;
             background-color: coral;
-            transition: left 0.3s, width 0.3s; // Add width to the transition properties.
+            /* Add width to the transition properties. */
+            transition: left 0.3s, width 0.3s;
         }
 
         .active-overlay::before {
@@ -419,7 +420,6 @@
     </div>
 
 
-
     <div id="blocksContainer"></div>
 
 
@@ -434,7 +434,7 @@
 
     <script type="module">
 
-        const baseURL = "https://colors.fly.dev"
+        const baseURL = "https://colors.st3w4r.workers.dev/api"
 
         let blocks = [];
         let colorBlocks = [];
@@ -458,9 +458,6 @@
             // Check timer
             firstTimeDisplayed = false;
             startTime = new Date();
-
-
-
 
 
             // Change the button text to "Processing..." and disable it
