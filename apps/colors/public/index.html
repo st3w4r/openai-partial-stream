@@ -280,6 +280,8 @@
 
         .footer-text {
             color: darkslategray;
+            margin-top: 10px;
+            margin-bottom: 10px;
             /* font-family: Arial, sans-serif; */
             /* or any other font you're using */
             font-size: 16px;
@@ -307,6 +309,14 @@
             color: darkslategray;
         }
 
+        .footer-icons img {
+            margin-top: 10px;
+            width: 24px;
+            /* or any size you prefer */
+            height: 24px;
+            margin-right: 10px;
+            /* optional spacing between icons */
+        }
 
         .info-text {
             /* font-family: Arial, sans-serif; */
@@ -379,6 +389,86 @@
                 top: calc(4 * (100% / 5));
             }
 
+
+
+        }
+
+
+        /* Description */
+
+        .odd-section {
+            color: beige;
+            background-color: darkslategray;
+            width: 100%;
+            height: 100%;
+            /* If you want it to cover the full viewport height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .how-to {
+            color: beige;
+            max-width: 500px;
+            font-size: x-large;
+            text-align: justify;
+            text-justify: inter-word;
+            padding: 50px;
+            /* background-color: transparent; */
+            /* You can remove this line if you want, it's just for clarity */
+        }
+
+        .how-to span {
+            /* background-color: darkred; */
+            background-color: beige;
+            color: darkslategray;
+        }
+
+        .prompt-function {
+            max-width: 500px;
+        }
+
+
+        .how-to-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Two equally sized columns */
+            gap: 2rem;
+            /* Space between grid items */
+            max-width: 1200px;
+            /* Set max width for the container */
+            margin: auto;
+            /* Centers the container */
+        }
+
+        .how-to {
+            /* ... existing styles ... */
+            /* Removing max-width to allow the grid to control the width */
+            text-align: justify;
+            /* Centers the content */
+        }
+
+        .prompt-function {
+            /* ... existing styles ... */
+            padding: 50px;
+            /* Adds some padding around the content for breathing room */
+            /* background-color: rgba(255, 255, 255, 0.1); */
+            /* Adds a subtle background for better distinction */
+            border-radius: 8px;
+            /* Rounds the corners */
+        }
+
+        @media screen and (max-width: 768px) {
+            .how-to-container {
+                grid-template-columns: 1fr;
+                /* One column for smaller screens */
+            }
+
+            .how-to,
+            .prompt-function {
+                text-align: left;
+                /* Aligns text to the left on small screens */
+            }
         }
     </style>
 </head>
@@ -419,17 +509,101 @@
 
     </div>
 
+    <!-- <div class="voila-style">Tap for AI's Colorful Masterpiece!</div> -->
 
     <div id="blocksContainer"></div>
 
 
     <div id="voilaContainer" class="voila-style">Voila!</div>
 
+
+    <div id="second-section" class="odd-section">
+        <div class="how-to-container">
+            <div id="how-to" class="how-to">
+                <strong>How AI color generation works</strong><br />
+                <!-- <strong>How it works</strong><br /> -->
+                We start by sending a <span>prompt to ChatGPT</span>, asking for colors using OpenAI Function Calling.
+                In
+                response, the API
+                sends
+                back
+                a <span>JSON text stream</span> that isn't fully formatted yet. But here's where the efficiency kicks
+                in:
+                even
+                before we've
+                received all of the data, we're already <span>parsing it on-the-fly</span> and turning it into
+                structured
+                color entities. And seamlessly send each of these entities straight to the browser using Server Sent
+                Events,
+                ensuring a real-time experience.
+                <br />
+                <br />
+                <strong>Modes</strong><br />
+                <span>All-Together</span> the UI waits for complete data.<br />
+                <span>One-By-One</span> goes entity by entity.<br />
+                <span>Progressive</span> operates via key-value pairs.<br />
+                <span>Real-time</span> feeds data by individual tokens.<br />
+
+            </div>
+
+            <div id="prompt-function" class="prompt-function">
+                <strong>The Prompt</strong><br />
+                Give me a palette of 5 gorgeous colors with their hex codes, names, and descriptions.
+                <br />
+                <br />
+                <strong>The Function</strong><br />
+                <!-- <div> -->
+                {"name": "give_colors","description": "Give a list of colors",
+                "parameters": {"type": "object","properties": {"colors": {"type": "array","items": {"type": "object",
+                "properties": {"hex": { "type": "string", "description": "The hexadecimal code of the color" },"name": {
+                "type": "string", "description": "The color name" }, "description": { "type": "string", "description":
+                "The description of the color" }
+                }}}}}}
+                <!-- </div> -->
+                <br />
+                <br />
+                <strong>The raw stream of tokens</strong><br />
+                data: {"he <br />
+                data: x":"#FF <br />
+                data: 69B4" <br />
+                data: ,"na <br />
+                data: me":"Ho <br />
+                data: t Pink" <br />
+                <br />
+                <strong>The parsable entity stream </strong><br />
+                {"index":0,"status":"PARTIAL","data":{"hex":"#FF69B4","name":"Hot Pink"},"entity":"colors"}<br /><br />
+
+            </div>
+        </div>
+    </div>
+
+    <!-- <script src="https://gist.github.com/st3w4r/21b9d9918ad981710da3b58fd6e6c966.js"></script> -->
+
+
+
     <div class="footer-text">
         Stepping into the arena with <a href="https://github.com/st3w4r/openai-partial-stream" target="_blank"
             rel="noopener noreferrer">Partial-Stream</a>
         and ChatGPT API function calling.
+
+        <div class="footer-icons">
+            <a href="https://twitter.com/YanaelBarbier" target="_blank" rel="noopener noreferrer">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/X_logo_2023_original.svg/600px-X_logo_2023_original.svg.png"
+                    alt="X/Twitter" />
+            </a>
+            <a href="https://www.threads.net/@yanaelbarbier" target="_blank" rel="noopener noreferrer">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Threads_%28app%29_logo.svg/1024px-Threads_%28app%29_logo.svg.png?20230705004747"
+                    alt="Threads" />
+            </a>
+            <a href="https://github.com/st3w4r/openai-partial-stream" target="_blank" rel="noopener noreferrer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" alt="GitHub">
+                    <path
+                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                </svg>
+            </a>
+        </div>
     </div>
+
 
 
     <script type="module">
