@@ -4,13 +4,13 @@
     "deploy": "wrangler deploy --minify src/index.ts"
   },
   "dependencies": {
-    "openai-partial-stream": "*",
     "@hono/zod-validator": "^0.1.9",
     "hono": "^3.7.2",
+    "openai-partial-stream": "*",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230914.0",
-    "wrangler": "^3.9.0"
+    "wrangler": "^3.11.0"
   }
 }
