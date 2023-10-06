@@ -15,6 +15,8 @@ type Variables = {
     openai: OpenAI;
 };
 
+let openai: OpenAI;
+
 const api = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 const queryMode = z.object({
@@ -29,7 +31,9 @@ const queryMode = z.object({
 });
 
 api.use("*", async (c, next) => {
-    const openai = new OpenAI({ apiKey: c.env.OPENAI_API_KEY });
+    if (!openai) {
+        openai = new OpenAI({ apiKey: c.env.OPENAI_API_KEY });
+    }
     c.set("openai", openai);
     await next();
 });
@@ -76,10 +80,6 @@ api.get("/sse/colors", zValidator("query", queryMode), (c) => {
 
         for await (const data of gen) {
             const jsonStr = JSON.stringify(data);
-
-            // Add id to the stream
-            // const itemIndex = data.index;
-            // stream.write(`id: ${itemIndex}\n`);
 
             // Return the json as the message
             stream.write(`data: ${jsonStr}\n\n`);
