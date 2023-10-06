@@ -468,6 +468,7 @@
             /* Rounds the corners */
         }
 
+
         @media screen and (max-width: 1024px) {
             .how-to-container {
                 grid-template-columns: 1fr;
@@ -479,7 +480,28 @@
                 text-align: left;
                 /* Aligns text to the left on small screens */
             }
+
+            pre {
+                white-space: pre-wrap;
+                /* Allows the content to wrap */
+                word-wrap: break-word;
+                /* Breaks long words to next line */
+            }
         }
+
+        pre {
+            /* background-color: #292929; */
+            /* background-color: rgb(54, 77, 77); */
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 0px;
+            line-height: 1.2;
+        }
+
+        /* code {
+            background-color: #292929;
+        } */
     </style>
 </head>
 
@@ -556,21 +578,6 @@
 
             </div>
 
-            <style>
-                pre {
-                    /* background-color: #292929; */
-                    /* background-color: rgb(54, 77, 77); */
-                    padding: 10px;
-                    border-radius: 4px;
-                    overflow-x: auto;
-                    margin: 0px;
-                    line-height: 1.2;
-                }
-
-                /* code {
-                    background-color: #292929;
-                } */
-            </style>
             <div id="prompt-function" class="prompt-function">
                 <strong>The Prompt</strong><br />
                 <code>
