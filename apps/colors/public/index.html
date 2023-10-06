@@ -418,6 +418,48 @@
             max-width: 500px;
         }
 
+
+        .how-to-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Two equally sized columns */
+            gap: 2rem;
+            /* Space between grid items */
+            max-width: 1200px;
+            /* Set max width for the container */
+            margin: auto;
+            /* Centers the container */
+        }
+
+        .how-to {
+            /* ... existing styles ... */
+            /* Removing max-width to allow the grid to control the width */
+            text-align: justify;
+            /* Centers the content */
+        }
+
+        .prompt-function {
+            /* ... existing styles ... */
+            padding: 50px;
+            /* Adds some padding around the content for breathing room */
+            /* background-color: rgba(255, 255, 255, 0.1); */
+            /* Adds a subtle background for better distinction */
+            border-radius: 8px;
+            /* Rounds the corners */
+        }
+
+        @media screen and (max-width: 768px) {
+            .how-to-container {
+                grid-template-columns: 1fr;
+                /* One column for smaller screens */
+            }
+
+            .how-to,
+            .prompt-function {
+                text-align: left;
+                /* Aligns text to the left on small screens */
+            }
+        }
     </style>
 </head>
 
@@ -464,59 +506,64 @@
 
     <div id="voilaContainer" class="voila-style">Voila!</div>
 
+
     <div id="second-section" class="odd-section">
+        <div class="how-to-container">
+            <div id="how-to" class="how-to">
+                <strong>How AI generated colors works</strong><br />
+                <!-- <strong>How it works</strong><br /> -->
+                We start by sending a <span>prompt to ChatGPT</span>, asking for colors using Function Calling. In
+                response, the API
+                quickly
+                sends
+                back
+                a <span>JSON text stream</span> that isn't fully formatted yet. But here's where the efficiency kicks
+                in:
+                even
+                before we've
+                received all of the data, we're already <span>parsing it on-the-fly</span> and turning it into
+                structured
+                color entities. And seamlessly send each of these entities straight to the browser using Server Sent
+                Events,
+                ensuring a real-time experience.
 
-        <div id="how-to" class="how-to">
-
-            <strong>How AI generated colors works</strong><br />
-            <!-- <strong>How it works</strong><br /> -->
-            We start by sending a prompt to ChatGPT, asking for colors with a function. In response, the API quickly sends
-            back
-            a <span>JSON text stream</span> that isn't fully formatted yet. But here's where the efficiency kicks in:
-            even
-            before we've
-            received all of the data, we're already <span>parsing it on-the-fly</span> and turning it into
-            structured
-            color entities. And seamlessly send each of these colors straight to the browser using Server Sent Events,
-            ensuring a real-time experience.
-
-        </div>
-    </div>
-
-        <div id="prompt-function" class="prompt-function">
-            <strong>The Prompt</strong><br />
-            Give me a palette of 5 gorgeous color with the hex code, name and a description.
-
-            <br />
-            <br />
-            <strong>The Function</strong><br />
-            
-            <div>
-                {
-                  "name": "give_colors",
-                  "description": "Give a list of color",
-                  "parameters": {<br/>
-                    "type": "object",
-                    "properties": {<br/>
-                      "colors": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {<br/>
-                            "hex": { "type": "string", "description": "The hexadecimal code of the color" },<br/>
-                            "name": { "type": "string", "description": "The color name" },<br/>
-                            "description": { "type": "string", "description": "The description of the color" }<br/>
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
             </div>
-            <!-- <a href="https://github.com/st3w4r/openai-partial-stream/blob/main/apps/colors/src/entityColors.ts#L28-L59" target="_blank" rel="noopener noreferrer">OpenAI Function Calling</a> -->
+
+            <div id="prompt-function" class="prompt-function">
+                <strong>The Prompt</strong><br />
+                Give me a palette of 5 gorgeous color with the hex code, name and a description.
+                <br />
+                <br />
+                <strong>The Function</strong><br />
+                <!-- <div> -->
+                {"name": "give_colors","description": "Give a list of color",
+                "parameters": {"type": "object","properties": {"colors": {"type": "array","items": {"type": "object",
+                "properties": {"hex": { "type": "string", "description": "The hexadecimal code of the color" },"name": {
+                "type": "string", "description": "The color name" }, "description": { "type": "string", "description":
+                "The description of the color" }
+                }}}}}}
+                <!-- </div> -->
+
+                <br />
+                <br />
+                <strong>The raw stream of tokens</strong><br />
+
+                data: {"he <br />
+                data: x":"#FF <br />
+                data: 69B4" <br />
+                data: ,"na <br />
+                data: me":"Ho <br />
+                data: t Pink" <br />
+
+                <br />
+                <br />
+                <strong>The parsable entity stream </strong><br />
+                {"index":0,"status":"PARTIAL","data":{"hex":"#FF69B4","name":"Hot Pink"},"entity":"colors"}<br /><br />
+
+            </div>
         </div>
-        
     </div>
+
     <!-- <script src="https://gist.github.com/st3w4r/21b9d9918ad981710da3b58fd6e6c966.js"></script> -->
 
 
