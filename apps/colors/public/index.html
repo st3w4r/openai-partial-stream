@@ -499,6 +499,68 @@
             line-height: 1.2;
         }
 
+
+        /* Installation */
+
+        .even-section {
+            background-color: beige;
+            color: darkslategray;
+            width: 100%;
+            height: 100%;
+            /* If you want it to cover the full viewport height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .install-container {
+            max-width: 500px;
+            font-size: x-large;
+            text-align: justify;
+            text-justify: inter-word;
+            padding: 50px;
+        }
+
+        .install-container code {
+            background-color: darkslategray;
+            color: beige;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        @media screen and (max-width: 1024px) {
+            .install-container {
+                text-align: left;
+                /* Aligns text to the left on small screens */
+            }
+        }
+
+
+        /* LINK REPO */
+        .repo-link {
+            background-color: coral;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .repo-link:hover {
+            background-color: #ff6b57;
+            /* A slightly darker shade of coral for hover effect */
+            transform: translateY(-2px);
+            /* Small lift on hover for a dynamic effect */
+        }
+
+        .repo-link:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.5);
+            /* Coral box shadow for accessibility on focus */
+        }
+
+
         /* code {
             background-color: #292929;
         } */
@@ -621,7 +683,22 @@ data: t Pink"</code></pre>
 
             </div>
         </div>
+
     </div>
+
+    <div id="installation-section" class="even-section">
+        <div class="install-container">
+            <strong>Installation</strong><br /><br />
+            To get started with JavaScript / TypeScript:
+            <br /><br />
+            <code>npm i openai-partial-stream</code>
+            <br /><br />
+            Import, and you'll want the manual, check out the <a href="https://github.com/st3w4r/openai-partial-stream"
+                target="_blank" rel="noopener noreferrer" class="repo-link">documentation on GitHub</a>
+
+        </div>
+    </div>
+
 
 
 
