@@ -28,7 +28,13 @@ const queryMode = z.object({
             StreamMode.NoStream,
         ])
         .optional(),
-    number: z.string().optional(), //.gte(1).lte(10).optional(),
+    number: z
+        .string()
+        .transform((v) => parseInt(v))
+        .refine((v) => !isNaN(v) && v >= 1 && v <= 10, {
+            message: "not a valid number",
+        }),
+
     prompt: z.string().max(100).optional(),
 });
 
