@@ -28,6 +28,8 @@ const queryMode = z.object({
             StreamMode.NoStream,
         ])
         .optional(),
+    number: z.string().optional(), //.gte(1).lte(10).optional(),
+    prompt: z.string().max(100).optional(),
 });
 
 api.use("*", async (c, next) => {
@@ -72,11 +74,11 @@ api.get("/sse/tagline", (c) => {
 });
 
 api.get("/sse/colors", zValidator("query", queryMode), (c) => {
-    const { mode } = c.req.valid("query");
+    const { mode, number, prompt } = c.req.valid("query");
     const openai = c.get("openai");
 
     return c.stream(async (stream) => {
-        const gen = await callGenerateColors(openai, mode);
+        const gen = await callGenerateColors(openai, mode, number, prompt);
 
         for await (const data of gen) {
             const jsonStr = JSON.stringify(data);
