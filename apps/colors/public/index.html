@@ -564,6 +564,105 @@
         /* code {
             background-color: #292929;
         } */
+
+        /* Styling for the API input textbox */
+        .api-input-container {
+            margin-bottom: 20px;
+            /* Some margin for spacing */
+            display: flex;
+            /* Using flex to place label and input side-by-side */
+            align-items: center;
+            /* Vertically aligns the items */
+        }
+
+        .api-input-container label {
+            margin-right: 10px;
+            /* Adds spacing between label and input */
+            color: darkslategray;
+            /* Color that matches your design */
+            font-weight: bold;
+            /* To make the label stand out */
+        }
+
+        .api-input-container input[type="text"] {
+            padding: 10px;
+            /* Padding for spacing inside */
+            border: 2px solid darkslategray;
+            /* Border color that matches your design */
+            border-radius: 5px;
+            /* Adds some rounded corners to match other elements */
+            font-family: 'Roboto', sans-serif;
+            /* Using the Roboto font, but adjust if needed */
+            font-size: 16px;
+            /* Font size similar to other text on your site */
+            flex-grow: 1;
+            /* Allows the input to take the available space */
+            transition: border-color 0.3s;
+            /* Smooth transition for hover effect */
+        }
+
+        .api-input-container input[type="text"]:focus {
+            border-color: coral;
+            /* Change border color on focus to indicate active field */
+            outline: none;
+            /* Removes the default browser outline */
+        }
+
+        /* Styling for the counter */
+        .counter-container {
+            margin-bottom: 20px;
+            /* Some margin for spacing */
+            display: flex;
+            /* Using flex to place label and input side-by-side */
+            align-items: center;
+            /* Vertically aligns the items */
+        }
+
+        .counter-container label {
+            margin-right: 10px;
+            /* Adds spacing between label and input */
+            color: darkslategray;
+            /* Color that matches your design */
+            font-weight: bold;
+            /* To make the label stand out */
+        }
+
+        .counter-container input[type="number"] {
+            width: 60px;
+            /* Set a fixed width for the counter */
+            padding: 10px;
+            /* Padding for spacing inside */
+            border: 2px solid darkslategray;
+            /* Border color that matches your design */
+            border-radius: 5px;
+            /* Adds some rounded corners to match other elements */
+            font-family: 'Roboto', sans-serif;
+            /* Using the Roboto font, but adjust if needed */
+            font-size: 16px;
+            /* Font size similar to other text on your site */
+            text-align: center;
+            /* To center the number in the input box */
+            transition: border-color 0.3s;
+            /* Smooth transition for hover effect */
+        }
+
+        .counter-container input[type="number"]:focus {
+            border-color: coral;
+            /* Change border color on focus to indicate active field */
+            outline: none;
+            /* Removes the default browser outline */
+        }
+
+        /* Override the appearance for the input type number to make it consistent across browsers */
+        .counter-container input[type="number"]::-webkit-inner-spin-button,
+        .counter-container input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .counter-container input[type="number"] {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 
@@ -572,8 +671,21 @@
 
     <!-- Make AI apps more interactive and responsive. -->
     <!-- Dive into the next-gen of immersive AI experiences. -->
+
+
     <div class="info-text">
     </div>
+
+    <div class="api-input-container">
+        <label for="custom-prompt">Describe the tone</label>
+        <input type="text" id="custom-prompt" placeholder="Enter your tone..." value="coffee shop in autumn"
+            maxlength="100">
+    </div>
+    <div class="counter-container">
+        <label for="counterInput">How many colors?</label>
+        <input type="number" id="counterInput" min="1" max="10" value="5" required>
+    </div>
+
 
 
     <button id="generateColors">Generate Colors</button>
@@ -750,6 +862,12 @@ data: t Pink"</code></pre>
         function callGenerateColors() {
             const btn = document.getElementById('generateColors');
 
+            // Fetch the value from the custom-prompt input box
+            const promptValue = encodeURIComponent(document.getElementById('custom-prompt').value);
+            // Fetch the value from the counter input box
+            const numberValue = document.getElementById('counterInput').value;
+
+
             // Check timer
             firstTimeDisplayed = false;
             startTime = new Date();
@@ -772,7 +890,7 @@ data: t Pink"</code></pre>
 
 
             // Connect to the SSE endpoint using the selected mode:
-            const eventSource = new EventSource(`${baseURL}/sse/colors?mode=${selectedMode}`);
+            const eventSource = new EventSource(`${baseURL}/sse/colors?mode=${selectedMode}&prompt=${promptValue}&number=${numberValue}`);
 
 
             eventSource.onmessage = function (event) {
@@ -1002,6 +1120,25 @@ data: t Pink"</code></pre>
                 eventSource.close();
             };
         }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // This ensures the script runs after the page's DOM is fully loaded
+
+            const sentences = [
+                "Wine in France",
+                "Coffee shop in autumn",
+                "Sunset lover",
+                "Mother nature",
+                "Aurora borealis",
+                "Midnight with the stars",
+            ];
+
+            const randomSentence = sentences[Math.floor(Math.random() * sentences.length)];
+
+            document.getElementById('custom-prompt').value = randomSentence;
+        });
+
 
 
     </script>

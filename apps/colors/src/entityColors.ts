@@ -9,18 +9,22 @@ const ColorSchema = z.object({
     description: z.string().optional(),
 });
 
-function getColorMessages(number: string): any[] {
+function getColorMessages(number: string, prompt: string): any[] {
     return [
         {
             role: "system",
             content: "Write JSON only",
         },
         {
-            role: "user",
+            role: "system",
             content:
                 "Give me a palette of " +
                 number +
                 " gorgeous color with the hex code, name and a description.",
+        },
+        {
+            role: "user",
+            content: "The palette will have the ton and theme of:" + prompt,
         },
     ];
 }
@@ -61,14 +65,16 @@ function getColorListFunction() {
 export async function callGenerateColors(
     openai: OpenAI,
     mode: StreamMode = StreamMode.StreamObjectKeyValueTokens,
+    number: number = 5,
+    prompt: string = "",
 ) {
     // Call OpenAI API, with function calling
     // Function calling: https://openai.com/blog/function-calling-and-other-api-updates
     const stream = await openai.chat.completions.create({
-        messages: getColorMessages("5"),
+        messages: getColorMessages(number.toString(), prompt),
         model: "gpt-3.5-turbo", // OR "gpt-4"
         stream: true, // ENABLE STREAMING - Server Sent Event (SSE)
-        temperature: 1.3,
+        temperature: 1.1,
         functions: [getColorListFunction()],
         function_call: { name: "give_colors" },
     });
