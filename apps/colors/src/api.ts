@@ -30,6 +30,8 @@ const queryMode = z.object({
         .optional(),
     number: z
         .string()
+        .optional()
+        .default("5")
         .transform((v) => parseInt(v))
         .refine((v) => !isNaN(v) && v >= 1 && v <= 10, {
             message: "not a valid number",

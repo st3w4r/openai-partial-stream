@@ -73,8 +73,9 @@ export async function callGenerateColors(
     const stream = await openai.chat.completions.create({
         messages: getColorMessages(number.toString(), prompt),
         model: "gpt-3.5-turbo", // OR "gpt-4"
+        // model: "gpt-4",
         stream: true, // ENABLE STREAMING - Server Sent Event (SSE)
-        temperature: 1.3,
+        temperature: 1.1,
         functions: [getColorListFunction()],
         function_call: { name: "give_colors" },
     });
