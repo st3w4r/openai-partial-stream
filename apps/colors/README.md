@@ -1,12 +1,9 @@
 # Deployment
 
-```
+```bash
 npm install
-npm run dev
-```
-
-```
-npm run deploy
+make dev
+make deploy
 ```
 
 # Sercrets
@@ -25,7 +22,7 @@ Use the wrangler CLI to deploy the worker.
 
 ```bash
 
-npm install -g @cloudflare/wrangler
+npm install -g wrangler
 
 wrangler login
 
