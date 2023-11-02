@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zodToTs, printNode } from "zod-to-ts";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
 import { ParsedResponse, StreamResponseWrapper } from "./utils";
 
@@ -15,12 +15,14 @@ export class Entity<K extends string, T> {
     }
 
     generatePromptSchema() {
-        const { node } = zodToTs(this.schema, this.name);
-        const nodeString = printNode(node);
+        const jsonSchema =
+            zodToJsonSchema(this.schema, this.name)?.definitions?.[this.name] ??
+            "";
+        const strJsonSchema = JSON.stringify(jsonSchema);
 
         const prompt = `
-        Format an array of json object to respect this json TypeScript definition:
-        ${nodeString}
+        Format an array of json object to respect this json schema definition:
+        ${strJsonSchema}
     
         Output as a json array:
         example: [{"name": "value"}, {"name": "value"}]
@@ -57,7 +59,7 @@ export class Entity<K extends string, T> {
     ): AsyncIterable<ParsedResponse<K, T> | null> {
         for await (const item of entityObject) {
             if (item) {
-                let childrens = item.data[this.name];
+                let childrens = item.data?.[this.name] ?? item.data;
                 if (Array.isArray(childrens) && childrens.length > 0) {
                     let index = childrens.length - 1;
                     let data = this.parse(childrens[index]);

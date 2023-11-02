@@ -22,7 +22,11 @@ export class OpenAiHandler {
 
             // If no content, check function calling content
             if (!content) {
-                content = msg.choices[0]?.delta?.function_call?.arguments + "";
+                content = msg.choices[0]?.delta?.function_call?.arguments;
+            }
+
+            if (content === undefined) {
+                continue;
             }
 
             const res = this.parser.parse(content);
