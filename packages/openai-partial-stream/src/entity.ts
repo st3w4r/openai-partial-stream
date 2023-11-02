@@ -57,7 +57,7 @@ export class Entity<K extends string, T> {
     ): AsyncIterable<ParsedResponse<K, T> | null> {
         for await (const item of entityObject) {
             if (item) {
-                let childrens = item.data[this.name];
+                let childrens = item.data?.[this.name] ?? item.data;
                 if (Array.isArray(childrens) && childrens.length > 0) {
                     let index = childrens.length - 1;
                     let data = this.parse(childrens[index]);
