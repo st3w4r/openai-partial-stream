@@ -1,4 +1,6 @@
 {
+  "name": "web-app-colors",
+  "private": true,
   "scripts": {
     "dev": "wrangler dev src/index.ts --port 8888",
     "deploy": "wrangler deploy --minify src/index.ts"

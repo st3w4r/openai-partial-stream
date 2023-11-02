@@ -1,5 +1,11 @@
 # partial-ai-stream-lib
 
+## 0.3.7
+
+### Patch Changes
+
+- Change zod-to-ts to zod-to-json-schema
+
 ## 0.3.6
 
 ### Patch Changes
