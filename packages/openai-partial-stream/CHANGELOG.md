@@ -1,5 +1,11 @@
 # partial-ai-stream-lib
 
+## 0.3.8
+
+### Patch Changes
+
+- Fix long tokens with multi braces
+
 ## 0.3.7
 
 ### Patch Changes
