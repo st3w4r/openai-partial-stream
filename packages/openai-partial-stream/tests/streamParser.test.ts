@@ -50,6 +50,39 @@ test("stream partial parser", async () => {
     expect(results).toEqual(expected);
 });
 
+// TODO: Handle array with key value for each item
+test("stream partial parser array", async () => {
+    const streamParser = new StreamParser(StreamMode.StreamObjectKeyValue);
+
+    let content = [
+        `{"items":[`,
+        `{"a":`,
+        ` 1, `,
+        `"b": 2`,
+        `, "c": `,
+        `3}`,
+        `]`,
+    ];
+
+    let results: (StreamResponseWrapper | null)[] = [];
+
+    for (const item of content) {
+        results.push(streamParser.parse(item));
+    }
+
+    const expected = [
+        null,
+        null,
+        { index: 0, status: "PARTIAL", data: { items: { a: 1 } } },
+        null,
+        { index: 0, status: "PARTIAL", data: { a: 1, b: 2 } },
+        { index: 0, status: "COMPLETED", data: { a: 1, b: 2, c: 3 } },
+        null,
+    ];
+
+    expect(results).toEqual(expected);
+});
+
 test("stream partial parser tokens", async () => {
     const streamParser = new StreamParser(
         StreamMode.StreamObjectKeyValueTokens,
