@@ -217,3 +217,57 @@ test("stream partial", async () => {
 
     expect(results).toEqual(expected);
 });
+
+// TODO: Improve the parer to handle this case
+// Parser should be able to return an array when their is mutli object closed
+// In the same chunk
+test.skip("stream partial longer tokens", async () => {
+    const inputs = [
+        `{ "colors": [{"hex": "#FF7F50`,
+        `"},{`,
+        `"he`,
+        `x": "#465`,
+        `2B4"}] }`,
+    ];
+
+    // TODO: Add another case
+    // const inputs = [
+    //     `
+    //     { "colors": [{"a":1},{"b":2},{"c":3`,
+    //     `}`,
+    //     `] }`,
+    // ];
+
+    const streamParser = new StreamParser(StreamMode.StreamObject);
+
+    const results = inputs.map((item) => streamParser.parse(item));
+
+    const expected = [
+        null,
+        [
+            {
+                index: 0,
+                status: "COMPLETED",
+                data: { colors: [{ hex: "#FF7F50" }] },
+            },
+            {
+                index: 1,
+                status: "PARTIAL",
+                data: { colors: [{ hex: "#FF7F50" }, {}] },
+            },
+        ],
+        null,
+        null,
+        {
+            index: 1,
+            status: "COMPLETED",
+            data: { colors: [{ hex: "#FF7F50" }, { hex: "#4652B4" }] },
+        },
+    ];
+
+    results.forEach((result) => {
+        console.log(result?.index, result?.status, result?.data);
+    });
+
+    expect(results).toEqual(expected);
+});

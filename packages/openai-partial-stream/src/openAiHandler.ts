@@ -29,17 +29,23 @@ export class OpenAiHandler {
                 continue;
             }
 
-            const res = this.parser.parse(content);
+            // TODO: Handle this in the stream parser
+            // The stream parser should be able to return multi responses.
+            const chunks = content.split(/(?<={|})/);
 
-            if (
-                this.mode === StreamMode.NoStream ||
-                this.mode === StreamMode.Batch
-            ) {
-                if (res) {
-                    this.noStreamBufferList.push(res);
+            for (const chunk of chunks) {
+                const res = this.parser.parse(chunk);
+
+                if (
+                    this.mode === StreamMode.NoStream ||
+                    this.mode === StreamMode.Batch
+                ) {
+                    if (res) {
+                        this.noStreamBufferList.push(res);
+                    }
+                } else if (res) {
+                    yield res;
                 }
-            } else if (res) {
-                yield res;
             }
         }
 

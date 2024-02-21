@@ -33,7 +33,7 @@ async function callGenerateColors(
                     "Give me a palette of 5 gorgeous color with the hex code, name and a description.",
             },
         ],
-        model: "gpt-3.5-turbo", // OR "gpt-4"
+        model: "gpt-4-turbo-preview", // OR "gpt-4"
         stream: true, // ENABLE STREAMING
         temperature: 1.3,
         functions: [

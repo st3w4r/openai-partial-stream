@@ -23,7 +23,7 @@ async function main() {
                 content: "Give me 3 cities and their postcodes in California.",
             },
         ],
-        model: "gpt-3.5-turbo", // OR "gpt-4"
+        model: "gpt-3.5-turbo", // OR "gpt-4" OR "gpt-4-turbo-preview"
         stream: true, // ENABLE STREAMING
         temperature: 1.1,
         functions: [
@@ -67,7 +67,7 @@ async function main() {
     // - StreamObjectKeyValue:       (PROGRESSIVE)  Stream of JSON objects and key value pairs
     // - StreamObject:               (ONE-BY-ONE)   Stream of JSON objects
     // - NoStream:                   (ALL-TOGETHER) All the data is returned at the end of the process
-    const mode = StreamMode.StreamObjectKeyValueTokens;
+    const mode = StreamMode.StreamObject;
 
     // Create an instance of the handler
     const openAiHandler = new OpenAiHandler(mode);
