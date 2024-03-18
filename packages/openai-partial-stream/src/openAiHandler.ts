@@ -25,6 +25,11 @@ export class OpenAiHandler {
                 content = msg.choices[0]?.delta?.function_call?.arguments;
             }
 
+            // Check tools
+            if (!content) {
+                content = msg.choices[0]?.delta?.tool_calls?.[0]?.function?.arguments;
+            }
+
             if (content === undefined) {
                 continue;
             }
