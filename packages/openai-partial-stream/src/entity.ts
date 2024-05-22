@@ -14,7 +14,7 @@ export class Entity<K extends string, T> {
         this.schema = schema;
     }
 
-    generatePromptSchema() {
+    generatePromptSchema(): string {
         const jsonSchema =
             zodToJsonSchema(this.schema, this.name)?.definitions?.[this.name] ??
             "";

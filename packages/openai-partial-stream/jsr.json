@@ -1,0 +1,5 @@
+{
+    "name": "@st3w4r/openai-partial-stream",
+    "version": "0.1.0",
+    "exports": "./src/index.ts"
+}
