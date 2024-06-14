@@ -1,5 +1,11 @@
 # partial-ai-stream-lib
 
+## 0.3.9
+
+### Patch Changes
+
+- support tools call for function
+
 ## 0.3.8
 
 ### Patch Changes

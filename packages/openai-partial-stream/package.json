@@ -3,7 +3,7 @@
     "author": "Yanael Barbier",
     "license": "MIT",
     "private": false,
-    "version": "0.3.8",
+    "version": "0.3.9",
     "repository": {
         "type": "git",
         "url": "https://github.com/st3w4r/openai-partial-stream.git",
