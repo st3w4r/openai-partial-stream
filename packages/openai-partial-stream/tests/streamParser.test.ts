@@ -76,6 +76,43 @@ test("stream partial parser tokens", async () => {
     expect(results).toEqual(expected);
 });
 
+test("stream partial parser keeps PARTIAL status for nested array/object", async () => {
+    const streamParser = new StreamParser(
+        StreamMode.StreamObjectKeyValueTokens,
+    );
+
+    const content = [
+        `{"colors":[{"name":"re`,
+        `d"},{"name":"bl`,
+        `ue"}],"done":tr`,
+        `ue}`,
+    ];
+
+    const results = content
+        .map((item) => streamParser.parse(item))
+        .filter(Boolean);
+
+    const expected = [
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: { colors: [{ name: "re" }] },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: { colors: [{ name: "red" }, { name: "bl" }] },
+        },
+        {
+            index: 0,
+            status: "COMPLETED",
+            data: { colors: [{ name: "red" }, { name: "blue" }], done: true },
+        },
+    ];
+
+    expect(results).toEqual(expected);
+});
+
 async function* arrayToGenerator<T>(arr: T[]): AsyncGenerator<T> {
     for await (const item of arr) {
         yield item;
