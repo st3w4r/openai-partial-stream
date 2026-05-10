@@ -32,10 +32,21 @@ const queryMode = z.object({
         .string()
         .optional()
         .default("5")
-        .transform((v) => parseInt(v))
-        .refine((v) => !isNaN(v) && v >= 1 && v <= 10, {
-            message: "not a valid number",
-        }),
+        .superRefine((v, ctx) => {
+            const number = Number(v);
+            if (
+                !/^\d+$/.test(v) ||
+                !Number.isInteger(number) ||
+                number < 1 ||
+                number > 10
+            ) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "not a valid number",
+                });
+            }
+        })
+        .transform((v) => Number(v)),
 
     prompt: z.string().max(100).optional(),
 });

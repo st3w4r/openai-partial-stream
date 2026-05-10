@@ -878,7 +878,15 @@ data: t Pink"</code></pre>
             // Fetch the value from the custom-prompt input box
             const promptValue = encodeURIComponent(document.getElementById('custom-prompt').value);
             // Fetch the value from the counter input box
-            const numberValue = document.getElementById('counterInput').value;
+            const counterInput = document.getElementById('counterInput');
+            const numberValue = counterInput.value.trim();
+            const number = Number(numberValue);
+            if (!/^\d+$/.test(numberValue) || !Number.isInteger(number) || number < 1 || number > 10) {
+                counterInput.setCustomValidity("Choose a whole number from 1 to 10.");
+                counterInput.reportValidity();
+                return;
+            }
+            counterInput.setCustomValidity("");
 
 
             // Check timer
