@@ -12,6 +12,17 @@ export class OpenAiHandler {
         this.parser = new StreamParser(this.mode);
     }
 
+    private getChunks(content: string): string[] {
+        if (
+            this.mode === StreamMode.StreamObjectKeyValue ||
+            this.mode === StreamMode.StreamObjectKeyValueTokens
+        ) {
+            return [...content];
+        }
+
+        return content.split(/(?<={|})/);
+    }
+
     async *process(
         stream: any,
     ): AsyncGenerator<StreamResponseWrapper | null, void, unknown> {
@@ -34,9 +45,7 @@ export class OpenAiHandler {
                 continue;
             }
 
-            // TODO: Handle this in the stream parser
-            // The stream parser should be able to return multi responses.
-            const chunks = content.split(/(?<={|})/);
+            const chunks = this.getChunks(content);
 
             for (const chunk of chunks) {
                 const res = this.parser.parse(chunk);

@@ -66,9 +66,8 @@ export async function callGenerateTagline(
 ) {
     const stream = await openai.chat.completions.create({
         messages: getTaglineMessages(),
-        model: "gpt-3.5-turbo", // OR "gpt-4"
+        model: "gpt-5.5",
         stream: true, // ENABLE STREAMING - Server Sent Event (SSE)
-        temperature: 0.8,
         functions: [getTaglineFunction()],
         function_call: { name: "tagline" },
     });

@@ -113,6 +113,175 @@ test("stream partial parser keeps PARTIAL status for nested array/object", async
     expect(results).toEqual(expected);
 });
 
+test("stream partial parser completes when root close has no new data", async () => {
+    const streamParser = new StreamParser(StreamMode.StreamObjectKeyValue);
+
+    const content = [`{"colors":[{"name":"red"`, `}`, `]`, `}`];
+
+    const results = content
+        .map((item) => streamParser.parse(item))
+        .filter(Boolean);
+
+    const expected = [
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: { colors: [{ name: "red" }] },
+        },
+        {
+            index: 0,
+            status: "COMPLETED",
+            data: { colors: [{ name: "red" }] },
+        },
+    ];
+
+    expect(results).toEqual(expected);
+});
+
+test("stream partial parser emits object starts and ready key-value data", async () => {
+    const streamParser = new StreamParser(StreamMode.StreamObjectKeyValue);
+
+    const content = [...JSON.stringify({
+        colors: [
+            {
+                hex: "#111111",
+                name: "One",
+                description: "First",
+            },
+            {
+                hex: "#222222",
+                name: "Two",
+                description: "Second",
+            },
+        ],
+    })];
+
+    const results = content
+        .map((item) => streamParser.parse(item))
+        .filter(Boolean);
+
+    const expected = [
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: {},
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: { colors: [] },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: { colors: [{}] },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: { colors: [{ hex: "#111111" }] },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: { colors: [{ hex: "#111111", name: "One" }] },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: {
+                colors: [
+                    {
+                        hex: "#111111",
+                        name: "One",
+                        description: "First",
+                    },
+                ],
+            },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: {
+                colors: [
+                    {
+                        hex: "#111111",
+                        name: "One",
+                        description: "First",
+                    },
+                    {},
+                ],
+            },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: {
+                colors: [
+                    {
+                        hex: "#111111",
+                        name: "One",
+                        description: "First",
+                    },
+                    { hex: "#222222" },
+                ],
+            },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: {
+                colors: [
+                    {
+                        hex: "#111111",
+                        name: "One",
+                        description: "First",
+                    },
+                    { hex: "#222222", name: "Two" },
+                ],
+            },
+        },
+        {
+            index: 0,
+            status: "PARTIAL",
+            data: {
+                colors: [
+                    {
+                        hex: "#111111",
+                        name: "One",
+                        description: "First",
+                    },
+                    {
+                        hex: "#222222",
+                        name: "Two",
+                        description: "Second",
+                    },
+                ],
+            },
+        },
+        {
+            index: 0,
+            status: "COMPLETED",
+            data: {
+                colors: [
+                    {
+                        hex: "#111111",
+                        name: "One",
+                        description: "First",
+                    },
+                    {
+                        hex: "#222222",
+                        name: "Two",
+                        description: "Second",
+                    },
+                ],
+            },
+        },
+    ];
+
+    expect(results).toEqual(expected);
+});
+
 async function* arrayToGenerator<T>(arr: T[]): AsyncGenerator<T> {
     for await (const item of arr) {
         yield item;

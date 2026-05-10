@@ -28,6 +28,10 @@ export class StreamParser {
 
         const [hasChanged, resJson, stack] = this.jsonCloser.parse();
 
+        const isProgressiveMode =
+            this.mode === StreamMode.StreamObjectKeyValue ||
+            this.mode === StreamMode.StreamObjectKeyValueTokens;
+
         // If an object has been closed, decide whether it means completion.
         // - Progressive modes complete only when the root object is closed (stack empty).
         // - StreamObject/NoStream keep array-item completion behaviour for entity extraction.
@@ -35,10 +39,6 @@ export class StreamParser {
             const stackTop = stack[stack.length - 1];
             const rootClosed = stack.length === 0;
             const arrayItemClosed = stackTop === "[";
-
-            const isProgressiveMode =
-                this.mode === StreamMode.StreamObjectKeyValue ||
-                this.mode === StreamMode.StreamObjectKeyValueTokens;
 
             if (
                 (isProgressiveMode && rootClosed) ||
@@ -49,7 +49,7 @@ export class StreamParser {
             }
         }
 
-        if (hasChanged && resJson) {
+        if ((hasChanged || (completed && isProgressiveMode)) && resJson) {
             outputEntity = resJson;
         } else {
             outputEntity = null;
