@@ -28,18 +28,28 @@ export class StreamParser {
 
         const [hasChanged, resJson, stack] = this.jsonCloser.parse();
 
-        // If an object have been closed
-        // Check if an array is open or if the stack is empty
-        // Meaning the object is completed and a new entity can be created
-        if (
-            end !== -1 &&
-            ("[" === stack[stack.length - 1] || stack.length === 0)
-        ) {
-            this.entityIndex += 1;
-            completed = true;
+        const isProgressiveMode =
+            this.mode === StreamMode.StreamObjectKeyValue ||
+            this.mode === StreamMode.StreamObjectKeyValueTokens;
+
+        // If an object has been closed, decide whether it means completion.
+        // - Progressive modes complete only when the root object is closed (stack empty).
+        // - StreamObject/NoStream keep array-item completion behaviour for entity extraction.
+        if (end !== -1) {
+            const stackTop = stack[stack.length - 1];
+            const rootClosed = stack.length === 0;
+            const arrayItemClosed = stackTop === "[";
+
+            if (
+                (isProgressiveMode && rootClosed) ||
+                (!isProgressiveMode && (arrayItemClosed || rootClosed))
+            ) {
+                this.entityIndex += 1;
+                completed = true;
+            }
         }
 
-        if (hasChanged && resJson) {
+        if ((hasChanged || (completed && isProgressiveMode)) && resJson) {
             outputEntity = resJson;
         } else {
             outputEntity = null;

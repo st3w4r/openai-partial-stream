@@ -7,7 +7,6 @@ export class JsonCloser {
     private stack: any[] = [];
 
     private prevSize = 0;
-
     private closedObject = false;
     private closedArray = false;
 
@@ -89,6 +88,9 @@ export class JsonCloser {
             const jsonRes = JSON.parse(closedJson);
 
             const size = JSON.stringify(jsonRes).length;
+            const isProgressiveMode =
+                this.mode === StreamMode.StreamObjectKeyValue ||
+                this.mode === StreamMode.StreamObjectKeyValueTokens;
 
             let hasChanged = false;
             if (size > this.prevSize) {
@@ -102,7 +104,7 @@ export class JsonCloser {
                 // If the array have been close the object have been closed too
                 // No need to consider it as a change
                 // This is to avoid processing twice the same completion
-                hasChanged = this.closedObject;
+                hasChanged = !isProgressiveMode && this.closedObject;
                 this.closedObject = false;
             }
 
