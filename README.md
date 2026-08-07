@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=st3w4r&project=openai-partial-stream&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 # Parse Partial JSON Stream - Turn your slow AI app into an engaging real-time app
 
 - Convert a **stream of token** into a **parsable JSON** object before the stream ends.
