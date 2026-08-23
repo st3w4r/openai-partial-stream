@@ -44,7 +44,7 @@ function getColorListFunction() {
                             hex: {
                                 type: "string",
                                 description:
-                                    "The hexadecimal code of the color",
+                                    "The six-digit hexadecimal code of the color in #RRGGBB format",
                             },
                             name: {
                                 type: "string",
@@ -55,9 +55,11 @@ function getColorListFunction() {
                                 description: "The description of the color",
                             },
                         },
+                        required: ["hex", "name", "description"],
                     },
                 },
             },
+            required: ["colors"],
         },
     };
 }

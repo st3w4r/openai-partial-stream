@@ -866,6 +866,8 @@ data: t Pink"</code></pre>
                 container.removeChild(container.firstChild);
             }
             blocks = [];
+            colorBlocks = [];
+            copiedColors = [];
             document.getElementById('voilaContainer').style.opacity = "0";
         }
 
@@ -918,7 +920,7 @@ data: t Pink"</code></pre>
                 // Parse the data from the SSE message
                 const data = JSON.parse(event.data);
 
-                if (!firstTimeDisplayed && data && Object.keys(data.data).length !== 0) {
+                if (!firstTimeDisplayed && data?.data && Object.keys(data.data).length !== 0) {
                     const elapsedTime = new Date() - startTime;
                     const elapsedSeconds = (elapsedTime / 1000).toFixed(2); // Convert to seconds and keep 2 decimal places
                     const voilaContainer = document.getElementById('voilaContainer');
@@ -986,10 +988,20 @@ data: t Pink"</code></pre>
         }
 
         function processSingleBlock(index, data) {
+            if (!data || typeof data !== 'object') return;
+
+            const hex = normalizeHex(data.hex);
+            const name = typeof data.name === 'string' ? data.name.trim() : '';
+            const description = typeof data.description === 'string' ? data.description.trim() : '';
+
+            // Names and descriptions can arrive before the streamed hex value is
+            // complete. Wait for a usable color instead of showing the dark fallback.
+            if (!blocks[index] && !hex) return;
+
             if (!blocks[index]) {
 
-                if (data.hex) {
-                    colorBlocks[index] = data.hex;
+                if (hex) {
+                    colorBlocks[index] = hex;
                 }
 
                 // Move all existing blocks to make space for the new one
@@ -1001,18 +1013,24 @@ data: t Pink"</code></pre>
                 // Block does not exist; create it
                 const block = document.createElement('div');
                 block.className = 'color-block';
-                // block.style.backgroundColor = data.hex || '#FFFFFF';  // Default to white if hex isn't provided
-                block.style.backgroundColor = data.hex || 'beige';  // Default to white if hex isn't provided
-                //             block.innerHTML = `
-                //     <span class="color-name">${data.name || ''}</span>
-                //     <span class="color-description">${data.description || ''}</span>
-                // `;
-                block.innerHTML = `
-                        <div class="color-content">
-                            <span class="color-name">${data.name || ''}</span>
-                            <span class="color-description">${data.description || ''}</span>
-                        </div>
-                    `;
+                block.style.backgroundColor = hex;
+                block.style.color = getReadableTextColor(hex);
+
+                const content = document.createElement('div');
+                content.className = 'color-content';
+
+                const nameElement = document.createElement('span');
+                nameElement.className = 'color-name';
+                nameElement.style.color = 'inherit';
+                nameElement.textContent = name || hex;
+
+                const descriptionElement = document.createElement('span');
+                descriptionElement.className = 'color-description';
+                descriptionElement.style.color = 'inherit';
+                descriptionElement.textContent = description || 'Details are streaming…';
+
+                content.append(nameElement, descriptionElement);
+                block.appendChild(content);
 
 
                 block.style.opacity = 0;  // Initially set to 0
@@ -1023,6 +1041,7 @@ data: t Pink"</code></pre>
                 // Add click event to copy the hex code
                 block.addEventListener('click', function () {
                     const hexCode = colorBlocks[index];
+                    if (!hexCode) return;
                     const colorNameElement = block.querySelector('.color-name');
                     const colorDescriptionElement = block.querySelector('.color-description');
                     const originalNameText = colorNameElement.getAttribute('data-original') || colorNameElement.textContent;
@@ -1062,13 +1081,37 @@ data: t Pink"</code></pre>
                 }, 50);
             } else {
                 // Block exists; update it
-                colorBlocks[index] = data.hex;
-
                 const block = blocks[index];
-                if (data.hex) block.style.backgroundColor = data.hex;
-                if (data.name) block.querySelector('.color-name').textContent = data.name;
-                if (data.description) block.querySelector('.color-description').textContent = data.description;
+                if (hex) {
+                    colorBlocks[index] = hex;
+                    block.style.backgroundColor = hex;
+                    block.style.color = getReadableTextColor(hex);
+                }
+                if (name) block.querySelector('.color-name').textContent = name;
+                if (description) block.querySelector('.color-description').textContent = description;
             }
+        }
+
+        function normalizeHex(value) {
+            if (typeof value !== 'string') return null;
+            const match = value.trim().match(/^(?:#|0x)?([0-9a-f]{6}|[0-9a-f]{8})$/i);
+            return match ? `#${match[1]}` : null;
+        }
+
+        function getReadableTextColor(hex) {
+            if (!hex) return 'beige';
+
+            let digits = hex.slice(1);
+            if (digits.length === 3) {
+                digits = [...digits].map((digit) => digit + digit).join('');
+            }
+
+            const red = parseInt(digits.slice(0, 2), 16);
+            const green = parseInt(digits.slice(2, 4), 16);
+            const blue = parseInt(digits.slice(4, 6), 16);
+            const luminance = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+
+            return luminance > 0.88 ? 'darkslategray' : 'beige';
         }
 
 

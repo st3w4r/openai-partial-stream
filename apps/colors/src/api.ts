@@ -84,11 +84,11 @@ api.get("/sse/tagline", (c) => {
 
         for await (const data of gen) {
             const jsonStr = JSON.stringify(data);
-            stream.write(`data: ${jsonStr}\n\n`);
+            await stream.write(`data: ${jsonStr}\n\n`);
         }
         // Stream is done
-        stream.write(`event: CLOSE\n`);
-        stream.write(`data: [DONE]\n\n`);
+        await stream.write(`event: CLOSE\n`);
+        await stream.write(`data: [DONE]\n\n`);
     });
 });
 
@@ -103,11 +103,11 @@ api.get("/sse/colors", zValidator("query", queryMode), (c) => {
             const jsonStr = JSON.stringify(data);
 
             // Return the json as the message
-            stream.write(`data: ${jsonStr}\n\n`);
+            await stream.write(`data: ${jsonStr}\n\n`);
         }
         // Stream is done
-        stream.write(`event: CLOSE\n`);
-        stream.write(`data: [DONE]\n\n`);
+        await stream.write(`event: CLOSE\n`);
+        await stream.write(`data: [DONE]\n\n`);
     });
 });
 
